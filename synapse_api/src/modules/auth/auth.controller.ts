@@ -1,6 +1,8 @@
 import { Request, Response } from "express";
 import { AuthService } from "./auth.service";
 import { LoginSchema, RegisterSchema } from "./auth.schemas";
+import { generateCode } from "../../common/utils/generateCode";
+import { sendEmail } from '../../common/utils/sendEmail';
 
 export class AuthController {
 
@@ -58,6 +60,74 @@ export class AuthController {
                 ok: true,
                 token,
 
+            });
+        } catch (error) {
+            return res.status(400).json({
+                ok: false,
+                error: (error as Error).message
+            });
+        }
+    }
+
+    static async recuperarPassword(req: Request, res: Response) {
+        try {
+            const code = generateCode();
+            const { correo_electronico } = req.body;
+            const token = await AuthService.recuperarPassword(correo_electronico);
+            
+            // Enviar email con el token
+            await sendEmail(correo_electronico, "Recuperación de contraseña", code);
+            
+            return res.json({
+                ok: true,
+                token,
+                codigo_dev: code
+            });
+        } catch (error) {
+            return res.status(400).json({
+                ok: false,
+                error: (error as Error).message
+            });
+        }
+    }
+
+    static async verificarCodigo(req: Request, res: Response) {
+        try {
+            const { correo_electronico, codigo } = req.body;
+            const token = await AuthService.verificarCodigo(correo_electronico, codigo);
+            return res.json({
+                ok: true,
+                token
+            });
+        } catch (error) {
+            return res.status(400).json({
+                ok: false,
+                error: (error as Error).message
+            });
+        }
+    }
+
+    static async restablecerPassword(req: Request, res: Response) {
+        try {
+            const { correo_electronico, codigo, nueva_password } = req.body;
+            const token = await AuthService.restablecerPassword(correo_electronico, codigo, nueva_password);
+            return res.json({
+                ok: true,
+                token
+            });
+        } catch (error) {
+            return res.status(400).json({
+                ok: false,
+                error: (error as Error).message
+            });
+        }
+    }
+
+    static async logout(req: Request, res: Response) {
+        try {
+            return res.json({
+                ok: true,
+                message: "Sesión cerrada exitosamente"
             });
         } catch (error) {
             return res.status(400).json({

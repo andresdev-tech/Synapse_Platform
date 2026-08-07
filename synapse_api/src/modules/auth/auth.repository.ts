@@ -58,4 +58,25 @@ export class AuthRepository {
       }
     });
   }
+
+  static findUserByCodigo(correo_electronico: string, codigo: string) {
+    return prisma.usuarios.findMany({
+      where: {
+        correo_electronico: correo_electronico,
+        codigo: codigo
+      }
+    });
+  }
+
+  static updateUserPassword(correo_electronico: string, codigo: string, password: string) {
+    return prisma.usuarios.update({
+      where: {
+        correo_electronico: correo_electronico,
+        codigo: codigo
+      },
+      data: {
+        password_hash: password
+      }
+    });
+  }
 }

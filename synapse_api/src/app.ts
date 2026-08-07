@@ -9,7 +9,6 @@ import { swaggerUi, swaggerSpec } from "./docs/swager";
 const app = express();
 
 app.use(helmet());
-app.use(cors());
 app.use(express.json());
 app.use(morgan("combined"));
 app.use(cors(
@@ -22,7 +21,7 @@ app.use(morgan("combined"));
 
 app.use("/api/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
-app.use("/api/v1/", router);
+app.use("/api/v1", router);
 
 console.log('qwenkey: ', process.env.QWEN_API_KEY);
 
