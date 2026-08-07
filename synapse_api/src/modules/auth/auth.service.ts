@@ -2,6 +2,7 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { AuthRepository } from './auth.repository';
 import { PassHash } from '../../common/utils/passHash.util';
+import { sendEmail } from '../../common/utils/sendEmail';
 
 export class AuthService {
 
@@ -125,6 +126,48 @@ export class AuthService {
             });
 
             return { ok: true, token };
+        } catch (error: any) {
+            throw new Error(error.message);
+        }
+    }
+
+    static async recuperarPassword(correo_electronico: string) {
+        try {
+            const user = await AuthRepository.findUserByEmail(correo_electronico);
+            if (!user) {
+                throw new Error('Usuario no encontrado');
+            }
+            const token = jwt.sign(
+                { id: user.id },
+                process.env.JWT_SECRET!,
+                { expiresIn: '1h' }
+            );
+            
+            return token;
+        } catch (error: any) {
+            throw new Error(error.message);
+        }
+    }
+
+    static async verificarCodigo(correo_electronico: string, codigo: string) {
+        try {
+            const user = await AuthRepository.findUserByCodigo(correo_electronico, codigo);
+            if (!user) {
+                throw new Error('Usuario no encontrado');
+            }
+            return user;
+        } catch (error: any) {
+            throw new Error(error.message);
+        }
+    }
+
+    static async restablecerPassword(correo_electronico: string, codigo: string, password: string) {
+        try {
+            const user = await AuthRepository.updateUserPassword(correo_electronico, codigo, password);
+            if (!user) {
+                throw new Error('Usuario no encontrado');
+            }
+            return user;
         } catch (error: any) {
             throw new Error(error.message);
         }

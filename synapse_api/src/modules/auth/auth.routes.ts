@@ -95,4 +95,23 @@ router.post("/login", AuthController.login);
  */
 router.post("/register", AuthController.register);
 
+
+router.post("/recuperar-password", AuthController.recuperarPassword);
+
+router.post("/verificar-codigo", AuthController.verificarCodigo);
+
+router.post("/restablecer-password", AuthController.restablecerPassword);
+
+/**
+ * @swagger
+ * /auth/logout:
+ *   post:
+ *     summary: Cerrar sesión
+ *     tags: [Auth]
+ *     responses:
+ *       200:
+ *         description: Sesión cerrada exitosamente
+ */
+router.post("/logout", AuthController.logout);
+
 export default router;
