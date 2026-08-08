@@ -7,9 +7,7 @@
     "dev": "nodemon",
     "devAC": "nodemon --exec ts-node src/server.ts",
     "test": "vitest",
-    "studio": "prisma studio",
-    "prisma:seed": "ts-node prisma/seedDocumentos.ts",
-    "seed": "node prisma/seed.cjs"
+    "studio": "prisma studio"
   },
   "keywords": [],
   "author": "andresdev-tech",
