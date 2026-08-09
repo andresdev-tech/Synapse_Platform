@@ -14,7 +14,7 @@ export class AuthService {
      * Verifica credenciales y registra los datos de auditoría de la sesión (IP y Navegador)
      */
     static async login(correo_electronico: string, password: string, ip: string, browser: string) {
-        
+
         // Buscar si el usuario existe en la Base de Datos
         const usuario = await AuthRepository.findUserByEmail(correo_electronico);
         if (!usuario) {
@@ -47,8 +47,8 @@ export class AuthService {
         });
 
         return {
-             token,
-             usuario
+            token,
+            usuario
         };
     }
 
@@ -58,7 +58,8 @@ export class AuthService {
         await sendEmail(correo_electronico, "Verificación de cuenta", code);
 
         this.verificaciones.set(correo_electronico, code);
-        
+        console.log('Tamaño del mapa:', this.verificaciones.size);
+
         const token = jwt.sign(
             { correo_electronico, code },
             process.env.JWT_SECRET!,
@@ -74,20 +75,20 @@ export class AuthService {
         // TODO: Implementar lógica para verificar el código de verificación
 
         const storedCode = this.verificaciones.get(correo_electronico);
-        if(storedCode == codigo){
+        console.log('Iguales:', storedCode === codigo);
+        if (storedCode === codigo) {
             this.verificaciones.delete(correo_electronico);
-            return "Código verificado correctamente";
+            // Generar token para el usuario verificado
+            const token = jwt.sign(
+                { correo_electronico },
+                process.env.JWT_SECRET!,
+                { expiresIn: 600 } // 10 minutos
+            );
+            return token;
         } else {
             throw new Error('Código incorrecto');
         }
-        
-        // Generar token para el usuario verificado
-        const token = jwt.sign(
-            { correo_electronico, codigo },
-            process.env.JWT_SECRET!,
-            { expiresIn: 600 } // 10 minutos
-        );
-        return token;
+
     }
 
     /**
@@ -95,13 +96,13 @@ export class AuthService {
      * Valida los datos entrantes, hashea la contraseña y crea el registro
      */
     static async register(
-        nombres: string, 
-        apellidos: string, 
-        tipo_documento: number, 
-        numero_documento: string, 
-        correo_electronico: string, 
-        fecha_nacimiento: Date, 
-        password: string, 
+        nombres: string,
+        apellidos: string,
+        tipo_documento: number,
+        numero_documento: string,
+        correo_electronico: string,
+        fecha_nacimiento: Date,
+        password: string,
         rol: number
     ) {
         try {
@@ -121,16 +122,16 @@ export class AuthService {
             const passwordHash = await PassHash.hash(password);
 
             const nuevoUsuario = await AuthRepository.createUser(
-                nombres, 
-                apellidos, 
-                tipo_documento, 
-                numero_documento, 
-                correo_electronico, 
-                fecha_nacimiento, 
-                passwordHash, 
+                nombres,
+                apellidos,
+                tipo_documento,
+                numero_documento,
+                correo_electronico,
+                fecha_nacimiento,
+                passwordHash,
                 rol
             );
-            
+
             // Retornar un Token JWT automático tras el registro exitoso
             return jwt.sign(
                 { id: nuevoUsuario.id },
@@ -183,7 +184,7 @@ export class AuthService {
                 process.env.JWT_SECRET!,
                 { expiresIn: '1h' }
             );
-            
+
             return token;
         } catch (error: any) {
             throw new Error(error.message);
