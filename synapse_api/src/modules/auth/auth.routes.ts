@@ -41,6 +41,10 @@ const router = Router();
 
 router.post("/login", AuthController.login);
 
+router.post("/request-verification", AuthController.requestVerification);
+
+router.post("/verify-email", AuthController.verifyEmail);
+
 /**
  * @swagger
  * /auth/register:

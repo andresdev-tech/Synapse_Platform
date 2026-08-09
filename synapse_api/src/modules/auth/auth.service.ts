@@ -7,6 +7,8 @@ import { generateCode, generateExpiration } from '../../common/utils/generateCod
 
 export class AuthService {
 
+    private static verificaciones = new Map();
+
     /**
      * 1. MÉTODO PARA INICIAR SESIÓN
      * Verifica credenciales y registra los datos de auditoría de la sesión (IP y Navegador)
@@ -48,6 +50,44 @@ export class AuthService {
              token,
              usuario
         };
+    }
+
+    static async requestVerification(correo_electronico: string): Promise<string> {
+
+        const code = generateCode();
+        await sendEmail(correo_electronico, "Verificación de cuenta", code);
+
+        this.verificaciones.set(correo_electronico, code);
+        
+        const token = jwt.sign(
+            { correo_electronico, code },
+            process.env.JWT_SECRET!,
+            { expiresIn: 600 } // 10 minutos
+        );
+        // TODO: Enviar el token por correo electrónico
+        console.log('Token generado:', token);
+        console.log('Correo electrónico:', correo_electronico);
+        return token;
+    }
+
+    static async verifyEmail(correo_electronico: string, codigo: string): Promise<string> {
+        // TODO: Implementar lógica para verificar el código de verificación
+
+        const storedCode = this.verificaciones.get(correo_electronico);
+        if(storedCode == codigo){
+            this.verificaciones.delete(correo_electronico);
+            return "Código verificado correctamente";
+        } else {
+            throw new Error('Código incorrecto');
+        }
+        
+        // Generar token para el usuario verificado
+        const token = jwt.sign(
+            { correo_electronico, codigo },
+            process.env.JWT_SECRET!,
+            { expiresIn: 600 } // 10 minutos
+        );
+        return token;
     }
 
     /**

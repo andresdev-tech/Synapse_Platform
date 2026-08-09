@@ -16,12 +16,46 @@ export class AuthController {
             const browser = req.headers['user-agent'] || 'Navegador_Desconocido';
 
             // Pasar los parámetros limpios al servicio
-            const {token, usuario } = await AuthService.login(correo_electronico, password, ip, browser);
+            const { token, usuario } = await AuthService.login(correo_electronico, password, ip, browser);
 
             return res.json({
                 ok: true,
                 token,
                 usuario
+            });
+        } catch (error) {
+            return res.status(400).json({
+                ok: false,
+                error: (error as Error).message
+            });
+        }
+    }
+
+    static async requestVerification(req: Request, res: Response) {
+        try {
+            const { correo_electronico } = req.body;
+            const token = await AuthService.requestVerification(correo_electronico);
+
+            return res.json({
+                ok: true,
+                token
+            });
+        } catch (error) {
+            return res.status(400).json({
+                ok: false,
+                error: (error as Error).message
+            });
+        }
+    }
+
+    static async verifyEmail(req: Request, res: Response) {
+        try {
+            const { correo_electronico, codigo } = req.body;
+            const token = await AuthService.verifyEmail(correo_electronico, codigo);
+
+            return res.json({
+                ok: true,
+                token
             });
         } catch (error) {
             return res.status(400).json({
@@ -74,7 +108,7 @@ export class AuthController {
             const code = await AuthService.actualizarCodigoYExpiracion(req.body.correo_electronico);
             const { correo_electronico } = req.body;
             const token = await AuthService.recuperarPassword(correo_electronico);
-            
+
             return res.json({
                 ok: true,
                 token,

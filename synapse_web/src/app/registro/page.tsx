@@ -6,10 +6,10 @@ import { authAPI } from '../../lib/api';
 import { CheckCircle, XCircle } from 'lucide-react';
 
 const reglas = [
-  { id: 'longitud',  label: 'Mínimo 7 caracteres',                      test: (p: string) => p.length >= 7 },
-  { id: 'mayuscula', label: 'Al menos 1 letra mayúscula',                test: (p: string) => /[A-Z]/.test(p) },
-  { id: 'numeros',   label: 'Al menos 2 números',                        test: (p: string) => (p.match(/[0-9]/g) || []).length >= 2 },
-  { id: 'especial',  label: 'Al menos 1 carácter especial (@#$%&*!...)', test: (p: string) => /[^A-Za-z0-9]/.test(p) },
+  { id: 'longitud', label: 'Mínimo 7 caracteres', test: (p: string) => p.length >= 7 },
+  { id: 'mayuscula', label: 'Al menos 1 letra mayúscula', test: (p: string) => /[A-Z]/.test(p) },
+  { id: 'numeros', label: 'Al menos 2 números', test: (p: string) => (p.match(/[0-9]/g) || []).length >= 2 },
+  { id: 'especial', label: 'Al menos 1 carácter especial (@#$%&*!...)', test: (p: string) => /[^A-Za-z0-9]/.test(p) },
 ];
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.com$/i;
@@ -91,19 +91,56 @@ export default function RegistroPage() {
 
     setLoading(true);
     try {
-      await authAPI.registrar({
-        nombres,
-        apellidos,
-        tipo_documento_id: parseInt(form.tipo_documento_id),
-        numero_documento: numeroDocumento,
-        fecha_nacimiento: form.fecha_nacimiento || undefined,
+
+      // Verificar email
+      const response = await authAPI.requestVerification({
         correo_electronico: correo.toLowerCase(),
-        password: form.password,
-        rol: 1,
       });
-      router.push('/login?registered=true');
+
+      // Guardamos temporalmente la información
+      // necesaria para la verificación
+      localStorage.setItem(
+        'verification_session',
+        JSON.stringify({
+          token: response.data.verificationToken || '',
+          email: correo.toLowerCase(),
+        })
+      );
+
+      /* await authAPI.registrar({
+         nombres,
+         apellidos,
+         tipo_documento_id: parseInt(form.tipo_documento_id),
+         numero_documento: numeroDocumento,
+         fecha_nacimiento: form.fecha_nacimiento || undefined,
+         correo_electronico: correo.toLowerCase(),
+         password: form.password,
+         rol: 1,
+       });
+       router.push('/login?registered=true');*/
+       console.log('Registro exitoso, redirigiendo a verify-email');
+
+      // Guardamos también TODOS los datos
+      // del registro temporalmente
+      localStorage.setItem(
+        'pending_registration',
+        JSON.stringify({
+          nombres,
+          apellidos,
+          tipo_documento_id: parseInt(form.tipo_documento_id),
+          numero_documento: numeroDocumento,
+          fecha_nacimiento: form.fecha_nacimiento || undefined,
+          correo_electronico: correo.toLowerCase(),
+          password: form.password,
+          rol: 1,
+        })
+      );
+
+      // Mandamos al usuario a verificar
+      router.push('/verify-email');
+
     } catch (err: any) {
-      setError(err.response?.data?.message || 'Error al registrarse.');
+      setError(err.response?.data?.message || 'Error al registrarse.' || 'No se pudo enviar el código de verificación.');
     } finally {
       setLoading(false);
     }
@@ -184,13 +221,12 @@ export default function RegistroPage() {
               onChange={handleChange}
               onFocus={() => setPasswordFocus(true)}
               onBlur={() => setPasswordFocus(false)}
-              className={`input-field ${
-                form.password
-                  ? passwordValida
-                    ? 'border-green-400 focus:ring-green-300'
-                    : 'border-red-300 focus:ring-red-200'
-                  : ''
-              }`}
+              className={`input-field ${form.password
+                ? passwordValida
+                  ? 'border-green-400 focus:ring-green-300'
+                  : 'border-red-300 focus:ring-red-200'
+                : ''
+                }`}
             />
 
             {(passwordFocus || form.password.length > 0) && (
@@ -218,13 +254,12 @@ export default function RegistroPage() {
               required
               value={form.confirmar_password}
               onChange={handleChange}
-              className={`input-field ${
-                form.confirmar_password
-                  ? form.confirmar_password === form.password
-                    ? 'border-green-400 focus:ring-green-300'
-                    : 'border-red-300 focus:ring-red-200'
-                  : ''
-              }`}
+              className={`input-field ${form.confirmar_password
+                ? form.confirmar_password === form.password
+                  ? 'border-green-400 focus:ring-green-300'
+                  : 'border-red-300 focus:ring-red-200'
+                : ''
+                }`}
             />
             {form.confirmar_password && form.confirmar_password !== form.password && (
               <p className="text-xs text-red-500 mt-1 flex items-center gap-1">
