@@ -4,5 +4,5 @@ import { env } from "./config/env";
 const port = env.PORT;
 
 app.listen(port, () => {
-  console.log(`nexus-api is running on http://localhost:${port}`);
+  console.log(`Synapse API is running on http://localhost:${port}`);
 });

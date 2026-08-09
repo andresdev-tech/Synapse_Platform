@@ -3,8 +3,11 @@ import jwt from 'jsonwebtoken';
 import { AuthRepository } from './auth.repository';
 import { PassHash } from '../../common/utils/passHash.util';
 import { sendEmail } from '../../common/utils/sendEmail';
+import { generateCode, generateExpiration } from '../../common/utils/generateCode';
 
 export class AuthService {
+
+    private static verificaciones = new Map();
 
     /**
      * 1. MÉTODO PARA INICIAR SESIÓN
@@ -19,7 +22,7 @@ export class AuthService {
         }
 
         // Verificar si la contraseña coincide con el hash
-        const esValida = await bcrypt.compare(password, usuario.password_hash);
+        const esValida = await bcrypt.compare(password, usuario.contrasena_hash);
         if (!esValida) {
             throw new Error('Contraseña incorrecta');
         }
@@ -47,6 +50,44 @@ export class AuthService {
              token,
              usuario
         };
+    }
+
+    static async requestVerification(correo_electronico: string): Promise<string> {
+
+        const code = generateCode();
+        await sendEmail(correo_electronico, "Verificación de cuenta", code);
+
+        this.verificaciones.set(correo_electronico, code);
+        
+        const token = jwt.sign(
+            { correo_electronico, code },
+            process.env.JWT_SECRET!,
+            { expiresIn: 600 } // 10 minutos
+        );
+        // TODO: Enviar el token por correo electrónico
+        console.log('Token generado:', token);
+        console.log('Correo electrónico:', correo_electronico);
+        return token;
+    }
+
+    static async verifyEmail(correo_electronico: string, codigo: string): Promise<string> {
+        // TODO: Implementar lógica para verificar el código de verificación
+
+        const storedCode = this.verificaciones.get(correo_electronico);
+        if(storedCode == codigo){
+            this.verificaciones.delete(correo_electronico);
+            return "Código verificado correctamente";
+        } else {
+            throw new Error('Código incorrecto');
+        }
+        
+        // Generar token para el usuario verificado
+        const token = jwt.sign(
+            { correo_electronico, codigo },
+            process.env.JWT_SECRET!,
+            { expiresIn: 600 } // 10 minutos
+        );
+        return token;
     }
 
     /**
@@ -149,13 +190,33 @@ export class AuthService {
         }
     }
 
+    static async actualizarCodigoYExpiracion(correo_electronico: string) {
+        try {
+            const codigo = generateCode();
+            const expiresAt = generateExpiration();
+            await AuthRepository.udapteCodigoAndExpiresAt(correo_electronico, codigo, expiresAt);
+            // Enviar email con el token
+            await sendEmail(correo_electronico, "Recuperación de contraseña", codigo);
+            return codigo;
+        } catch (error: any) {
+            throw new Error(error.message);
+        }
+    }
+
     static async verificarCodigo(correo_electronico: string, codigo: string) {
         try {
             const user = await AuthRepository.findUserByCodigo(correo_electronico, codigo);
+
+            const expiresAt = generateExpiration();
+
+            if (expiresAt < new Date()) {
+                throw new Error('Codigo expirado');
+            }
+
             if (!user) {
                 throw new Error('Usuario no encontrado');
             }
-            return user;
+            return { ok: true, user: { id: user[0].id, correo_electronico: user[0].correo_electronico } };
         } catch (error: any) {
             throw new Error(error.message);
         }
@@ -163,7 +224,10 @@ export class AuthService {
 
     static async restablecerPassword(correo_electronico: string, codigo: string, password: string) {
         try {
-            const user = await AuthRepository.updateUserPassword(correo_electronico, codigo, password);
+
+            const passwordHash = await bcrypt.hash(password, 10);
+
+            const user = await AuthRepository.updateUserPassword(correo_electronico, codigo, passwordHash);
             if (!user) {
                 throw new Error('Usuario no encontrado');
             }

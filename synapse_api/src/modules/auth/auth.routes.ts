@@ -41,6 +41,10 @@ const router = Router();
 
 router.post("/login", AuthController.login);
 
+router.post("/request-verification", AuthController.requestVerification);
+
+router.post("/verify-email", AuthController.verifyEmail);
+
 /**
  * @swagger
  * /auth/register:
@@ -93,7 +97,7 @@ router.post("/login", AuthController.login);
  *       400:
  *         description: Error en los datos enviados
  */
-router.post("/register", AuthController.register);
+router.post("/registro", AuthController.register);
 
 
 router.post("/recuperar-password", AuthController.recuperarPassword);

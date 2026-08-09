@@ -1,5 +1,6 @@
 import axios, { AxiosInstance, AxiosError } from 'axios';
 
+
 /**
  * CONFIGURACIÓN DEL API CLIENT
  * =============================
@@ -59,6 +60,13 @@ export const authAPI = {
 
   registrar: (data: any) =>
     api.post('/auth/registro', data),
+
+  verifyEmail: (correo_electronico: string, token: string, codigo: string) => 
+    // TODO: Implementar lógica de vericacion de email
+    api.post('/auth/verify-email', { correo_electronico, token, codigo }),
+
+  requestVerification: (data: { correo_electronico: string }) =>
+    api.post('/auth/request-verification', data),
 
   // Alias para conservar compatibilidad.
   register: (data: any) =>
