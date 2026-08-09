@@ -93,7 +93,7 @@ router.post("/login", AuthController.login);
  *       400:
  *         description: Error en los datos enviados
  */
-router.post("/register", AuthController.register);
+router.post("/registro", AuthController.register);
 
 
 router.post("/recuperar-password", AuthController.recuperarPassword);

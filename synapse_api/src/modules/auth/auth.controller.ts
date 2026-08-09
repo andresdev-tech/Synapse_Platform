@@ -71,12 +71,9 @@ export class AuthController {
 
     static async recuperarPassword(req: Request, res: Response) {
         try {
-            const code = generateCode();
+            const code = await AuthService.actualizarCodigoYExpiracion(req.body.correo_electronico);
             const { correo_electronico } = req.body;
             const token = await AuthService.recuperarPassword(correo_electronico);
-            
-            // Enviar email con el token
-            await sendEmail(correo_electronico, "Recuperación de contraseña", code);
             
             return res.json({
                 ok: true,

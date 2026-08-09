@@ -99,6 +99,7 @@ export default function RegistroPage() {
         fecha_nacimiento: form.fecha_nacimiento || undefined,
         correo_electronico: correo.toLowerCase(),
         password: form.password,
+        rol: 1,
       });
       router.push('/login?registered=true');
     } catch (err: any) {

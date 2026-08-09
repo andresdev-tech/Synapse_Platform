@@ -27,20 +27,20 @@ export class AuthRepository {
         numero_documento: numero_documento,
         correo_electronico: correo_electronico,
         fecha_nacimiento: new Date(fecha_nacimiento),
-        password_hash: password,
+        contrasena_hash: password,
         rol_id: rol
       }
     });
   }
 
   static createSession(sessionInfo: { userId: number; token: string; ipAddress: string; navegadorInfo?: string; expiresAt: Date }) {
-    return prisma.sesiones.create({
+    return prisma.sesion.create({
       data: {
         usuario_id: sessionInfo.userId,
         token_sesion: sessionInfo.token,
         ip_direccion: sessionInfo.ipAddress,
         navegador_info: sessionInfo.navegadorInfo || null,
-        es_activa: true,
+        activa: true,
         creado_en: new Date(),
         ultima_actividad: new Date(),
         expira_en: new Date(sessionInfo.expiresAt.toISOString())
@@ -59,11 +59,23 @@ export class AuthRepository {
     });
   }
 
+  static udapteCodigoAndExpiresAt(correo_electronico: string, codigo: string, expiresAt: Date) {
+    return prisma.usuarios.update({
+      where: {
+        correo_electronico: correo_electronico
+      },
+      data: {
+        codigo_2fa: codigo,
+        expiracion_2fa: new Date(expiresAt.toISOString())
+      }
+    });
+  }
+
   static findUserByCodigo(correo_electronico: string, codigo: string) {
     return prisma.usuarios.findMany({
       where: {
         correo_electronico: correo_electronico,
-        codigo: codigo
+        codigo_2fa: codigo
       }
     });
   }
@@ -72,10 +84,12 @@ export class AuthRepository {
     return prisma.usuarios.update({
       where: {
         correo_electronico: correo_electronico,
-        codigo: codigo
+        codigo_2fa: codigo
       },
       data: {
-        password_hash: password
+        codigo_2fa: null,
+        expiracion_2fa: null,
+        contrasena_hash: password
       }
     });
   }

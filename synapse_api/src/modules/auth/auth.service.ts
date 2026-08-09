@@ -3,6 +3,7 @@ import jwt from 'jsonwebtoken';
 import { AuthRepository } from './auth.repository';
 import { PassHash } from '../../common/utils/passHash.util';
 import { sendEmail } from '../../common/utils/sendEmail';
+import { generateCode, generateExpiration } from '../../common/utils/generateCode';
 
 export class AuthService {
 
@@ -19,7 +20,7 @@ export class AuthService {
         }
 
         // Verificar si la contraseña coincide con el hash
-        const esValida = await bcrypt.compare(password, usuario.password_hash);
+        const esValida = await bcrypt.compare(password, usuario.contrasena_hash);
         if (!esValida) {
             throw new Error('Contraseña incorrecta');
         }
@@ -149,13 +150,33 @@ export class AuthService {
         }
     }
 
+    static async actualizarCodigoYExpiracion(correo_electronico: string) {
+        try {
+            const codigo = generateCode();
+            const expiresAt = generateExpiration();
+            await AuthRepository.udapteCodigoAndExpiresAt(correo_electronico, codigo, expiresAt);
+            // Enviar email con el token
+            await sendEmail(correo_electronico, "Recuperación de contraseña", codigo);
+            return codigo;
+        } catch (error: any) {
+            throw new Error(error.message);
+        }
+    }
+
     static async verificarCodigo(correo_electronico: string, codigo: string) {
         try {
             const user = await AuthRepository.findUserByCodigo(correo_electronico, codigo);
+
+            const expiresAt = generateExpiration();
+
+            if (expiresAt < new Date()) {
+                throw new Error('Codigo expirado');
+            }
+
             if (!user) {
                 throw new Error('Usuario no encontrado');
             }
-            return user;
+            return { ok: true, user: { id: user[0].id, correo_electronico: user[0].correo_electronico } };
         } catch (error: any) {
             throw new Error(error.message);
         }
@@ -163,7 +184,10 @@ export class AuthService {
 
     static async restablecerPassword(correo_electronico: string, codigo: string, password: string) {
         try {
-            const user = await AuthRepository.updateUserPassword(correo_electronico, codigo, password);
+
+            const passwordHash = await bcrypt.hash(password, 10);
+
+            const user = await AuthRepository.updateUserPassword(correo_electronico, codigo, passwordHash);
             if (!user) {
                 throw new Error('Usuario no encontrado');
             }
