@@ -30,7 +30,7 @@ export class AuthService {
 
         // Generar un único Token JWT reutilizable
         const token = jwt.sign(
-            { id: usuario.id },
+            { id: usuario.id, rol: usuario.rol_id },
             process.env.JWT_SECRET!,
             { expiresIn: '3h' }
         );
@@ -142,7 +142,7 @@ export class AuthService {
 
             // Retornar un Token JWT automático tras el registro exitoso
             return jwt.sign(
-                { id: nuevoUsuario.id },
+                { id: nuevoUsuario.id, rol: rol },
                 process.env.JWT_SECRET!,
                 { expiresIn: '3h' }
             );
@@ -188,7 +188,7 @@ export class AuthService {
                 throw new Error('Usuario no encontrado');
             }
             const token = jwt.sign(
-                { id: user.id },
+                { id: user.id, rol: user.rol_id },
                 process.env.JWT_SECRET!,
                 { expiresIn: '1h' }
             );
@@ -225,7 +225,7 @@ export class AuthService {
             if (!user) {
                 throw new Error('Usuario no encontrado');
             }
-            return { ok: true, user: { id: user[0].id, correo_electronico: user[0].correo_electronico } };
+            return { ok: true, user: { id: user[0].id, correo_electronico: user[0].correo_electronico, rol: user[0].rol_id } };
         } catch (error: any) {
             throw new Error(error.message);
         }

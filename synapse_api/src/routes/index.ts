@@ -8,7 +8,7 @@ const router = Router();
 
 router.use("/auth", authRoutes);
 router.use("/usuarios", usersRoutes);
-router.use("/programs", programsRoutes);
+router.use("/programas", programsRoutes);
 router.use("/chat", chatRoutes);
 
 export default router;

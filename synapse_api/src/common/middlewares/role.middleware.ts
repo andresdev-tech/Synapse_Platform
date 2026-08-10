@@ -1,6 +1,7 @@
 // src/common/middlewares/role.middleware.ts
 
 import { Request, Response, NextFunction } from "express";
+import  { GetRoleNameCort }  from '../../common/constants/roles'
 
 export const roleMiddleware = (roles: string[]) => {
   return (
@@ -10,9 +11,12 @@ export const roleMiddleware = (roles: string[]) => {
   ) => {
     const user = req as any;
 
-    console.log("USER:", user);
-    console.log("USER ROLE:", user.role);
-    console.log("USER ID:", user.id);
+    const roleId = GetRoleNameCort(user.user.rol);
+
+    console.log("USER:", user.user);
+    console.log("USER ROLE:", user.user.rol);
+    console.log("ROLE ID:", roleId);
+    console.log("USER ID:", user.user.id);
     console.log("ROLES:", roles);
 
     if (!user) {
@@ -22,7 +26,8 @@ export const roleMiddleware = (roles: string[]) => {
       });
     }
 
-    if (!roles.includes(user.role)) {
+    if (!roles.includes(roleId)) {
+      console.log("ROLE ID NOT IN ROLES", roleId, roles);
       return res.status(403).json({
         success: false,
         message: "No tienes permisos para realizar esta acción",

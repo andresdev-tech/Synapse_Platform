@@ -101,7 +101,7 @@ router.post(
   "/",
   authMiddleware,
   roleMiddleware([
-    String(Roles.ADMIN),
+    String(Roles(5)),
   ]),
   ProgramasController.create
 );
@@ -148,7 +148,7 @@ router.put(
   "/:id",
   authMiddleware,
   roleMiddleware([
-    String(Roles.ADMIN),
+    String(Roles(5)),
   ]),
   ProgramasController.update
 );
@@ -182,7 +182,7 @@ router.delete(
   "/:id",
   authMiddleware,
   roleMiddleware([
-    String(Roles.ADMIN),
+    String(Roles(5)),
   ]),
   ProgramasController.delete
 );
