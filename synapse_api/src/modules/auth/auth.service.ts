@@ -4,6 +4,7 @@ import { AuthRepository } from './auth.repository';
 import { PassHash } from '../../common/utils/passHash.util';
 import { sendEmail } from '../../common/utils/sendEmail';
 import { generateCode, generateExpiration } from '../../common/utils/generateCode';
+import { getRoleName } from '../../common/constants/roles';
 
 export class AuthService {
 
@@ -46,9 +47,16 @@ export class AuthService {
             expiresAt: new Date(Date.now() + 3 * 60 * 60 * 1000) // Expira en 3 horas
         });
 
+        const roles = getRoleName(usuario.rol_id);
+        console.log('Rol:', roles);
+        console.log('Rol ID:', usuario.rol_id);
+
         return {
             token,
-            usuario
+            usuario: {
+                ...usuario,
+                rol: roles
+            }
         };
     }
 

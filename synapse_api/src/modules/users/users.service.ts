@@ -1,5 +1,6 @@
-
 import { UsersRepository } from "./users.repository";
+import { tipoDocumento } from "../../common/constants/tipeDocument";
+import { getRoleName } from "../../common/constants/roles";
 
 export class UsersService {
     
@@ -13,8 +14,15 @@ export class UsersService {
             if (!user) {
                 throw new Error("User not found");
             }
+
+            const docsTypes = tipoDocumento(user.tipo_documento_id);
+            const roleName = getRoleName(user.rol_id);
             
-            return user;
+            return {
+                ...user,
+                tipo_documento: docsTypes,
+                rol: roleName
+            };
         } catch (error: any) {
             throw error.response || error.message;
         }

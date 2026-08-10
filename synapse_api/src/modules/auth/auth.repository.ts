@@ -5,6 +5,17 @@ export class AuthRepository {
     return prisma.usuarios.findFirst({
       where: {
         correo_electronico: correo_electronico
+      },
+      select: {
+        id: true,
+        nombres: true,
+        apellidos: true,
+        tipo_documento_id: true,
+        numero_documento: true,
+        correo_electronico: true,
+        contrasena_hash: true,
+        rol_id: true,
+        ultimo_login: true
       }
     });
   }
