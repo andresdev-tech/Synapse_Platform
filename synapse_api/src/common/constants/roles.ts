@@ -20,13 +20,40 @@ export const getRoleName = (roleId: number) => {
   }
 };
 
+
+export const GetRoleNameCort = (id: number) => {
+  switch (id) {
+    case 1:
+      return 'Aprendiz';
+    case 2:
+      return 'Estudiante';
+    case 3:
+      return 'PROFESOR';
+    case 4:
+      return 'COORDINADOR';
+    case 5:
+      return 'ADMIN';
+    default:
+      return 'UNKNOWN';
+  }
+};
+
 /**
  * Roles enum for type safety
  */
-export enum Roles {
-  ASPIRANTE = 1,
-  ADMIN = 5,
-  DOCENTE = 3,
-  ESTUDIANTE = 2,
-  COORDINADOR = 4,
-}
+export const Roles = (id: number): string => {
+  switch (id) {
+    case 1:
+      return 'Aprendiz';
+    case 2:
+      return 'Estudiante';
+    case 3:
+      return 'PROFESOR';
+    case 4:
+      return 'COORDINADOR';
+    case 5:
+      return 'ADMIN';
+    default:
+      return 'UNKNOWN';
+  }
+};
