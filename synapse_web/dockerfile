@@ -1,0 +1,21 @@
+FROM node:20-alpine
+
+WORKDIR /app
+
+# Copiar archivos de dependencias
+COPY package.json package-lock.json ./
+
+# Instalar dependencias
+RUN npm ci
+
+# Copiar el proyecto
+COPY . .
+
+# Construir Next.js
+# RUN npm run build
+
+# Puerto de Next.js
+EXPOSE 3000
+
+# Iniciar aplicación
+CMD ["npm", "run", "dev"]

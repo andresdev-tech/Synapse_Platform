@@ -1,0 +1,39 @@
+services:
+  backend:
+    build:
+      context: ./synapse_api
+      dockerfile: Dockerfile
+
+    container_name: synapse_api
+
+    ports:
+      - "9000:9000"
+
+    env_file:
+      - ./synapse_api/.env
+
+    volumes:
+      - ./synapse_api/src:/app/src
+      - ./synapse_api/prisma:/app/prisma
+      - ./synapse_api/nodemon.json:/app/nodemon.json
+      - ./synapse_api/tsconfig.json:/app/tsconfig.json
+
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./synapse_web
+      dockerfile: Dockerfile
+
+    container_name: synapse_web
+
+    ports:
+      - "3000:3000"
+
+    env_file:
+      - ./synapse_web/.env
+
+    depends_on:
+      - backend
+
+    restart: unless-stopped
