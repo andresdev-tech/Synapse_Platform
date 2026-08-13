@@ -55,7 +55,11 @@ export class UsersRepository {
                 where: {
                     id
                 },
-                data
+                data: {
+                    nombres: data.nombres,
+                    apellidos: data.apellidos,
+                    fecha_nacimiento: data.fecha_nacimiento ? new Date(data.fecha_nacimiento) : undefined
+                }
             });
         } catch (error: any) {
             console.log("Error updating user:", error);
