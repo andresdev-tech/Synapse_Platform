@@ -11,6 +11,50 @@ body {
   @apply bg-gray-50 text-gray-900;
 }
 
+.auth-background {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 15% 20%, rgba(125, 211, 252, 0.7), transparent 26%),
+    radial-gradient(circle at 80% 12%, rgba(147, 197, 253, 0.58), transparent 28%),
+    radial-gradient(circle at 62% 78%, rgba(168, 85, 247, 0.38), transparent 32%),
+    linear-gradient(135deg, #06172f 0%, #0f2f76 28%, #1554d6 55%, #0f172a 100%);
+  filter: saturate(1.15);
+}
+
+.auth-background::before,
+.auth-background::after {
+  content: "";
+  position: absolute;
+  inset: auto;
+  border-radius: 9999px;
+  filter: blur(80px);
+  opacity: 0.7;
+}
+
+.auth-background::before {
+  width: 28rem;
+  height: 28rem;
+  left: -4rem;
+  top: 12%;
+  background: rgba(34, 211, 238, 0.28);
+}
+
+.auth-background::after {
+  width: 32rem;
+  height: 32rem;
+  right: -4rem;
+  bottom: -2rem;
+  background: rgba(168, 85, 247, 0.24);
+}
+
+.auth-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.12);
+  backdrop-filter: blur(2px);
+}
+
 .btn-primary {
   @apply bg-primary-600 text-white px-4 py-2 rounded-lg
          hover:bg-primary-700 transition-colors font-medium
