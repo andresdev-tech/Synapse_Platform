@@ -33,7 +33,7 @@ export default function AdminUsuariosPage() {
   useEffect(() => {
     if (!isAdmin()) { router.push('/dashboard'); return; }
     usuariosAPI.listarUsuarios()
-      .then((res) => setUsuarios(res.data))
+      .then((res) => setUsuarios(res.data.data))
       .catch(console.error)
       .finally(() => setLoading(false));
   }, []);
