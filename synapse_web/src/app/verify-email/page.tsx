@@ -82,60 +82,65 @@ export default function VerifyEmail() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-primary-900 to-primary-600 px-4">
-      <div className="w-full max-w-md mb-4">
-        <Link
-          href="/login"
-          className="inline-flex items-center gap-1 text-sm text-blue-100 hover:text-white transition-colors"
-        >
-          ← Volver al inicio
-        </Link>
-      </div>
+    <div className="relative min-h-screen overflow-hidden bg-[#071a39]">
+      <div className="auth-background" aria-hidden="true" />
+      <div className="auth-overlay" aria-hidden="true" />
 
-      <div className="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-md">
-        <div className="text-center mb-8">
-          <div className="text-4xl font-extrabold text-primary-700 tracking-tight">SYNAPSE</div>
-          <p className="text-gray-500 text-sm mt-1">Verifica tu correo electrónico</p>
+      <div className="relative z-10 min-h-screen flex flex-col items-center justify-center px-4">
+        <div className="w-full max-w-md mb-4">
+          <Link
+            href="/login"
+            className="inline-flex items-center gap-1 text-sm text-blue-100 hover:text-white transition-colors"
+          >
+            ← Volver al inicio
+          </Link>
         </div>
 
-        <form onSubmit={handleVerify} noValidate className="space-y-4">
-          <div className="text-center text-sm text-gray-600">
-            Hemos enviado un código de 6 dígitos a tu correo para confirmar tu cuenta.
+        <div className="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-md">
+          <div className="text-center mb-8">
+            <div className="text-4xl font-extrabold text-primary-700 tracking-tight">SYNAPSE</div>
+            <p className="text-gray-500 text-sm mt-1">Verifica tu correo electrónico</p>
           </div>
 
-          <div>
-            <label htmlFor="codigo" className="block text-sm font-medium text-gray-700 mb-1">
-              Código de verificación
-            </label>
-            <input
-              id="codigo"
-              type="text"
-              inputMode="numeric"
-              maxLength={6}
-              className="input-field text-center tracking-[0.5em] font-semibold"
-              placeholder="123456"
-              value={code}
-              onChange={(e) => setCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
-              required
-            />
-          </div>
-
-          {error && (
-            <div className="bg-red-50 border border-red-200 text-red-700 rounded-lg px-4 py-3 text-sm">
-              {error}
+          <form onSubmit={handleVerify} noValidate className="space-y-4">
+            <div className="text-center text-sm text-gray-600">
+              Hemos enviado un código de 6 dígitos a tu correo para confirmar tu cuenta.
             </div>
-          )}
 
-          {success && (
-            <div className="bg-green-50 border border-green-200 text-green-700 rounded-lg px-4 py-3 text-sm">
-              Email verificado correctamente
+            <div>
+              <label htmlFor="codigo" className="block text-sm font-medium text-gray-700 mb-1">
+                Código de verificación
+              </label>
+              <input
+                id="codigo"
+                type="text"
+                inputMode="numeric"
+                maxLength={6}
+                className="input-field text-center tracking-[0.5em] font-semibold"
+                placeholder="123456"
+                value={code}
+                onChange={(e) => setCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
+                required
+              />
             </div>
-          )}
 
-          <button type="submit" disabled={loading} className="btn-primary w-full py-3">
-            {loading ? 'Verificando...' : 'Verificar correo'}
-          </button>
-        </form>
+            {error && (
+              <div className="bg-red-50 border border-red-200 text-red-700 rounded-lg px-4 py-3 text-sm">
+                {error}
+              </div>
+            )}
+
+            {success && (
+              <div className="bg-green-50 border border-green-200 text-green-700 rounded-lg px-4 py-3 text-sm">
+                Email verificado correctamente
+              </div>
+            )}
+
+            <button type="submit" disabled={loading} className="btn-primary w-full py-3">
+              {loading ? 'Verificando...' : 'Verificar correo'}
+            </button>
+          </form>
+        </div>
       </div>
     </div>
   );

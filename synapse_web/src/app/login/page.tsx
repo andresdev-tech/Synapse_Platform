@@ -41,72 +41,77 @@ export default function LoginPage() {
 
   return (
     <GuestGuard>
-      <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-primary-900 to-primary-600 px-4">
-        <div className="w-full max-w-md mb-4">
-          <Link
-            href="/"
-            className="inline-flex items-center gap-1 text-sm text-blue-100 hover:text-white transition-colors"
-          >
-            ← Volver al inicio
-          </Link>
-        </div>
+      <div className="relative min-h-screen overflow-hidden bg-[#071a39]">
+        <div className="auth-background" aria-hidden="true" />
+        <div className="auth-overlay" aria-hidden="true" />
 
-        <div className="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-md">
-          {/* Logo */}
-          <div className="text-center mb-8">
-            <div className="text-4xl font-extrabold text-primary-700 tracking-tight">SYNAPSE</div>
-            <p className="text-gray-500 text-sm mt-1">Plataforma Académica Inteligente</p>
+        <div className="relative z-10 min-h-screen flex flex-col items-center justify-center px-4">
+          <div className="w-full max-w-md mb-4">
+            <Link
+              href="/"
+              className="inline-flex items-center gap-1 text-sm text-blue-100 hover:text-white transition-colors"
+            >
+              ← Volver al inicio
+            </Link>
           </div>
 
-          <form onSubmit={handleSubmit} noValidate className="space-y-4">
-            <div>
-              <label htmlFor="correo" className="block text-sm font-medium text-gray-700 mb-1">Correo electrónico</label>
-              <input
-                id="correo"
-                type="email"
-                className="input-field"
-                placeholder="correo@ejemplo.com"
-                value={correo}
-                onChange={(e) => setCorreo(e.target.value)}
-                required
-                autoComplete="username"
-              />
-            </div>
-            <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">Contraseña</label>
-              <input
-                id="password"
-                type="password"
-                className="input-field"
-                placeholder="••••••••"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                autoComplete="current-password"
-              />
+          <div className="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-md">
+            {/* Logo */}
+            <div className="text-center mb-8">
+              <div className="text-4xl font-extrabold text-primary-700 tracking-tight">SYNAPSE</div>
+              <p className="text-gray-500 text-sm mt-1">Plataforma Académica Inteligente</p>
             </div>
 
-            {error && (
-              <div className="bg-red-50 border border-red-200 text-red-700 rounded-lg px-4 py-3 text-sm">
-                {error}
+            <form onSubmit={handleSubmit} noValidate className="space-y-4">
+              <div>
+                <label htmlFor="correo" className="block text-sm font-medium text-gray-700 mb-1">Correo electrónico</label>
+                <input
+                  id="correo"
+                  type="email"
+                  className="input-field"
+                  placeholder="correo@ejemplo.com"
+                  value={correo}
+                  onChange={(e) => setCorreo(e.target.value)}
+                  required
+                  autoComplete="username"
+                />
               </div>
-            )}
+              <div>
+                <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">Contraseña</label>
+                <input
+                  id="password"
+                  type="password"
+                  className="input-field"
+                  placeholder="••••••••"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                  autoComplete="current-password"
+                />
+              </div>
 
-            <button type="submit" disabled={loading} className="btn-primary w-full py-3">
-              {loading ? 'Iniciando sesión...' : 'Iniciar Sesión'}
-            </button>
-          </form>
+              {error && (
+                <div className="bg-red-50 border border-red-200 text-red-700 rounded-lg px-4 py-3 text-sm">
+                  {error}
+                </div>
+              )}
 
-          <div className="mt-6 text-center space-y-2">
-            <Link href="/recuperar-password" className="text-primary-600 text-sm hover:underline block">
-              ¿Olvidaste tu contraseña?
-            </Link>
-            <p className="text-gray-500 text-sm">
-              ¿No tienes cuenta?{' '}
-              <Link href="/registro" className="text-primary-600 font-medium hover:underline">
-                Regístrate
+              <button type="submit" disabled={loading} className="btn-primary w-full py-3">
+                {loading ? 'Iniciando sesión...' : 'Iniciar Sesión'}
+              </button>
+            </form>
+
+            <div className="mt-6 text-center space-y-2">
+              <Link href="/recuperar-password" className="text-primary-600 text-sm hover:underline block">
+                ¿Olvidaste tu contraseña?
               </Link>
-            </p>
+              <p className="text-gray-500 text-sm">
+                ¿No tienes cuenta?{' '}
+                <Link href="/registro" className="text-primary-600 font-medium hover:underline">
+                  Regístrate
+                </Link>
+              </p>
+            </div>
           </div>
         </div>
       </div>
