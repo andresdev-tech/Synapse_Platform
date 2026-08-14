@@ -2,8 +2,15 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import dynamic from 'next/dynamic';
 import { useAuth } from '../../lib/AuthContext';
 import { GuestGuard } from '../../components/GuestGuard';
+
+// Carga dinámica apuntando a tu archivo Estrellas.jsx deshaciendo SSR
+const BackgroundStars = dynamic(
+  () => import('../../components/Estrellas'), 
+  { ssr: false }
+);
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -44,6 +51,9 @@ export default function LoginPage() {
       <div className="relative min-h-screen overflow-hidden bg-[#071a39]">
         <div className="auth-background" aria-hidden="true" />
         <div className="auth-overlay" aria-hidden="true" />
+
+        {/* Las estrellas de React Three Fiber cargadas solo en el cliente */}
+        <BackgroundStars />
 
         <div className="relative z-10 min-h-screen flex flex-col items-center justify-center px-4">
           <div className="w-full max-w-md mb-4">

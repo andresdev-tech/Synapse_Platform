@@ -1,10 +1,16 @@
-'use client'
+'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import { authAPI } from '@/lib/api';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { useState } from 'react';
+import dynamic from 'next/dynamic';
+
+// Carga dinámica del componente Estrellas deshabilitando SSR
+const BackgroundStars = dynamic(
+  () => import('@/components/Estrellas'),
+  { ssr: false }
+);
 
 export default function VerifyEmail() {
   const [code, setCode] = useState('');
@@ -85,6 +91,9 @@ export default function VerifyEmail() {
     <div className="relative min-h-screen overflow-hidden bg-[#071a39]">
       <div className="auth-background" aria-hidden="true" />
       <div className="auth-overlay" aria-hidden="true" />
+
+      {/* Estrellas 3D en el fondo pero delante del overlay */}
+      <BackgroundStars />
 
       <div className="relative z-10 min-h-screen flex flex-col items-center justify-center px-4">
         <div className="w-full max-w-md mb-4">
