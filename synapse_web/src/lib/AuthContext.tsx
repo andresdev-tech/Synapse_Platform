@@ -1,5 +1,5 @@
 'use client';
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useMemo, useCallback } from 'react';
 import { authAPI } from '../lib/api';
 
 interface Usuario {
@@ -22,43 +22,51 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+// Leer usuario de localStorage de forma SÍNCRONA en la inicialización
+// del estado, para evitar el ciclo extra de render con loading=true.
+// Solo se ejecuta en el cliente (typeof window check).
+function getInitialUsuario(): Usuario | null {
+  if (typeof window === 'undefined') return null;
+  try {
+    const stored = localStorage.getItem('nexus_usuario');
+    const token = localStorage.getItem('nexus_token');
+    if (stored && token) return JSON.parse(stored) as Usuario;
+  } catch {}
+  return null;
+}
+
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [usuario, setUsuario] = useState<Usuario | null>(null);
-  const [loading, setLoading] = useState(true);
+  // Estado inicializado síncronamente desde localStorage → loading=false de entrada
+  const [usuario, setUsuario] = useState<Usuario | null>(getInitialUsuario);
+  const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    try {
-      const stored = localStorage.getItem('nexus_usuario');
-      const token = localStorage.getItem('nexus_token');
-      if (stored && token) {
-        setUsuario(JSON.parse(stored));
-      }
-    } catch {}
-    setLoading(false);
-  }, []);
-
-  const login = async (correo_electronico: string, password: string) => {
+  const login = useCallback(async (correo_electronico: string, password: string) => {
     const res = await authAPI.login(correo_electronico, password);
     const { token, usuario } = res.data;
     localStorage.setItem('nexus_token', token);
     localStorage.setItem('nexus_usuario', JSON.stringify(usuario));
     setUsuario(usuario);
-  };
+  }, []);
 
-  const logout = async () => {
+  const logout = useCallback(async () => {
     try { await authAPI.logout(); } catch (_) {}
     localStorage.removeItem('nexus_token');
     localStorage.removeItem('nexus_usuario');
     setUsuario(null);
     window.location.href = '/login';
-  };
+  }, []);
 
-  const isAdmin    = () => usuario?.rol === 'Administrador';
-  const isAprendiz = () => usuario?.rol === 'Aprendiz';
-  const isProfesor = () => usuario?.rol === 'Profesor';
+  const isAdmin = useCallback(() => usuario?.rol === 'Administrador', [usuario?.rol]);
+  const isAprendiz = useCallback(() => usuario?.rol === 'Aprendiz', [usuario?.rol]);
+  const isProfesor = useCallback(() => usuario?.rol === 'Profesor', [usuario?.rol]);
+
+  const value = useMemo(
+    () => ({ usuario, loading, login, logout, isAdmin, isAprendiz, isProfesor }),
+    [usuario, loading, login, logout, isAdmin, isAprendiz, isProfesor]
+  );
 
   return (
-    <AuthContext.Provider value={{ usuario, loading, login, logout, isAdmin, isAprendiz, isProfesor }}>
+    <AuthContext.Provider value={value}>
       {children}
     </AuthContext.Provider>
   );

@@ -1,5 +1,5 @@
 'use client';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useAuth } from '../../lib/AuthContext';
 import { programasAPI, inscripcionesAPI } from '../../lib/api';
 import Link from 'next/link';
@@ -40,17 +40,15 @@ export default function DashboardPage() {
   const esCoordinador = usuario?.rol?.toLowerCase() === 'coordinador';
   const router = useRouter();
   const [stats, setStats] = useState({ programas: 0, inscripciones: 0 });
-  // Animated display values for stats
   const [displayStats, setDisplayStats] = useState({ programas: 0, inscripciones: 0 });
-  // Rotating motivational quotes (más llamativas)
-  const quotes = [
+  const quotes = useMemo(() => [
     { emoji: '🚀', title: 'Atrévete a despegar', subtitle: 'Un pequeño paso hoy, un gran salto mañana.' },
     { emoji: '🔥', title: 'Enciende tu curiosidad', subtitle: 'La pasión impulsa el aprendizaje sostenido.' },
     { emoji: '💡', title: 'Transforma ideas en acción', subtitle: 'Las ideas valen cuando las compartes y aplicas.' },
     { emoji: '🤝', title: 'Multiplica tu impacto', subtitle: 'Enseñar es sembrar conocimientos que crecen.' },
     { emoji: '🌱', title: 'Cultiva constancia', subtitle: 'El progreso diario florece con disciplina.' },
     { emoji: '🎯', title: 'Apunta alto', subtitle: 'Define metas claras y conviértelas en hábitos.' },
-  ];
+  ], []);
   const [quoteIndex, setQuoteIndex] = useState(0);
   // Typing text state
   const [typingText, setTypingText] = useState('');
@@ -71,22 +69,33 @@ export default function DashboardPage() {
   const [selectedProgram, setSelectedProgram] = useState<any | null>(null);
 
   useEffect(() => {
-    // Redirigir al panel admin si es administrador
     if (!loading && isAdmin()) {
       router.push('/dashboard/admin/overview');
       return;
     }
+
+    let cancelled = false;
+
     const cargar = async () => {
       try {
         const [progRes, inscRes] = await Promise.all([
           programasAPI.listar(),
           isAprendiz() ? inscripcionesAPI.misInscripciones() : Promise.resolve({ data: [] }),
         ]);
-        setStats({ programas: progRes.data.length, inscripciones: inscRes.data.length });
+
+        if (cancelled) return;
+
+        const programas = progRes.data || [];
+        setProgramasList(programas);
+        setStats({
+          programas: programas.length,
+          inscripciones: inscRes.data.length,
+        });
       } catch {}
     };
+
     if (!isAdmin()) cargar();
-    // Cargar acceso rápido para coordinador
+
     const cargarQuick = async () => {
       if (usuario?.rol !== 'coordinador') return;
       try {
@@ -107,75 +116,47 @@ export default function DashboardPage() {
         setQuickLoading(false);
       }
     };
+
     cargarQuick();
-    // cargar lista completa de programas para el dashboard decorado
-    const cargarProgramas = async () => {
-      try {
-        const res = await programasAPI.listar();
-        setProgramasList(res.data || []);
-      } catch (e) {}
+
+    return () => {
+      cancelled = true;
     };
-    cargarProgramas();
-  }, [usuario]);
+  }, [usuario, loading, isAdmin, isAprendiz, router]);
 
   // Rotar frases motivacionales cada 4 segundos
   useEffect(() => {
     const id = setInterval(() => {
       setQuoteIndex((i) => (i + 1) % quotes.length);
-    }, 4000);
+    }, 8000);
     return () => clearInterval(id);
-  }, []);
+  }, [quotes.length]);
 
-  // Typing animation for the title
   useEffect(() => {
     const full = quotes[quoteIndex].title;
     let i = 0;
     setTypingText('');
-    const t = setInterval(() => {
-      i++;
-      setTypingText(full.slice(0, i));
-      if (i >= full.length) clearInterval(t);
-    }, 40);
-    return () => clearInterval(t);
-  }, [quoteIndex]);
+    const t = setTimeout(() => {
+      const run = () => {
+        i += 1;
+        setTypingText(full.slice(0, i));
+        if (i < full.length) {
+          setTimeout(run, 55);
+        }
+      };
+      run();
+    }, 80);
+    return () => clearTimeout(t);
+  }, [quoteIndex, quotes]);
 
-  // Animar contadores cuando cambian las stats
   useEffect(() => {
-    // Smooth count animation using requestAnimationFrame
-    const start = performance.now();
-    const from = { p: displayStats.programas, i: displayStats.inscripciones };
-    const to = { p: stats.programas, i: stats.inscripciones };
-    const dur = 800;
-    let raf = 0;
-    const easeOut = (t: number) => 1 - Math.pow(1 - t, 3);
-    const tick = (now: number) => {
-      const t = Math.min(1, (now - start) / dur);
-      const eased = easeOut(t);
-      const currP = Math.round(from.p + (to.p - from.p) * eased);
-      const currI = Math.round(from.i + (to.i - from.i) * eased);
-      setDisplayStats({ programas: currP, inscripciones: currI });
-      if (t < 1) {
-        raf = requestAnimationFrame(tick);
-      }
-    };
-    raf = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(raf);
+    setDisplayStats(stats);
   }, [stats.programas, stats.inscripciones]);
 
-  // Progress ring animation (decorative)
-  const [ringValue, setRingValue] = useState(0);
-  useEffect(() => {
-    let raf = 0;
-    const start = performance.now();
-    const dur = 900;
-    const tick = (now: number) => {
-      const t = Math.min(1, (now - start) / dur);
-      setRingValue(Math.round(100 * (1 - Math.pow(1 - t, 3))));
-      if (t < 1) raf = requestAnimationFrame(tick);
-    };
-    raf = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(raf);
-  }, []);
+  const ringValue = useMemo(() => {
+    const value = Math.min(100, Math.max(20, stats.programas * 12 + 15));
+    return value;
+  }, [stats.programas]);
 
   // Stat detail modal
   const [statModalOpen, setStatModalOpen] = useState(false);

@@ -1,4 +1,4 @@
-import axios, { AxiosInstance, AxiosError } from 'axios';
+import axios, { AxiosInstance, AxiosError, AxiosResponse } from 'axios';
 
 
 /**
@@ -9,6 +9,34 @@ import axios, { AxiosInstance, AxiosError } from 'axios';
  */
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api';
+
+const getCacheKey = (url: string, params?: any) => `${url}?${JSON.stringify(params ?? {})}`;
+const getCache = new Map<string, { expiresAt: number; data: any }>();
+
+const readCache = (key: string) => {
+  const item = getCache.get(key);
+  if (!item) return null;
+  if (Date.now() > item.expiresAt) {
+    getCache.delete(key);
+    return null;
+  }
+  return item.data;
+};
+
+const writeCache = (key: string, data: any, ttlMs = 30000) => {
+  getCache.set(key, { expiresAt: Date.now() + ttlMs, data });
+};
+
+const invalidateCache = (url?: string) => {
+  if (!url) {
+    getCache.clear();
+    return;
+  }
+
+  for (const key of Array.from(getCache.keys())) {
+    if (key.startsWith(url)) getCache.delete(key);
+  }
+};
 
 // Crear instancia de Axios
 const api: AxiosInstance = axios.create({
@@ -36,12 +64,21 @@ api.interceptors.request.use(
 
 // Interceptor para manejar errores
 api.interceptors.response.use(
-  (response) => response,
+  (response) => {
+    if (response.config.method?.toLowerCase() === 'get' && response.config.url) {
+      const key = getCacheKey(response.config.url, response.config.params);
+      writeCache(key, response);
+    }
+
+    return response;
+  },
   (error: AxiosError) => {
+    if (error.config && error.config.method && error.config.method.toLowerCase() !== 'get') {
+      invalidateCache(error.config.url || '');
+    }
+
     if (error.response?.status === 401) {
-      // Token expirado
       if (typeof window !== 'undefined') {
-        // 🔧 FIX: Cambiar nombres de keys para coincidir con AuthContext
         localStorage.removeItem('nexus_token');
         localStorage.removeItem('nexus_usuario');
         window.location.href = '/login';
@@ -54,6 +91,16 @@ api.interceptors.response.use(
 /**
  * FUNCIONES DE AUTENTICACIÓN
  */
+const cachedGet = async <T = any>(url: string, params?: any): Promise<AxiosResponse<T>> => {
+  const key = getCacheKey(url, params);
+  const cached = readCache(key) as AxiosResponse<T> | null;
+  if (cached) return cached;
+
+  const response = await api.get<T>(url, { params });
+  writeCache(key, response);
+  return response;
+};
+
 export const authAPI = {
   login: (correo_electronico: string, password: string) =>
     api.post('/auth/login', { correo_electronico, password }),
@@ -94,6 +141,7 @@ export const authAPI = {
     try {
       await api.post('/auth/logout');
     } finally {
+      invalidateCache();
       if (typeof window !== 'undefined') {
         localStorage.removeItem('nexus_token');
         localStorage.removeItem('nexus_usuario');
@@ -108,7 +156,7 @@ export const authAPI = {
 export const gruposAPI = {
   // Obtener grupos de un programa
   obtenerGruposPorPrograma: (programaId: number) =>
-    api.get(`/grupos/programa/${programaId}`),
+    cachedGet(`/grupos/programa/${programaId}`),
   
   // Obtener miembros de un grupo específico
   obtenerMiembrosGrupo: (grupoId: number) =>
@@ -161,7 +209,7 @@ export const gruposAPI = {
 export const coordinadorAPI = {
   // Obtener mis programas
   misProgramas: () =>
-    api.get('/coordinador/programas'),
+    cachedGet('/coordinador/programas'),
   
   // Obtener detalle de programa
   obtenerPrograma: (programaId: number) =>
@@ -178,15 +226,15 @@ export const coordinadorAPI = {
 export const programasAPI = {
   // Obtener todos los programas
   obtenerTodos: () =>
-    api.get('/programas'),
+    cachedGet('/programas'),
   listar: () =>
-    api.get('/programas'),
+    cachedGet('/programas'),
   
   // Obtener detalle de programa
   obtenerPorId: (programaId: number) =>
-    api.get(`/programas/${programaId}`),
+    cachedGet(`/programas/${programaId}`),
   obtener: (programaId: number) =>
-    api.get(`/programas/${programaId}`),
+    cachedGet(`/programas/${programaId}`),
   
   // Crear programa (Admin)
   crear: (data: any) =>
@@ -220,10 +268,10 @@ export const programasAPI = {
  */
 export const inscripcionesAPI = {
   obtenerTodas: () =>
-    api.get('/inscripciones'),
+    cachedGet('/inscripciones'),
 
   obtenerPorPrograma: (programaId: number) =>
-    api.get(`/inscripciones/programa/${programaId}`),
+    cachedGet(`/inscripciones/programa/${programaId}`),
 
   inscribirse: (programaId: number) =>
   api.post('/inscripciones', { programa_id: programaId }),
@@ -235,7 +283,7 @@ export const inscripcionesAPI = {
     api.put(`/inscripciones/${inscripcionId}`, { estado }),
 
   misInscripciones: () =>
-    api.get('/inscripciones/mis-inscripciones'),
+    cachedGet('/inscripciones/mis-inscripciones'),
 };
 
 /**
@@ -244,7 +292,7 @@ export const inscripcionesAPI = {
 export const usuariosAPI = {
   // Obtener perfil actual
   obtenerPerfil: () =>
-    api.get('/usuarios/perfil'),
+    cachedGet('/usuarios/perfil'),
   
   // Actualizar perfil
   actualizarPerfil: (data: any) =>
@@ -280,13 +328,13 @@ export const usuariosAPI = {
  */
 export const profesorAPI = {
   misProgramas: () =>
-    api.get('/profesor/programas'),
+    cachedGet('/profesor/programas'),
 
   misGrupos: () =>
     api.get('/profesor/programas'),
 
   obtenerGrupo: (programaId: number) =>
-    api.get(`/profesor/programas/${programaId}/grupo`),
+    cachedGet(`/profesor/programas/${programaId}/grupo`),
 
   actualizarFaltas: (inscripcionId: number, faltas: number) =>
     api.put(`/profesor/inscripcion/${inscripcionId}/faltas`, { faltas }),
@@ -307,7 +355,7 @@ export const chatbotAPI = {
     api.post('/chatbot/consulta', { mensaje }),
 
   obtenerHistorial: () =>
-    api.get('/chatbot/historial'),
+    cachedGet('/chatbot/historial'),
 };
 
 /**
