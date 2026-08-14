@@ -1,6 +1,7 @@
 'use client';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { memo, useMemo } from 'react';
 import { useAuth } from '../lib/AuthContext';
 import {
   LayoutDashboard, BookOpen, ClipboardList,
@@ -36,15 +37,16 @@ const navProfesor = [
   { href: '/dashboard/perfil',        label: 'Mi Perfil',         icon: User },
 ];
 
-export default function Sidebar() {
+const Sidebar = memo(function Sidebar() {
   const pathname = usePathname();
   const { usuario, logout } = useAuth();
 
-  const navItems =
-    usuario?.rol === 'Administrador' ? navAdmin :
-    usuario?.rol === 'Coordinador'   ? navCoordinador :
-    usuario?.rol === 'Profesor'      ? navProfesor :
-    navAprendiz;
+  const navItems = useMemo(() => {
+    if (usuario?.rol === 'Administrador') return navAdmin;
+    if (usuario?.rol === 'Coordinador') return navCoordinador;
+    if (usuario?.rol === 'Profesor') return navProfesor;
+    return navAprendiz;
+  }, [usuario?.rol]);
 
   return (
     <aside className="w-64 bg-primary-900 text-white flex flex-col min-h-screen flex-shrink-0">
@@ -155,4 +157,6 @@ export default function Sidebar() {
       </div>
     </aside>
   );
-}
+});
+
+export default Sidebar;

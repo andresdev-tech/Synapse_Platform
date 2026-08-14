@@ -1,5 +1,7 @@
-'use client';
+// Server Component — sin 'use client': Next.js pre-renderiza esta página
+// en el servidor, reduciendo el bundle JS inicial al mínimo.
 import Link from 'next/link';
+import Image from 'next/image';
 import {
   BookOpen, MessageSquare, ClipboardList, Users,
   ChevronRight, Sparkles, GraduationCap, Target, Award, Shield
@@ -86,10 +88,10 @@ export default function LandingPage() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
           {[
-            { icon: ClipboardList, color: 'bg-blue-100 text-blue-600',   title: 'Inscripciones',          desc: 'El ChatBot explica detalladamente cómo solicitar el ingreso a los programas de formación.' },
-            { icon: BookOpen,      color: 'bg-purple-100 text-purple-600',title: 'Programas de Formación', desc: 'Ayuda a consultar y entender la oferta educativa disponible con horarios y modalidades.' },
-            { icon: MessageSquare, color: 'bg-green-100 text-green-600',  title: 'Dudas y Preguntas',      desc: 'Resuelve inquietudes sobre datos personales, requisitos y éxito de inscripción.' },
-            { icon: Users,         color: 'bg-orange-100 text-orange-600',title: 'Horarios',               desc: 'Guía al aprendiz sobre cómo consultar y seleccionar sus franjas horarias disponibles.' },
+            { icon: ClipboardList, color: 'bg-blue-100 text-blue-600',    title: 'Inscripciones',          desc: 'El ChatBot explica detalladamente cómo solicitar el ingreso a los programas de formación.' },
+            { icon: BookOpen,      color: 'bg-purple-100 text-purple-600', title: 'Programas de Formación', desc: 'Ayuda a consultar y entender la oferta educativa disponible con horarios y modalidades.' },
+            { icon: MessageSquare, color: 'bg-green-100 text-green-600',   title: 'Dudas y Preguntas',      desc: 'Resuelve inquietudes sobre datos personales, requisitos y éxito de inscripción.' },
+            { icon: Users,         color: 'bg-orange-100 text-orange-600', title: 'Horarios',               desc: 'Guía al aprendiz sobre cómo consultar y seleccionar sus franjas horarias disponibles.' },
           ].map(({ icon: Icon, color, title, desc }) => (
             <div key={title} className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 hover:shadow-md transition-shadow">
               <div className={`w-12 h-12 rounded-xl flex items-center justify-center mb-4 ${color}`}>
@@ -111,9 +113,9 @@ export default function LandingPage() {
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {[
-              { icon: Target, color: 'bg-blue-600',   title: 'Misión', desc: 'Facilitar el acceso a la formación técnica y tecnológica mediante una plataforma digital moderna, intuitiva y accesible para todos.' },
-              { icon: Award,  color: 'bg-purple-600',  title: 'Visión', desc: 'Ser la herramienta de referencia para la gestión académica digital, integrando IA para orientar a cada usuario en su camino formativo.' },
-              { icon: Shield, color: 'bg-green-600',   title: 'Valores', desc: 'Transparencia, inclusión, innovación y compromiso con la calidad educativa. La formación técnica es el motor del desarrollo personal.' },
+              { icon: Target, color: 'bg-blue-600',  title: 'Misión',  desc: 'Facilitar el acceso a la formación técnica y tecnológica mediante una plataforma digital moderna, intuitiva y accesible para todos.' },
+              { icon: Award,  color: 'bg-purple-600', title: 'Visión',  desc: 'Ser la herramienta de referencia para la gestión académica digital, integrando IA para orientar a cada usuario en su camino formativo.' },
+              { icon: Shield, color: 'bg-green-600',  title: 'Valores', desc: 'Transparencia, inclusión, innovación y compromiso con la calidad educativa. La formación técnica es el motor del desarrollo personal.' },
             ].map(({ icon: Icon, color, title, desc }) => (
               <div key={title} className="text-center p-6">
                 <div className={`w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-4 ${color}`}>
@@ -156,20 +158,15 @@ export default function LandingPage() {
           {equipo.map((m) => (
             <div key={m.nombre} className="bg-white rounded-2xl border border-gray-100 shadow-sm p-8 text-center hover:shadow-md transition-shadow">
               <div className="w-24 h-24 mx-auto mb-4 relative">
-                <img
+                {/* Next.js Image: optimización WebP/AVIF + lazy loading automático */}
+                <Image
                   src={m.foto}
                   alt={m.nombre}
-                  className="w-24 h-24 rounded-full object-cover border-4 border-gray-100 shadow-md"
-                  onError={(e) => {
-                    const target = e.currentTarget;
-                    target.style.display = 'none';
-                    const fallback = target.nextElementSibling as HTMLElement;
-                    if (fallback) fallback.style.display = 'flex';
-                  }}
+                  width={96}
+                  height={96}
+                  className="rounded-full object-cover border-4 border-gray-100 shadow-md"
+                  loading="lazy"
                 />
-                <div className={`w-24 h-24 ${m.color} rounded-full items-center justify-center text-white text-2xl font-extrabold absolute top-0 left-0 hidden`}>
-                  {m.iniciales}
-                </div>
               </div>
               <h3 className="font-bold text-gray-900 text-base mb-1">{m.nombre}</h3>
               <p className="text-primary-600 text-xs font-semibold uppercase tracking-wide mb-3">{m.rol}</p>
