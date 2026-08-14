@@ -2,8 +2,15 @@
 import { useState, useMemo } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import dynamic from 'next/dynamic';
 import { authAPI } from '../../lib/api';
 import { CheckCircle, XCircle } from 'lucide-react';
+
+// Carga dinámica apuntando a Estrellas.jsx deshabilitando SSR
+const BackgroundStars = dynamic(
+  () => import('../../components/Estrellas'),
+  { ssr: false }
+);
 
 type Step = 'correo' | 'codigo' | 'nueva';
 
@@ -119,7 +126,10 @@ export default function RecuperarPasswordPage() {
       <div className="auth-background" aria-hidden="true" />
       <div className="auth-overlay" aria-hidden="true" />
 
-      <div className="relative z-10 min-h-screen flex items-center justify-center">
+      {/* Estrellas 3D por encima del overlay del fondo y detrás de la tarjeta */}
+      <BackgroundStars />
+
+      <div className="relative z-10 min-h-screen flex items-center justify-center px-4">
         <div className="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-md">
           <div className="text-center mb-6">
             <div className="text-3xl font-extrabold text-primary-700">SYNAPSE</div>
