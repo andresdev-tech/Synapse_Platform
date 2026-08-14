@@ -5,20 +5,38 @@ import { useRouter } from 'next/navigation';
 import api from '../../../../lib/api';
 import { ClipboardList, Search, Filter, CheckCircle, Clock, XCircle, Award, Download } from 'lucide-react';
 
+interface Usuario {
+  id: number;
+  nombres: string;
+  apellidos: string;
+  correo_electronico: string;
+}
+
+interface Programa {
+  id: number;
+  nombre: string;
+  slug: string;
+  sector: string;
+  estado: string;
+}
+
 interface Inscripcion {
   id: number;
-  usuario: string;
-  correo_electronico: string;
-  programa: string;
+  usuario_id: number;
+  programa_id: number;
   estado: string;
-  fecha_inscripcion: string;
+  observaciones: string | null;
+  creado_en: string;
+  actualizado_en: string;
+  usuario: Usuario;
+  programa: Programa;
 }
 
 const estadoConfig: Record<string, { color: string; icon: any; label: string }> = {
-  activa:     { color: 'bg-green-100 text-green-700',  icon: CheckCircle, label: 'Activa' },
-  pendiente:  { color: 'bg-yellow-100 text-yellow-700',icon: Clock,       label: 'Pendiente' },
-  cancelada:  { color: 'bg-red-100 text-red-700',      icon: XCircle,     label: 'Cancelada' },
-  completada: { color: 'bg-blue-100 text-blue-700',    icon: Award,       label: 'Completada' },
+  activa: { color: 'bg-green-100 text-green-700', icon: CheckCircle, label: 'Activa' },
+  pendiente: { color: 'bg-yellow-100 text-yellow-700', icon: Clock, label: 'Pendiente' },
+  cancelada: { color: 'bg-red-100 text-red-700', icon: XCircle, label: 'Cancelada' },
+  completada: { color: 'bg-blue-100 text-blue-700', icon: Award, label: 'Completada' },
 };
 
 export default function AdminInscripcionesPage() {
@@ -33,7 +51,7 @@ export default function AdminInscripcionesPage() {
   useEffect(() => {
     if (!isAdmin()) { router.push('/dashboard'); return; }
     api.get('/inscripciones')
-      .then(res => { setInscripciones(res.data); setFiltradas(res.data); })
+      .then(res => { console.log("Datos completos:", res.data); setInscripciones(res.data.data); setFiltradas(res.data.data); })
       .catch(console.error)
       .finally(() => setLoading(false));
   }, []);
@@ -44,9 +62,9 @@ export default function AdminInscripcionesPage() {
     if (busqueda.trim()) {
       const b = busqueda.toLowerCase();
       res = res.filter(i =>
-        i.usuario?.toLowerCase().includes(b) ||
-        i.programa?.toLowerCase().includes(b) ||
-        i.correo_electronico?.toLowerCase().includes(b)
+        i.usuario.nombres?.toLowerCase().includes(b) ||
+        i.programa.nombre?.toLowerCase().includes(b) ||
+        i.usuario.correo_electronico?.toLowerCase().includes(b)
       );
     }
     setFiltradas(res);
@@ -55,8 +73,8 @@ export default function AdminInscripcionesPage() {
   const exportarCSV = () => {
     const headers = ['ID', 'Usuario', 'Correo', 'Programa', 'Estado', 'Fecha'];
     const rows = filtradas.map(i => [
-      i.id, i.usuario, i.correo_electronico, i.programa, i.estado,
-      new Date(i.fecha_inscripcion).toLocaleDateString('es-CO')
+      i.id, i.usuario, i.usuario.correo_electronico, i.programa, i.estado,
+      new Date(i.creado_en).toLocaleDateString('es-CO')
     ]);
     const csv = [headers, ...rows].map(r => r.join(',')).join('\n');
     const blob = new Blob([csv], { type: 'text/csv' });
@@ -147,24 +165,35 @@ export default function AdminInscripcionesPage() {
             </thead>
             <tbody className="divide-y divide-gray-50">
               {filtradas.map((ins) => {
+                console.log('Inscripción completa:', ins);
+                console.log('Usuario:', ins.usuario);
+                console.log('Programa:', ins.programa);
+                console.log(ins.estado);
+                
                 const cfg = estadoConfig[ins.estado] || estadoConfig.pendiente;
+                console.log(cfg);
+                
                 const Icon = cfg.icon;
+                
+                const nombre = ins.programa.nombre;
+                console.log(nombre);
+                
                 return (
                   <tr key={ins.id} className="hover:bg-gray-50 transition-colors">
                     <td className="px-4 py-3 text-gray-400 text-xs">{ins.id}</td>
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-2">
                         <div className="w-8 h-8 bg-primary-100 rounded-full flex items-center justify-center text-xs font-bold text-primary-600 flex-shrink-0">
-                          {ins.usuario?.charAt(0)?.toUpperCase()}
+                          {ins.usuario.nombres?.charAt(0)?.toUpperCase()}
                         </div>
                         <div>
-                          <div className="font-medium text-gray-900 text-sm">{ins.usuario}</div>
-                          <div className="text-gray-400 text-xs">{ins.correo_electronico}</div>
+                          <div className="font-medium text-gray-900 text-sm">{ins.usuario.nombres}</div>
+                          <div className="text-gray-400 text-xs">{ins.usuario.correo_electronico}</div>
                         </div>
                       </div>
                     </td>
                     <td className="px-4 py-3 text-gray-600 max-w-[200px]">
-                      <span className="truncate block">{ins.programa}</span>
+                      <span className="truncate block">{ins.programa.nombre}</span>
                     </td>
                     <td className="px-4 py-3">
                       <span className={`flex items-center gap-1 text-xs font-semibold px-2.5 py-1 rounded-full w-fit ${cfg.color}`}>
@@ -172,7 +201,7 @@ export default function AdminInscripcionesPage() {
                       </span>
                     </td>
                     <td className="px-4 py-3 text-gray-400 text-xs">
-                      {new Date(ins.fecha_inscripcion).toLocaleDateString('es-CO', {
+                      {new Date(ins.creado_en).toLocaleDateString('es-CO', {
                         day: '2-digit', month: 'short', year: 'numeric'
                       })}
                     </td>
