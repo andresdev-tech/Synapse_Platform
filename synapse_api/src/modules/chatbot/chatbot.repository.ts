@@ -60,7 +60,7 @@ export class ChatbotRepository {
   }
 
 async saveHistory(data: {
-  usuarioId: number;
+  usuarioId: string;
   pregunta: string;
   respuesta: string;
 }) {
@@ -73,7 +73,7 @@ async saveHistory(data: {
   });
 }
 
-  async getHistory(usuarioId: number) {
+  async getHistory(usuarioId: string) {
     return prisma.chatbot_historial.findMany({
       where: {
         usuario_id: usuarioId

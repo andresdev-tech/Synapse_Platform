@@ -5,7 +5,7 @@ export class InscriptionsRepository {
     static async getInscriptions() {
         try {
 
-            return await prisma.inscripcion.findMany({
+            return await prisma.inscripciones.findMany({
                 include: {
                     usuario: true,
                     programa: true
@@ -23,10 +23,10 @@ export class InscriptionsRepository {
         }
     }
 
-    static async getByPrograma(programa_id: number) {
+    static async getByPrograma(programa_id: string) {
         try {
 
-            return await prisma.inscripcion.findMany({
+            return await prisma.inscripciones.findMany({
                 where: {
                     programa_id,
                 },
@@ -50,10 +50,10 @@ export class InscriptionsRepository {
         }
     }
 
-    static async getByUsers(usuario_id: number) {
+    static async getByUsers(usuario_id: string) {
         try {
 
-            return await prisma.inscripcion.findMany({
+            return await prisma.inscripciones.findMany({
                 where: {
                     usuario_id,
                 },
@@ -77,12 +77,12 @@ export class InscriptionsRepository {
     }
 
     static async searchByUserAndProgram(
-        usuario_id: number,
-        programa_id: number
+        usuario_id: string,
+        programa_id: string
     ) {
         try {
 
-            return await prisma.inscripcion.findFirst({
+            return await prisma.inscripciones.findFirst({
                 where: {
                     usuario_id,
                     programa_id,
@@ -100,10 +100,10 @@ export class InscriptionsRepository {
         }
     }
 
-    static async getById(id: number) {
+    static async getById(id: string) {
         try {
 
-            return await prisma.inscripcion.findUnique({
+            return await prisma.inscripciones.findUnique({
                 where: {
                     id,
                 },
@@ -125,12 +125,12 @@ export class InscriptionsRepository {
     }
 
     static async create(
-        usuario_id: number,
-        programa_id: number
+        usuario_id: string,
+        programa_id: string
     ) {
         try {
 
-            return await prisma.inscripcion.create({
+            return await prisma.inscripciones.create({
                 data: {
                     usuario_id,
                     programa_id,
@@ -153,12 +153,12 @@ export class InscriptionsRepository {
     }
 
     static async changeStatus(
-        id: number,
+        id: string,
         estado: string
     ) {
         try {
 
-            return await prisma.inscripcion.update({
+            return await prisma.inscripciones.update({
                 where: {
                     id,
                 },
@@ -178,10 +178,10 @@ export class InscriptionsRepository {
         }
     }
 
-    static async delete(id: number) {
+    static async delete(id: string) {
         try {
 
-            return await prisma.inscripcion.delete({
+            return await prisma.inscripciones.delete({
                 where: {
                     id,
                 },

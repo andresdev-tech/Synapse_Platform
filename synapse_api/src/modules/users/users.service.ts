@@ -4,7 +4,7 @@ import { getRoleName } from "../../common/constants/roles";
 
 export class UsersService {
     
-    static async getProfile(id: number) {
+    static async getProfile(id: string) {
         try {
             const user = await UsersRepository.findById(id);
 
@@ -36,11 +36,11 @@ export class UsersService {
         return UsersRepository.create(data);
     }
     
-    static async update(id: number, data: any) {
+    static async update(id: string, data: any) {
         return UsersRepository.update(id, data);
     }
     
-    static async delete(id: number) {
+    static async delete(id: string) {
         return UsersRepository.delete(id);
     }
     
@@ -48,7 +48,7 @@ export class UsersService {
         return UsersRepository.findByEmail(email);
     }
 
-    static async getById(id: number) {
+    static async getById(id: string) {
         return UsersRepository.findById(id);
     }
 }

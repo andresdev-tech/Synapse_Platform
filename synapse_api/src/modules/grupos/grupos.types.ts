@@ -1,30 +1,30 @@
 export interface AssignLearnerData {
-    inscriptionId: number;
-    groupId: number;
+    inscriptionId: string;
+    groupId: string;
 }
 
 export interface ChangeGroupData {
-    userId: number;
-    programId: number;
-    newGroupId: number;
+    userId: string;
+    programId: string;
+    newGroupId: string;
 }
 
 export interface ExpelLearnerData {
-    groupId: number;
-    userId: number;
+    groupId: string;
+    userId: string;
     reason: string;
 }
 
 export interface SuspendLearnerData {
-    groupId: number;
-    userId: number;
+    groupId: string;
+    userId: string;
     reason: string;
 }
 
 export interface GroupStats {
-    total: number;
-    assigned: number;
-    pending: number;
-    suspended: number;
-    expelled: number;
+    total: string;
+    assigned: string;
+    pending: string;
+    suspended: string;
+    expelled: string;
 }

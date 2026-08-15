@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { ProgramasService } from "./programs.service";
+import { StringDecoder } from "node:string_decoder";
 
 export class ProgramasController {
   static async getAll(
@@ -23,7 +24,7 @@ export class ProgramasController {
     res: Response
   ) {
     try {
-      const id = Number(req.params.id);
+      const id = String(req.params.id);
 
       const programa =
         await ProgramasService.getById(id);
@@ -59,7 +60,7 @@ export class ProgramasController {
     res: Response
   ) {
     try {
-      const id = Number(req.params.id);
+      const id = String(req.params.id);
 
       const programa =
         await ProgramasService.update(
@@ -80,7 +81,7 @@ export class ProgramasController {
     res: Response
   ) {
     try {
-      const id = Number(req.params.id);
+      const id = String(req.params.id);
 
       await ProgramasService.delete(id);
 

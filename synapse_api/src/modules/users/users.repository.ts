@@ -12,7 +12,7 @@ export class UsersRepository {
         }
     }
 
-    static async findById(id: number) {
+    static async findById(id: string) {
         try {
             return prisma.usuarios.findUnique({
                 where: {
@@ -49,7 +49,7 @@ export class UsersRepository {
         }
     }
     
-    static async update(id: number, data: any) {
+    static async update(id: string, data: any) {
         try {
             return prisma.usuarios.update({
                 where: {
@@ -67,7 +67,7 @@ export class UsersRepository {
         }
     }
     
-    static async delete(id: number) {
+    static async delete(id: string) {
         try {
             return prisma.usuarios.delete({
                 where: {

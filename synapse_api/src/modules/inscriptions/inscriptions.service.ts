@@ -22,13 +22,13 @@ export class InscriptionsService {
     }
 
     static async getByPrograma(
-        programa_id: number
+        programa_id: string
     ) {
         try {
 
             if (
                 !programa_id ||
-                programa_id <= 0
+                programa_id === ""
             ) {
                 throw new Error(
                     "El programa no es válido"
@@ -54,13 +54,13 @@ export class InscriptionsService {
     }
 
     static async getMyInscriptions(
-        usuario_id: number
+        usuario_id: string
     ) {
         try {
 
             if (
                 !usuario_id ||
-                usuario_id <= 0
+                usuario_id === ""
             ) {
                 throw new Error(
                     "El usuario no es válido"
@@ -86,14 +86,14 @@ export class InscriptionsService {
     }
 
     static async create(
-        usuario_id: number,
-        programa_id: number
+        usuario_id: string,
+        programa_id: string
     ) {
         try {
 
             if (
                 !usuario_id ||
-                usuario_id <= 0
+                usuario_id === ""
             ) {
                 throw new Error(
                     "El usuario no es válido"
@@ -102,7 +102,7 @@ export class InscriptionsService {
 
             if (
                 !programa_id ||
-                programa_id <= 0
+                programa_id === ""
             ) {
                 throw new Error(
                     "El programa no es válido"
@@ -141,14 +141,14 @@ export class InscriptionsService {
     }
 
     static async cancel(
-        inscription_id: number,
-        usuario_id: number
+        inscription_id: string,
+        usuario_id: string
     ) {
         try {
 
             if (
                 !inscription_id ||
-                inscription_id <= 0
+                inscription_id === ""
             ) {
                 throw new Error(
                     "La inscripción no es válida"
@@ -157,7 +157,7 @@ export class InscriptionsService {
 
             if (
                 !usuario_id ||
-                usuario_id <= 0
+                usuario_id === ""
             ) {
                 throw new Error(
                     "El usuario no es válido"
@@ -202,14 +202,14 @@ export class InscriptionsService {
     }
 
     static async changeStatus(
-        inscription_id: number,
+        inscription_id: string,
         estado: string
     ) {
         try {
 
             if (
                 !inscription_id ||
-                inscription_id <= 0
+                inscription_id === ""
             ) {
                 throw new Error(
                     "La inscripción no es válida"

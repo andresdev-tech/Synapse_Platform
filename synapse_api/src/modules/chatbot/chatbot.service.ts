@@ -48,7 +48,7 @@ export class ChatbotService {
 
   private async executeTool(
     toolName: string,
-    usuarioId: number,
+    usuarioId: string,
     args: any
   ) {
     console.log('=== executeTool called ===');
@@ -69,7 +69,7 @@ export class ChatbotService {
   }
 
   async askQuestion(
-    usuarioId: number,
+    usuarioId: string,
     question: string
     
   ) {
@@ -189,7 +189,7 @@ Genera una respuesta clara para el usuario, o usa otra herramienta si es necesar
     };
   }
 
-  async getHistory(usuarioId: number) {
+  async getHistory(usuarioId: string) {
     return this.repository.getHistory(usuarioId);
   }
 }

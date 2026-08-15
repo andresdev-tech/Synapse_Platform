@@ -9,7 +9,7 @@ export class ProgramasService {
     return ProgramasRepository.findAll();
   }
 
-  static async getById(id: number) {
+  static async getById(id: string) {
     const programa =
       await ProgramasRepository.findById(id);
 
@@ -27,7 +27,7 @@ export class ProgramasService {
   }
 
   static async update(
-    id: number,
+    id: string,
     data: UpdateProgramaDto
   ) {
     await this.getById(id);
@@ -38,7 +38,7 @@ export class ProgramasService {
     );
   }
 
-  static async delete(id: number) {
+  static async delete(id: string) {
     await this.getById(id);
 
     return ProgramasRepository.delete(id);

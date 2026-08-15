@@ -7,13 +7,13 @@ import {
 
 export class GroupsService {
 
-    static async getGroupsByProgram(programId: number) {
+    static async getGroupsByProgram(programId: string) {
         const groups = await GruposRepository.getGroupsByProgram(programId);
 
         return groups;
     }
 
-    static async getGroupMembers(groupId: number) {
+    static async getGroupMembers(groupId: string) {
         const group = await GruposRepository.findGroupById(groupId);
 
         if (!group) {
@@ -23,7 +23,7 @@ export class GroupsService {
         return GruposRepository.getGroupMembers(groupId);
     }
 
-    static async getCompleteGroupInfo(groupId: number) {
+    static async getCompleteGroupInfo(groupId: string) {
         const group =
             await GruposRepository.getCompleteGroupInfo(groupId);
 
@@ -34,11 +34,11 @@ export class GroupsService {
         return group;
     }
 
-    static async getPendingInscriptions(programId: number) {
+    static async getPendingInscriptions(programId: string) {
         return GruposRepository.getPendingInscriptions(programId);
     }
 
-    static async getGroupLearners(groupId: number) {
+    static async getGroupLearners(groupId: string) {
         const group = await GruposRepository.findGroupById(groupId);
 
         if (!group) {
@@ -48,7 +48,7 @@ export class GroupsService {
         return GruposRepository.getGroupLearners(groupId);
     }
 
-    static async getProgramStatistics(programId: number) {
+    static async getProgramStatistics(programId: string) {
         return GruposRepository.getProgramStatistics(programId);
     }
 
@@ -132,8 +132,8 @@ export class GroupsService {
     }
 
     static async removeLearner(
-        groupId: number,
-        userId: number
+        groupId: string,
+        userId: string
     ) {
         const group =
             await GruposRepository.findGroupById(groupId);
@@ -164,8 +164,8 @@ export class GroupsService {
     }
 
     static async expelLearner(
-        groupId: number,
-        userId: number,
+        groupId: string,
+        userId: string,
         data: ReasonInput
     ) {
         const group =
@@ -210,8 +210,8 @@ export class GroupsService {
     }
 
     static async suspendLearner(
-        groupId: number,
-        userId: number,
+        groupId: string,
+        userId: string,
         data: ReasonInput
     ) {
         const group =
@@ -252,8 +252,8 @@ export class GroupsService {
     }
 
     static async revertExpulsion(
-        groupId: number,
-        userId: number
+        groupId: string,
+        userId: string
     ) {
         const group =
             await GruposRepository.findGroupById(groupId);

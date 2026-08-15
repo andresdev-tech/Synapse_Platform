@@ -2,37 +2,37 @@ import { prisma } from "../../config/prisma";
 
 export class ProgramasRepository {
   static async findAll() {
-    return prisma.programa.findMany({
+    return prisma.programas.findMany({
       orderBy: {
         id: "desc",
       },
     });
   }
 
-  static async findById(id: number) {
-    return prisma.programa.findUnique({
+  static async findById(id: string) {
+    return prisma.programas.findUnique({
       where: { id },
     });
   }
 
   static async create(data: any) {
-    return prisma.programa.create({
+    return prisma.programas.create({
       data,
     });
   }
 
   static async update(
-    id: number,
+    id: string,
     data: any
   ) {
-    return prisma.programa.update({
+    return prisma.programas.update({
       where: { id },
       data,
     });
   }
 
-  static async delete(id: number) {
-    return prisma.programa.delete({
+  static async delete(id: string) {
+    return prisma.programas.delete({
       where: { id },
     });
   }

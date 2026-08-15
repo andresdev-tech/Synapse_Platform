@@ -36,7 +36,7 @@ export class InscriptionsController {
         try {
 
             const programa_id =
-                Number(req.params.programaId);
+                req.params.programaId as string;
 
             const inscriptions =
                 await InscriptionsService.getByPrograma(
@@ -69,12 +69,12 @@ export class InscriptionsController {
             const { programa_id } = req.body;
 
             const usuario_id =
-                Number(res.locals.usuario_id);
+                String(res.locals.usuario_id);
 
             const inscription =
                 await InscriptionsService.create(
                     usuario_id,
-                    Number(programa_id)
+                    String(programa_id)
                 );
 
             return res.status(201).json({
@@ -102,10 +102,10 @@ export class InscriptionsController {
         try {
 
             const inscription_id =
-                Number(req.params.inscripcionId);
+                String(req.params.inscripcionId);
 
             const usuario_id =
-                Number(res.locals.usuario_id);
+                String(res.locals.usuario_id);
 
             const deletedInscription =
                 await InscriptionsService.cancel(
@@ -138,7 +138,7 @@ export class InscriptionsController {
         try {
 
             const inscription_id =
-                Number(req.params.inscripcionId);
+                String(req.params.inscripcionId);
 
             const { estado } = req.body;
 
@@ -174,7 +174,7 @@ export class InscriptionsController {
         try {
 
             const usuario_id =
-                Number(res.locals.usuario_id);
+                String(res.locals.usuario_id);
 
             const inscriptions =
                 await InscriptionsService.getMyInscriptions(
