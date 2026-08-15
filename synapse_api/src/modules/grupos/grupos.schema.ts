@@ -1,14 +1,14 @@
 import { z } from "zod";
 
 export const assignLearnerSchema = z.object({
-    inscriptionId: z.number().int().positive(),
-    groupId: z.number().int().positive(),
+    inscriptionId: z.string(),
+    groupId: z.string(),
 });
 
 export const changeGroupSchema = z.object({
-    userId: z.number().int().positive(),
-    programId: z.number().int().positive(),
-    newGroupId: z.number().int().positive(),
+    userId: z.string(),
+    programId: z.string(),
+    newGroupId: z.string(),
 });
 
 export const reasonSchema = z.object({

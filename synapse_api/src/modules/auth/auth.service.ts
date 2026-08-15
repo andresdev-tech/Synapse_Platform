@@ -23,7 +23,7 @@ export class AuthService {
         }
 
         // Verificar si la contraseña coincide con el hash
-        const esValida = await bcrypt.compare(password, usuario.contrasena_hash);
+        const esValida = await bcrypt.compare(password, usuario.password_hash);
         if (!esValida) {
             throw new Error('Contraseña incorrecta');
         }
@@ -106,12 +106,12 @@ export class AuthService {
     static async register(
         nombres: string,
         apellidos: string,
-        tipo_documento: number,
+        tipo_documento: string,
         numero_documento: string,
         correo_electronico: string,
         fecha_nacimiento: Date,
         password: string,
-        rol: number
+        rol: string
     ) {
         try {
 
@@ -157,7 +157,7 @@ export class AuthService {
      * 3. MÉTODO PARA REGISTRAR UNA SESIÓN (Auditoría)
      * Guarda los datos de IP y Navegador del usuario que inició sesión
      */
-    static async registrarInicioSesion(userId: number, ip: string, browser: string) {
+    static async registrarInicioSesion(userId: string, ip: string, browser: string) {
         try {
             // Generar un token JWT para la sesión
             const token = jwt.sign(

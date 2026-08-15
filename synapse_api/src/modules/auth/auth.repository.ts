@@ -1,4 +1,5 @@
 import { prisma } from "../../config/prisma";
+import { generateUUID } from '../../common/utils/uuidcreate'
 
 export class AuthRepository {
   static findUserByEmail(correo_electronico: string) {
@@ -13,14 +14,14 @@ export class AuthRepository {
         tipo_documento_id: true,
         numero_documento: true,
         correo_electronico: true,
-        contrasena_hash: true,
+        password_hash: true,
         rol_id: true,
-        ultimo_login: true
+        actualizado_en: true
       }
     });
   }
 
-  static findUserByDocument(tipo_documento: number, numero_documento: string) {
+  static findUserByDocument(tipo_documento: string, numero_documento: string) {
     return prisma.usuarios.findFirst({
       where: {
         tipo_documento_id: tipo_documento,
@@ -29,23 +30,24 @@ export class AuthRepository {
     });
   }
 
-  static createUser(nombres: string, apellidos: string, tipo_documento: number, numero_documento: string, correo_electronico: string, fecha_nacimiento: Date, password: string, rol: number) {
+  static createUser(nombres: string, apellidos: string, tipo_documento: string, numero_documento: string, correo_electronico: string, fecha_nacimiento: Date, password: string, rol: string) {
     return prisma.usuarios.create({
       data: {
+        id: generateUUID(),
         nombres,
         apellidos,
         tipo_documento_id: tipo_documento,
         numero_documento: numero_documento,
         correo_electronico: correo_electronico,
         fecha_nacimiento: new Date(fecha_nacimiento),
-        contrasena_hash: password,
+        password_hash: password,
         rol_id: rol
       }
     });
   }
 
-  static createSession(sessionInfo: { userId: number; token: string; ipAddress: string; navegadorInfo?: string; expiresAt: Date }) {
-    return prisma.sesion.create({
+  static createSession(sessionInfo: { userId: string; token: string; ipAddress: string; navegadorInfo?: string; expiresAt: Date }) {
+    return prisma.sesiones.create({
       data: {
         usuario_id: sessionInfo.userId,
         token_sesion: sessionInfo.token,
@@ -59,7 +61,7 @@ export class AuthRepository {
     });
   }
 
-  static updateLastLogin(userId: number) {
+  static updateLastLogin(userId: string) {
     return prisma.usuarios.update({
       where: {
         id: userId
@@ -100,7 +102,7 @@ export class AuthRepository {
       data: {
         codigo_2fa: null,
         expiracion_2fa: null,
-        contrasena_hash: password
+        password_hash: password
       }
     });
   }

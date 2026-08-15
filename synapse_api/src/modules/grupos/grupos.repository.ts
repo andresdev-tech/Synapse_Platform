@@ -1,31 +1,31 @@
 import { prisma } from "../../config/prisma"
 
 export class GruposRepository {
-    static async getGroupsByProgram(programId: number) {
+    static async getGroupsByProgram(programId: string) {
         return prisma.grupos.findMany({
             where: {
                 programa_id: programId,
             },
             include: {
-                programas: true,
+                programa: true,
             }
         });
     }
 
-    static async getGroupMembers(groupId: number) {
+    static async getGroupMembers(groupId: string) {
         return prisma.inscripciones.findMany({
             where: {
                 grupo_id: groupId,
             },
             include: {
-                usuarios_inscripciones_usuario_idTousuarios: true,
+                usuario: true,
                 programas: true,
                 grupos: true
             },
         });
     }
 
-    static async getCompleteGroupInfo(groupId: number) {
+    static async getCompleteGroupInfo(groupId: string) {
         return prisma.grupos.findUnique({
             where: {
                 id: groupId,
@@ -34,38 +34,38 @@ export class GruposRepository {
                 programa: true,
                 inscripciones: {
                     include: {
-                        usuarios_inscripciones_usuario_idTousuarios: true,
+                        usuario: true,
                     },
                 },
             },
         });
     }
 
-    static async getPendingInscriptions(programId: number) {
+    static async getPendingInscriptions(programId: string) {
         return prisma.inscripciones.findMany({
             where: {
                 programa_id: programId,
                 grupo_id: null
             },
             include: {
-                usuarios_inscripciones_usuario_idTousuarios: true,
-                programas: true
+                usuario: true,
+                programa: true
             }
         })
     }
 
-    static async getGroupLearners(groupId: number) {
+    static async getGroupLearners(groupId: string) {
         return prisma.inscripciones.findMany({
             where: {
                 grupo_id: groupId,
             },
             include: {
-                usuarios_inscripciones_usuario_idTousuarios: true,
+                usuario: true,
             },
         });
     }
 
-    static async getProgramStatistics(programId: number) {
+    static async getProgramStatistics(programId: string) {
         const [
             totalInscriptions,
             assignedInscriptions,
@@ -106,33 +106,33 @@ export class GruposRepository {
 
     }
 
-    static async findInscriptionById(inscriptionId: number) {
+    static async findInscriptionById(inscriptionId: string) {
         return prisma.inscripciones.findUnique({
             where: {
                 id: inscriptionId,
             },
             include: {
-                usuarios_inscripciones_usuario_idTousuarios: true,
-                programas: true,
-                grupos: true,
+                usuario: true,
+                programa: true,
+                grupo: true,
             },
         });
     }
 
-    static async findGroupById(groupId: number) {
+    static async findGroupById(groupId: string) {
         return prisma.grupos.findUnique({
             where: {
                 id: groupId,
             },
             include: {
-                programas: true,
+                programa: true,
             },
         });
     }
 
     static async findInscriptionByUserAndProgram(
-        userId: number,
-        programId: number
+        userId: string,
+        programId: string
     ) {
         return prisma.inscripciones.findFirst({
             where:{
@@ -140,16 +140,16 @@ export class GruposRepository {
                 programa_id: programId,
             },
             include:{
-                grupos: true,
-                programas: true,
-                usuarios_inscripciones_usuario_idTousuarios: true,
+                grupo: true,
+                programa: true,
+                usuario: true,
             },
         });
     }
 
     static async assignLearner(
-        inscriptionId: number,
-        groupId: number
+        inscriptionId: string,
+        groupId: string
     ) {
         return prisma.inscripciones.update({
             where: {
@@ -159,16 +159,16 @@ export class GruposRepository {
                 grupo_id: groupId,
             },
             include: {
-                usuarios_inscripciones_usuario_idTousuarios: true,
-                programas: true,
-                grupos: true,
+                usuario: true,
+                programa: true,
+                grupo: true,
             },
         });
     }
 
     static async changeLearnerGroup(
-        inscriptionId: number,
-        groupId: number
+        inscriptionId: string,
+        groupId: string
     ) {
         return prisma.inscripciones.update({
             where: {
@@ -178,15 +178,15 @@ export class GruposRepository {
                 grupo_id: groupId,
             },
             include: {
-                usuarios_inscripciones_usuario_idTousuarios: true,
-                programas: true,
-                grupos: true,
+                usuario: true,
+                programa: true,
+                grupo: true,
             },
         });
     }
 
     static async removeLearner(
-        inscriptionId: number
+        inscriptionId: string
     ) {
         return prisma.inscripciones.update({
             where: {
@@ -196,9 +196,9 @@ export class GruposRepository {
                 grupo_id: null,
             },
             include: {
-                usuarios_inscripciones_usuario_idTousuarios: true,
-                programas: true,
-                grupos: true,
+                usuario: true,
+                programa: true,
+                grupo: true,
             },
         });
     }

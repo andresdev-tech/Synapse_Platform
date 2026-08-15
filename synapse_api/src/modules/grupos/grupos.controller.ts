@@ -5,6 +5,7 @@ import {
     changeGroupSchema,
     reasonSchema,
 } from "./grupos.schema";
+import { string } from "zod/v4";
 
 export class GroupsController {
 
@@ -13,7 +14,7 @@ export class GroupsController {
         res: Response
     ) {
         try {
-            const programId = Number(req.params.programId);
+            const programId = String(req.params.programId);
 
             const groups =
                 await GroupsService.getGroupsByProgram(programId);
@@ -31,7 +32,7 @@ export class GroupsController {
         res: Response
     ) {
         try {
-            const groupId = Number(req.params.groupId);
+            const groupId = String(req.params.groupId);
 
             const members =
                 await GroupsService.getGroupMembers(groupId);
@@ -49,7 +50,7 @@ export class GroupsController {
         res: Response
     ) {
         try {
-            const groupId = Number(req.params.groupId);
+            const groupId = String(req.params.groupId);
 
             const group =
                 await GroupsService.getCompleteGroupInfo(groupId);
@@ -67,7 +68,7 @@ export class GroupsController {
         res: Response
     ) {
         try {
-            const programId = Number(req.params.programId);
+            const programId = String(req.params.programId);
 
             const inscriptions =
                 await GroupsService.getPendingInscriptions(
@@ -87,7 +88,7 @@ export class GroupsController {
         res: Response
     ) {
         try {
-            const groupId = Number(req.params.groupId);
+            const groupId = String(req.params.groupId);
 
             const learners =
                 await GroupsService.getGroupLearners(groupId);
@@ -105,7 +106,7 @@ export class GroupsController {
         res: Response
     ) {
         try {
-            const programId = Number(req.params.programId);
+            const programId = String(req.params.programId);
 
             const statistics =
                 await GroupsService.getProgramStatistics(
@@ -167,8 +168,8 @@ export class GroupsController {
         res: Response
     ) {
         try {
-            const groupId = Number(req.params.groupId);
-            const userId = Number(req.params.userId);
+            const groupId = String(req.params.groupId);
+            const userId = String(req.params.userId);
 
             const result =
                 await GroupsService.removeLearner(
@@ -192,8 +193,8 @@ export class GroupsController {
         res: Response
     ) {
         try {
-            const groupId = Number(req.params.groupId);
-            const userId = Number(req.params.userId);
+            const groupId = String(req.params.groupId);
+            const userId = String(req.params.userId);
 
             const data = reasonSchema.parse(req.body);
 
@@ -217,8 +218,8 @@ export class GroupsController {
         res: Response
     ) {
         try {
-            const groupId = Number(req.params.groupId);
-            const userId = Number(req.params.userId);
+            const groupId = String(req.params.groupId);
+            const userId = String(req.params.userId);
 
             const data = reasonSchema.parse(req.body);
 
@@ -242,8 +243,8 @@ export class GroupsController {
         res: Response
     ) {
         try {
-            const groupId = Number(req.params.groupId);
-            const userId = Number(req.params.userId);
+            const groupId = String(req.params.groupId);
+            const userId = String(req.params.userId);
 
             const result =
                 await GroupsService.revertExpulsion(

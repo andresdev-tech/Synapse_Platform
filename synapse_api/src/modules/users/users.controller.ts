@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { UsersService } from "./users.service";
+import { string } from "zod/v4";
 
 
 export class UsersController {
@@ -12,7 +13,7 @@ export class UsersController {
         
             const id = (req as any).user?.id;
 
-            const user = await UsersService.getProfile(Number(id));
+            const user = await UsersService.getProfile(id);
             
             res.status(200).json(user);
         } catch (error: any) {
@@ -27,7 +28,7 @@ export class UsersController {
         res: Response
     ) {
         try {
-            const user = await UsersService.getById(Number(req.params.id));
+            const user = await UsersService.getById(req.params.id as string);
             res.status(200).json({
                 success: true,
                 data: user
@@ -101,7 +102,7 @@ export class UsersController {
         res: Response
     ) {
         try {
-            const id = Number(req.params.id);
+            const id = req.params.id as string;
             const rolId = req.body.rolId;
             const user = await UsersService.update(id, { rol_id: rolId });
             res.status(200).json({
@@ -121,7 +122,7 @@ export class UsersController {
         res: Response
     ) {
         try {
-            const user = await UsersService.delete(Number(req.params.id));
+            const user = await UsersService.delete(String(req.params.id));
             res.status(200).json({
                 success: true,
                 data: user

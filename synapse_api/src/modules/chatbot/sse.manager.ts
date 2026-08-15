@@ -1,9 +1,9 @@
 import { Response } from 'express';
 
 class SSEManager {
-  private clients: Map<number, Response[]> = new Map();
+  private clients: Map<string, Response[]> = new Map();
 
-  addClient(userId: number, response: Response) {
+  addClient(userId: string, response: Response) {
     // Configurar headers SSE
     response.setHeader('Content-Type', 'text/event-stream');
     response.setHeader('Cache-Control', 'no-cache');
@@ -20,7 +20,7 @@ class SSEManager {
     this.clients.get(userId)!.push(response);
   }
 
-  removeClient(userId: number, response: Response) {
+  removeClient(userId: string, response: Response) {
     const userClients = this.clients.get(userId);
     if (userClients) {
       const index = userClients.indexOf(response);
@@ -33,7 +33,7 @@ class SSEManager {
     }
   }
 
-  sendToUser(userId: number, data: any) {
+  sendToUser(userId: string, data: any) {
     const userClients = this.clients.get(userId);
     if (userClients) {
       const message = `data: ${JSON.stringify(data)}\n\n`;

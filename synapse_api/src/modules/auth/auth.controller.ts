@@ -1,8 +1,8 @@
 import { Request, Response } from "express";
 import { AuthService } from "./auth.service";
 import { LoginSchema, RegisterSchema } from "./auth.schemas";
-import { generateCode } from "../../common/utils/generateCode";
-import { sendEmail } from '../../common/utils/sendEmail';
+import { parseTypeDoc } from "../../common/utils/parseTypeDoc";
+import { parseRol } from "../../common/utils/parseRol";
 
 export class AuthController {
 
@@ -79,15 +79,19 @@ export class AuthController {
                 rol
             } = validatedData;
 
+            const tpDoc = parseTypeDoc(Number(tipo_documento_id));
+
+            const role = parseRol(Number(rol));
+
             const token = await AuthService.register(
                 nombres,
                 apellidos,
-                Number(tipo_documento_id), // Asegurar que viaje como número
+                tpDoc,
                 numero_documento,
                 correo_electronico,
                 new Date(fecha_nacimiento), // Convertir a Date
                 password,
-                Number(rol)             // Asegurar que viaje como número
+                role
             );
 
             return res.status(201).json({
