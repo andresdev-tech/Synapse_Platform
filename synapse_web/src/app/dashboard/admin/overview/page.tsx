@@ -34,6 +34,7 @@ export default function AdminOverviewPage() {
   const router = useRouter();
   const [stats, setStats] = useState<Stats | null>(null);
   const [loading, setLoading] = useState(true);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   useEffect(() => {
     if (!isAdmin()) { router.push('/dashboard'); return; }
@@ -48,9 +49,9 @@ export default function AdminOverviewPage() {
         api.get('/inscripciones'),
       ]);
 
-      const usuarios     = usuariosRes.data;
-      const programas    = programasRes.data;
-      const inscripciones = inscripcionesRes.data;
+      const usuarios      = usuariosRes.data.data || usuariosRes.data;
+      const programas     = programasRes.data.data || programasRes.data;
+      const inscripciones = inscripcionesRes.data.data || inscripcionesRes.data;
 
       // Usuarios por rol
       const roleCount: Record<string, number> = {};
@@ -99,8 +100,9 @@ export default function AdminOverviewPage() {
           fecha:    i.fecha_inscripcion,
         })),
       });
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
+      setErrorMsg(err.message || String(err));
     } finally {
       setLoading(false);
     }
@@ -112,7 +114,17 @@ export default function AdminOverviewPage() {
     </div>
   );
 
-  if (!stats) return null;
+  if (errorMsg) return (
+    <div className="p-8 flex items-center justify-center min-h-screen bg-red-100 text-red-600 font-bold text-xl">
+      Error: {errorMsg}
+    </div>
+  );
+
+  if (!stats) return (
+    <div className="p-8 flex items-center justify-center min-h-screen bg-yellow-100 text-yellow-800 font-bold text-xl">
+      Debug: El componente se renderizó pero 'stats' sigue siendo null sin emitir un error.
+    </div>
+  );
 
   const estadoConfig: Record<string, { color: string; icon: any; label: string }> = {
     activa:     { color: 'bg-green-100 text-green-700',   icon: CheckCircle, label: 'Activa' },
