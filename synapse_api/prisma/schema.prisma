@@ -1,8 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Get a free hosted Postgres database in seconds: `npx create-db`
-
 generator client {
   provider = "prisma-client"
   output   = "../src/generated/prisma"
@@ -12,616 +7,333 @@ datasource db {
   provider = "postgresql"
 }
 
-// ======================================================
-// ROLES
-// ======================================================
-
-model roles {
-  id          String  @id @default(uuid()) @db.Uuid
-  nombre      String  @unique @db.VarChar(100)
-  descripcion String? @db.Text
-
-  usuarios usuarios[]
-
-  @@map("roles")
-}
-
-// ======================================================
-// TIPOS DE DOCUMENTO
-// ======================================================
-
-model tipos_documento {
-  id              String @id @default(uuid()) @db.Uuid
-  sigla           String @unique @db.VarChar(10)
-  nombre_completo String @db.VarChar(100)
-
-  usuarios usuarios[]
-
-  @@map("tipos_documento")
-}
-
-// ======================================================
-// USUARIOS
-// ======================================================
-
-model usuarios {
-  id String @id @default(uuid()) @db.Uuid
-
-  nombres   String @db.VarChar(100)
-  apellidos String @db.VarChar(100)
-
-  tipo_documento_id String @db.Uuid
-  numero_documento  String @unique @db.VarChar(30)
-
-  fecha_nacimiento DateTime? @db.Date
-
-  correo_electronico String @unique @db.VarChar(150)
-  password_hash      String @db.VarChar(255)
-
-  rol_id String @db.Uuid
-
-  codigo_2fa     String?   @db.VarChar(20)
-  expiracion_2fa DateTime?
-
-  activo       Boolean   @default(true)
-  ultimo_login DateTime?
-
-  creado_en      DateTime  @default(now())
-  actualizado_en DateTime?
-
-  rol            roles           @relation(fields: [rol_id], references: [id])
-  tipo_documento tipos_documento @relation(fields: [tipo_documento_id], references: [id])
-
-  // Autenticación
-  sesiones                     sesiones[]
-  tokens_actualizacion         tokens_actualizacion[]
-  tokens_recuperacion_password tokens_recuperacion_password[]
-
-  // Programas
-  coordinaciones coordinadores_programas[] @relation("CoordinadorPrograma")
-  profesores     profesores_programas[]    @relation("ProfesorPrograma")
-
-  // Grupos
-  grupos_aprendices       grupos_aprendices[] @relation("AprendizGrupo")
-  asignaciones_realizadas grupos_aprendices[] @relation("AsignadoPor")
-
-  // Inscripciones
-  inscripciones inscripciones[] @relation("UsuarioInscripcion")
-  expulsiones   inscripciones[] @relation("UsuarioExpulsor")
-
-  // Asistencias
-  asistencias_registradas asistencias[] @relation("RegistradoPor")
-
-  // Historial
-  historial_aprendiz    historial_asignaciones[] @relation("UsuarioHistorial")
-  historial_coordinador historial_asignaciones[] @relation("CoordinadorHistorial")
-
-  // Calificaciones
-  calificaciones_aprendiz calificaciones[] @relation("UsuarioCalificacion")
-  calificaciones_profesor calificaciones[] @relation("ProfesorCalificacion")
-
-  // Chatbot
-  chatbot_historial chatbot_historial[]
-
-  // Auditoría
-  auditorias auditorias[]
-
-  @@index([tipo_documento_id])
-  @@index([rol_id])
-  @@map("usuarios")
-}
-
-// ======================================================
-// SESIONES
-// ======================================================
-
-model sesiones {
-  id String @id @default(uuid()) @db.Uuid
-
-  usuario_id String @db.Uuid
-
-  token_sesion String @unique @db.VarChar(500)
-
-  ip_direccion   String? @db.VarChar(100)
-  navegador_info String? @db.Text
-
-  activa Boolean @default(true)
-
-  creado_en        DateTime  @default(now())
-  ultima_actividad DateTime?
-  expira_en        DateTime?
-
-  usuario usuarios @relation(fields: [usuario_id], references: [id])
-
-  @@index([usuario_id])
-  @@map("sesiones")
-}
-
-// ======================================================
-// TOKENS DE ACTUALIZACION
-// ======================================================
-
-model tokens_actualizacion {
-  id String @id @default(uuid()) @db.Uuid
-
-  usuario_id String @db.Uuid
-
-  token String @unique @db.VarChar(500)
-
-  expira_en DateTime
-
-  revocado Boolean @default(false)
-
-  creado_en DateTime @default(now())
-
-  usuario usuarios @relation(fields: [usuario_id], references: [id])
-
-  @@index([usuario_id])
-  @@map("tokens_actualizacion")
-}
-
-// ======================================================
-// TOKENS DE RECUPERACION DE PASSWORD
-// ======================================================
-
-model tokens_recuperacion_password {
-  id String @id @default(uuid()) @db.Uuid
-
-  usuario_id String @db.Uuid
-
-  token String @unique @db.VarChar(500)
-
-  expira_en DateTime
-
-  usado Boolean @default(false)
-
-  creado_en DateTime @default(now())
-
-  usuario usuarios @relation(fields: [usuario_id], references: [id])
-
-  @@index([usuario_id])
-  @@map("tokens_recuperacion_password")
-}
-
-// ======================================================
-// PROGRAMAS
-// ======================================================
-
-model programas {
-  id String @id @default(uuid()) @db.Uuid
-
-  nombre String @db.VarChar(150)
-  slug   String @unique @db.VarChar(180)
-
-  sector String? @db.VarChar(100)
-
-  estado String @default("activo") @db.VarChar(30)
-
-  imagen_url String? @db.VarChar(500)
-
-  creado_en      DateTime  @default(now())
-  actualizado_en DateTime?
-
-  beneficios programas_beneficios[]
-
-  requisitos programas_requisitos[]
-
-  descripcion programas_descripciones?
-
-  horarios programas_horarios[]
-
-  coordinadores coordinadores_programas[]
-
-  profesores profesores_programas[]
-
-  grupos grupos[]
-
-  inscripciones inscripciones[]
-
-  calificaciones calificaciones[]
-
-  chatbot_historial chatbot_historial[]
-
-  @@map("programas")
-}
-
-// ======================================================
-// BENEFICIOS DE PROGRAMAS
-// ======================================================
-
-model programas_beneficios {
-  id String @id @default(uuid()) @db.Uuid
-
-  programa_id String @db.Uuid
-
-  beneficio String @db.Text
-
-  programa programas @relation(fields: [programa_id], references: [id])
-
-  @@index([programa_id])
-  @@map("programas_beneficios")
-}
-
-// ======================================================
-// REQUISITOS DE PROGRAMAS
-// ======================================================
-
-model programas_requisitos {
-  id String @id @default(uuid()) @db.Uuid
-
-  programa_id String @db.Uuid
-
-  requisito String @db.Text
-
-  programa programas @relation(fields: [programa_id], references: [id])
-
-  @@index([programa_id])
-  @@map("programas_requisitos")
-}
-
-// ======================================================
-// DESCRIPCIONES DE PROGRAMAS
-// ======================================================
-
-model programas_descripciones {
-  id String @id @default(uuid()) @db.Uuid
-
-  programa_id String @unique @db.Uuid
-
-  contenido_html String @db.Text
-
-  creado_en DateTime @default(now())
-
-  programa programas @relation(fields: [programa_id], references: [id])
-
-  @@map("programas_descripciones")
-}
-
-// ======================================================
-// HORARIOS DE PROGRAMAS
-// ======================================================
-
-model programas_horarios {
-  id String @id @default(uuid()) @db.Uuid
-
-  programa_id String @db.Uuid
-
-  modalidad String @db.VarChar(50)
-  jornada   String @db.VarChar(50)
-
-  horarios_json Json?
-
-  creado_en DateTime @default(now())
-
-  programa programas @relation(fields: [programa_id], references: [id])
-
-  @@index([programa_id])
-  @@map("programas_horarios")
-}
-
-// ======================================================
-// COORDINADORES POR PROGRAMA
-// ======================================================
-
-model coordinadores_programas {
-  id String @id @default(uuid()) @db.Uuid
-
-  coordinador_id String @db.Uuid
-  programa_id    String @db.Uuid
-
-  asignado_en DateTime @default(now())
-
-  coordinador usuarios @relation("CoordinadorPrograma", fields: [coordinador_id], references: [id])
-
-  programa programas @relation(fields: [programa_id], references: [id])
-
-  @@unique([coordinador_id, programa_id])
-  @@index([coordinador_id])
-  @@index([programa_id])
-  @@map("coordinadores_programas")
-}
-
-// ======================================================
-// PROFESORES POR PROGRAMA
-// ======================================================
-
-model profesores_programas {
-  id String @id @default(uuid()) @db.Uuid
-
-  profesor_id String @db.Uuid
-  programa_id String @db.Uuid
-
-  asignado_en DateTime @default(now())
-
-  profesor usuarios @relation("ProfesorPrograma", fields: [profesor_id], references: [id])
-
-  programa programas @relation(fields: [programa_id], references: [id])
-
-  @@unique([profesor_id, programa_id])
-  @@index([profesor_id])
-  @@index([programa_id])
-  @@map("profesores_programas")
-}
-
-// ======================================================
-// GRUPOS
-// ======================================================
-
-model grupos {
-  id String @id @default(uuid()) @db.Uuid
-
-  programa_id String @db.Uuid
-
-  numero String  @db.VarChar(100)
-  nombre String? @db.VarChar(100)
-
-  capacidad_maxima Int @default(30)
-  capacidad_actual Int @default(0)
-
-  estado String @default("activo") @db.VarChar(30)
-
-  creado_en      DateTime  @default(now())
-  actualizado_en DateTime?
-
-  programa programas @relation(fields: [programa_id], references: [id])
-
-  aprendices grupos_aprendices[]
-
-  inscripciones inscripciones[]
-
-  historial_asignaciones historial_asignaciones[]
-
-  calificaciones calificaciones[]
-
-  @@unique([programa_id, numero])
-  @@index([programa_id])
-  @@index([estado])
-  @@map("grupos")
-}
-
-// ======================================================
-// GRUPOS - APRENDICES
-// ======================================================
-
-model grupos_aprendices {
-  id String @id @default(uuid()) @db.Uuid
-
-  grupo_id   String @db.Uuid
-  usuario_id String @db.Uuid
-
-  fecha_asignacion DateTime @default(now())
-
-  asignado_por String @db.Uuid
-
-  grupo grupos @relation(fields: [grupo_id], references: [id])
-
-  usuario usuarios @relation("AprendizGrupo", fields: [usuario_id], references: [id])
-
-  asignador usuarios @relation("AsignadoPor", fields: [asignado_por], references: [id])
-
-  @@unique([grupo_id, usuario_id])
-  @@index([grupo_id])
-  @@index([usuario_id])
-  @@index([asignado_por])
-  @@map("grupos_aprendices")
-}
-
-// ======================================================
-// INSCRIPCIONES
-// ======================================================
-
-model inscripciones {
-  id String @id @default(uuid()) @db.Uuid
-
-  usuario_id  String  @db.Uuid
-  programa_id String  @db.Uuid
-  grupo_id    String? @db.Uuid
-
-  estado String @default("pendiente") @db.VarChar(30)
-
-  observaciones String? @db.Text
-
-  fecha_inscripcion DateTime @default(now())
-
-  // Control de faltas
-  total_faltas  Int @default(0)
-  limite_faltas Int @default(3)
-
-  // Suspensión
-  suspendido       Boolean   @default(false)
-  fecha_suspension DateTime?
-
-  // Expulsión
-  motivo_expulsion String? @db.Text
-
-  expulsado_por   String?   @db.Uuid
-  fecha_expulsion DateTime?
-
-  creado_en      DateTime  @default(now())
-  actualizado_en DateTime?
-
-  usuario usuarios @relation("UsuarioInscripcion", fields: [usuario_id], references: [id])
-
-  programa programas @relation(fields: [programa_id], references: [id])
-
-  grupo grupos? @relation(fields: [grupo_id], references: [id])
-
-  expulsor usuarios? @relation("UsuarioExpulsor", fields: [expulsado_por], references: [id])
-
-  asistencias asistencias[]
-
-  @@unique([usuario_id, programa_id])
-  @@index([usuario_id])
-  @@index([programa_id])
-  @@index([grupo_id])
-  @@index([expulsado_por])
-  @@map("inscripciones")
-}
-
-// ======================================================
-// ASISTENCIAS
-// ======================================================
-
 model asistencias {
-  id String @id @default(uuid()) @db.Uuid
-
-  inscripcion_id String @db.Uuid
-
-  fecha DateTime @db.Date
-
-  asistio Boolean @default(false)
-
-  observacion String? @db.Text
-
-  registrado_por String? @db.Uuid
-
-  creado_en DateTime @default(now())
-
-  inscripcion inscripciones @relation(fields: [inscripcion_id], references: [id])
-
-  registrador usuarios? @relation("RegistradoPor", fields: [registrado_por], references: [id])
+  id             String        @id @db.Uuid
+  inscripcion_id String        @db.Uuid
+  fecha          DateTime      @db.Date
+  asistio        Boolean       @default(false)
+  observacion    String?
+  registrado_por String?       @db.Uuid
+  creado_en      DateTime      @default(now())
+  inscripciones  inscripciones @relation(fields: [inscripcion_id], references: [id])
+  usuarios       usuarios?     @relation(fields: [registrado_por], references: [id])
 
   @@unique([inscripcion_id, fecha])
   @@index([inscripcion_id])
   @@index([registrado_por])
-  @@map("asistencias")
 }
-
-// ======================================================
-// HISTORIAL DE ASIGNACIONES
-// ======================================================
-
-model historial_asignaciones {
-  id String @id @default(uuid()) @db.Uuid
-
-  grupo_id   String @db.Uuid
-  usuario_id String @db.Uuid
-
-  estado_anterior String? @db.VarChar(30)
-  estado_nuevo    String  @db.VarChar(30)
-
-  razon String? @db.VarChar(255)
-
-  coordinador_id String @db.Uuid
-
-  fecha_cambio DateTime @default(now())
-
-  grupo grupos @relation(fields: [grupo_id], references: [id])
-
-  usuario usuarios @relation("UsuarioHistorial", fields: [usuario_id], references: [id])
-
-  coordinador usuarios @relation("CoordinadorHistorial", fields: [coordinador_id], references: [id])
-
-  @@index([grupo_id])
-  @@index([usuario_id])
-  @@index([coordinador_id])
-  @@map("historial_asignaciones")
-}
-
-// ======================================================
-// CALIFICACIONES
-// ======================================================
-
-model calificaciones {
-  id String @id @default(uuid()) @db.Uuid
-
-  usuario_id  String  @db.Uuid
-  programa_id String  @db.Uuid
-  grupo_id    String? @db.Uuid
-
-  profesor_id String @db.Uuid
-
-  calificacion Decimal @db.Decimal(5, 2)
-
-  observacion String? @db.Text
-
-  creado_en      DateTime  @default(now())
-  actualizado_en DateTime?
-
-  usuario usuarios @relation("UsuarioCalificacion", fields: [usuario_id], references: [id])
-
-  programa programas @relation(fields: [programa_id], references: [id])
-
-  grupo grupos? @relation(fields: [grupo_id], references: [id])
-
-  profesor usuarios @relation("ProfesorCalificacion", fields: [profesor_id], references: [id])
-
-  @@index([usuario_id])
-  @@index([programa_id])
-  @@index([grupo_id])
-  @@index([profesor_id])
-  @@map("calificaciones")
-}
-
-// ======================================================
-// CHATBOT
-// ======================================================
-
-model chatbot_historial {
-  id String @id @default(uuid()) @db.Uuid
-
-  usuario_id String @db.Uuid
-
-  pregunta_usuario String @db.Text
-  respuesta_bot    String @db.Text
-
-  programa_consultado_id String? @db.Uuid
-
-  tokens_consumidos Int?
-
-  creado_en DateTime @default(now())
-
-  usuario usuarios @relation(fields: [usuario_id], references: [id])
-
-  programa_consultado programas? @relation(fields: [programa_consultado_id], references: [id])
-
-  @@index([usuario_id])
-  @@index([programa_consultado_id])
-  @@map("chatbot_historial")
-}
-
-// ======================================================
-// DOCUMENTOS RAG
-// ======================================================
-
-model documentos_rag {
-  id String @id @default(uuid()) @db.Uuid
-
-  titulo String @db.VarChar(255)
-  tipo   String @db.VarChar(100)
-
-  contenido String @db.Text
-
-  activo Boolean @default(true)
-
-  creado_en DateTime @default(now())
-
-  @@map("documentos_rag")
-}
-
-// ======================================================
-// AUDITORIAS
-// ======================================================
 
 model auditorias {
-  id String @id @default(uuid()) @db.Uuid
-
-  usuario_id String? @db.Uuid
-
-  accion String @db.VarChar(100)
-  tabla  String @db.VarChar(100)
-
-  registro_id String?
-
+  id               String    @id @db.Uuid
+  usuario_id       String?   @db.Uuid
+  accion           String    @db.VarChar(100)
+  tabla            String    @db.VarChar(100)
+  registro_id      String?
   datos_anteriores Json?
   datos_nuevos     Json?
+  creado_en        DateTime  @default(now())
+  usuarios         usuarios? @relation(fields: [usuario_id], references: [id])
 
+  @@index([registro_id])
+  @@index([tabla])
+  @@index([usuario_id])
+}
+
+model calificaciones {
+  id                                            String    @id @db.Uuid
+  usuario_id                                    String    @db.Uuid
+  programa_id                                   String    @db.Uuid
+  grupo_id                                      String?   @db.Uuid
+  profesor_id                                   String    @db.Uuid
+  calificacion                                  Decimal   @db.Decimal(5, 2)
+  observacion                                   String?
+  creado_en                                     DateTime  @default(now())
+  actualizado_en                                DateTime?
+  grupos                                        grupos?   @relation(fields: [grupo_id], references: [id])
+  usuarios_calificaciones_profesor_idTousuarios usuarios  @relation("calificaciones_profesor_idTousuarios", fields: [profesor_id], references: [id])
+  programas                                     programas @relation(fields: [programa_id], references: [id])
+  usuarios_calificaciones_usuario_idTousuarios  usuarios  @relation("calificaciones_usuario_idTousuarios", fields: [usuario_id], references: [id])
+
+  @@index([grupo_id])
+  @@index([profesor_id])
+  @@index([programa_id])
+  @@index([usuario_id])
+}
+
+model chatbot_historial {
+  id                     String     @id @db.Uuid
+  usuario_id             String     @db.Uuid
+  pregunta_usuario       String
+  respuesta_bot          String
+  programa_consultado_id String?    @db.Uuid
+  tokens_consumidos      Int?
+  creado_en              DateTime   @default(now())
+  programas              programas? @relation(fields: [programa_consultado_id], references: [id])
+  usuarios               usuarios   @relation(fields: [usuario_id], references: [id])
+
+  @@index([programa_consultado_id])
+  @@index([usuario_id])
+}
+
+model coordinadores_programas {
+  id             String    @id @db.Uuid
+  coordinador_id String    @db.Uuid
+  programa_id    String    @db.Uuid
+  asignado_en    DateTime  @default(now())
+  usuarios       usuarios  @relation(fields: [coordinador_id], references: [id])
+  programas      programas @relation(fields: [programa_id], references: [id])
+
+  @@unique([coordinador_id, programa_id])
+  @@index([coordinador_id])
+  @@index([programa_id])
+}
+
+model documentos_rag {
+  id        String   @id @db.Uuid
+  titulo    String   @db.VarChar(255)
+  tipo      String   @db.VarChar(100)
+  contenido String
+  activo    Boolean  @default(true)
   creado_en DateTime @default(now())
+}
 
-  usuario usuarios? @relation(fields: [usuario_id], references: [id])
+model grupos {
+  id                     String                   @id @db.Uuid
+  programa_id            String                   @db.Uuid
+  numero                 String                   @db.VarChar(100)
+  nombre                 String?                  @db.VarChar(100)
+  capacidad_maxima       Int                      @default(30)
+  capacidad_actual       Int                      @default(0)
+  estado                 String                   @default("activo") @db.VarChar(30)
+  creado_en              DateTime                 @default(now())
+  actualizado_en         DateTime?
+  calificaciones         calificaciones[]
+  programas              programas                @relation(fields: [programa_id], references: [id])
+  grupos_aprendices      grupos_aprendices[]
+  historial_asignaciones historial_asignaciones[]
+  inscripciones          inscripciones[]
+
+  @@unique([programa_id, numero])
+  @@index([estado])
+  @@index([programa_id])
+}
+
+model grupos_aprendices {
+  id                                                String   @id @db.Uuid
+  grupo_id                                          String   @db.Uuid
+  usuario_id                                        String   @db.Uuid
+  fecha_asignacion                                  DateTime @default(now())
+  asignado_por                                      String   @db.Uuid
+  usuarios_grupos_aprendices_asignado_porTousuarios usuarios @relation("grupos_aprendices_asignado_porTousuarios", fields: [asignado_por], references: [id])
+  grupos                                            grupos   @relation(fields: [grupo_id], references: [id])
+  usuarios_grupos_aprendices_usuario_idTousuarios   usuarios @relation("grupos_aprendices_usuario_idTousuarios", fields: [usuario_id], references: [id])
+
+  @@unique([grupo_id, usuario_id])
+  @@index([asignado_por])
+  @@index([grupo_id])
+  @@index([usuario_id])
+}
+
+model historial_asignaciones {
+  id                                                       String   @id @db.Uuid
+  grupo_id                                                 String   @db.Uuid
+  usuario_id                                               String   @db.Uuid
+  estado_anterior                                          String?  @db.VarChar(30)
+  estado_nuevo                                             String   @db.VarChar(30)
+  razon                                                    String?  @db.VarChar(255)
+  coordinador_id                                           String   @db.Uuid
+  fecha_cambio                                             DateTime @default(now())
+  usuarios_historial_asignaciones_coordinador_idTousuarios usuarios @relation("historial_asignaciones_coordinador_idTousuarios", fields: [coordinador_id], references: [id])
+  grupos                                                   grupos   @relation(fields: [grupo_id], references: [id])
+  usuarios_historial_asignaciones_usuario_idTousuarios     usuarios @relation("historial_asignaciones_usuario_idTousuarios", fields: [usuario_id], references: [id])
+
+  @@index([coordinador_id])
+  @@index([grupo_id])
+  @@index([usuario_id])
+}
+
+model inscripciones {
+  id                                             String        @id @db.Uuid
+  usuario_id                                     String        @db.Uuid
+  programa_id                                    String        @db.Uuid
+  grupo_id                                       String?       @db.Uuid
+  estado                                         String        @default("pendiente") @db.VarChar(30)
+  observaciones                                  String?
+  fecha_inscripcion                              DateTime      @default(now())
+  total_faltas                                   Int           @default(0)
+  limite_faltas                                  Int           @default(3)
+  suspendido                                     Boolean       @default(false)
+  fecha_suspension                               DateTime?
+  motivo_expulsion                               String?
+  expulsado_por                                  String?       @db.Uuid
+  fecha_expulsion                                DateTime?
+  creado_en                                      DateTime      @default(now())
+  actualizado_en                                 DateTime?
+  asistencias                                    asistencias[]
+  usuarios_inscripciones_expulsado_porTousuarios usuarios?     @relation("inscripciones_expulsado_porTousuarios", fields: [expulsado_por], references: [id])
+  grupos                                         grupos?       @relation(fields: [grupo_id], references: [id])
+  programas                                      programas     @relation(fields: [programa_id], references: [id])
+  usuarios_inscripciones_usuario_idTousuarios    usuarios      @relation("inscripciones_usuario_idTousuarios", fields: [usuario_id], references: [id])
+
+  @@unique([usuario_id, programa_id])
+  @@index([expulsado_por])
+  @@index([grupo_id])
+  @@index([programa_id])
+  @@index([usuario_id])
+}
+
+model profesores_programas {
+  id          String    @id @db.Uuid
+  profesor_id String    @db.Uuid
+  programa_id String    @db.Uuid
+  asignado_en DateTime  @default(now())
+  usuarios    usuarios  @relation(fields: [profesor_id], references: [id])
+  programas   programas @relation(fields: [programa_id], references: [id])
+
+  @@unique([profesor_id, programa_id])
+  @@index([profesor_id])
+  @@index([programa_id])
+}
+
+model programas {
+  id                      String                    @id @db.Uuid
+  nombre                  String                    @db.VarChar(150)
+  slug                    String                    @unique @db.VarChar(180)
+  descripcion             String?                   @db.Text
+  sector                  String?                   @db.VarChar(100)
+  estado                  String                    @default("activo") @db.VarChar(30)
+  imagen_url              String?                   @db.VarChar(500)
+  creado_en               DateTime                  @default(now())
+  actualizado_en          DateTime?
+  calificaciones          calificaciones[]
+  chatbot_historial       chatbot_historial[]
+  coordinadores_programas coordinadores_programas[]
+  grupos                  grupos[]
+  inscripciones           inscripciones[]
+  profesores_programas    profesores_programas[]
+  programas_beneficios    programas_beneficios[]
+  programas_horarios      programas_horarios[]
+  programas_requisitos    programas_requisitos[]
+}
+
+model programas_beneficios {
+  id          String    @id @db.Uuid
+  programa_id String    @db.Uuid
+  beneficio   String
+  programas   programas @relation(fields: [programa_id], references: [id])
+
+  @@index([programa_id])
+}
+
+model programas_horarios {
+  id            String    @id @db.Uuid
+  programa_id   String    @db.Uuid
+  modalidad     String    @db.VarChar(50)
+  jornada       String    @db.VarChar(50)
+  horarios_json Json?
+  creado_en     DateTime  @default(now())
+  programas     programas @relation(fields: [programa_id], references: [id])
+
+  @@index([programa_id])
+}
+
+model programas_requisitos {
+  id          String    @id @db.Uuid
+  programa_id String    @db.Uuid
+  requisito   String
+  programas   programas @relation(fields: [programa_id], references: [id])
+
+  @@index([programa_id])
+}
+
+model roles {
+  id          String     @id @db.Uuid
+  nombre      String     @unique @db.VarChar(100)
+  descripcion String?
+  usuarios    usuarios[]
+}
+
+model sesiones {
+  id               String    @id @db.Uuid
+  usuario_id       String    @db.Uuid
+  token_sesion     String    @unique @db.VarChar(500)
+  ip_direccion     String?   @db.VarChar(100)
+  navegador_info   String?
+  activa           Boolean   @default(true)
+  creado_en        DateTime  @default(now())
+  ultima_actividad DateTime?
+  expira_en        DateTime?
+  usuarios         usuarios  @relation(fields: [usuario_id], references: [id])
 
   @@index([usuario_id])
-  @@index([tabla])
-  @@index([registro_id])
-  @@map("auditorias")
+}
+
+model tipos_documento {
+  id              String     @id @db.Uuid
+  sigla           String     @unique @db.VarChar(10)
+  nombre_completo String     @db.VarChar(100)
+  usuarios        usuarios[]
+}
+
+model tokens_actualizacion {
+  id         String   @id @db.Uuid
+  usuario_id String   @db.Uuid
+  token      String   @unique @db.VarChar(500)
+  expira_en  DateTime
+  revocado   Boolean  @default(false)
+  creado_en  DateTime @default(now())
+  usuarios   usuarios @relation(fields: [usuario_id], references: [id])
+
+  @@index([usuario_id])
+}
+
+model tokens_recuperacion_password {
+  id         String   @id @db.Uuid
+  usuario_id String   @db.Uuid
+  token      String   @unique @db.VarChar(500)
+  expira_en  DateTime
+  usado      Boolean  @default(false)
+  creado_en  DateTime @default(now())
+  usuarios   usuarios @relation(fields: [usuario_id], references: [id])
+
+  @@index([usuario_id])
+}
+
+model usuarios {
+  id                                                                     String                         @id @db.Uuid
+  nombres                                                                String                         @db.VarChar(100)
+  apellidos                                                              String                         @db.VarChar(100)
+  tipo_documento_id                                                      String                         @db.Uuid
+  numero_documento                                                       String                         @unique @db.VarChar(30)
+  fecha_nacimiento                                                       DateTime?                      @db.Date
+  correo_electronico                                                     String                         @unique @db.VarChar(150)
+  password_hash                                                          String                         @db.VarChar(255)
+  rol_id                                                                 String                         @db.Uuid
+  codigo_2fa                                                             String?                        @db.VarChar(20)
+  expiracion_2fa                                                         DateTime?
+  activo                                                                 Boolean                        @default(true)
+  ultimo_login                                                           DateTime?
+  creado_en                                                              DateTime                       @default(now())
+  actualizado_en                                                         DateTime?
+  asistencias                                                            asistencias[]
+  auditorias                                                             auditorias[]
+  calificaciones_calificaciones_profesor_idTousuarios                    calificaciones[]               @relation("calificaciones_profesor_idTousuarios")
+  calificaciones_calificaciones_usuario_idTousuarios                     calificaciones[]               @relation("calificaciones_usuario_idTousuarios")
+  chatbot_historial                                                      chatbot_historial[]
+  coordinadores_programas                                                coordinadores_programas[]
+  grupos_aprendices_grupos_aprendices_asignado_porTousuarios             grupos_aprendices[]            @relation("grupos_aprendices_asignado_porTousuarios")
+  grupos_aprendices_grupos_aprendices_usuario_idTousuarios               grupos_aprendices[]            @relation("grupos_aprendices_usuario_idTousuarios")
+  historial_asignaciones_historial_asignaciones_coordinador_idTousuarios historial_asignaciones[]       @relation("historial_asignaciones_coordinador_idTousuarios")
+  historial_asignaciones_historial_asignaciones_usuario_idTousuarios     historial_asignaciones[]       @relation("historial_asignaciones_usuario_idTousuarios")
+  inscripciones_inscripciones_expulsado_porTousuarios                    inscripciones[]                @relation("inscripciones_expulsado_porTousuarios")
+  inscripciones_inscripciones_usuario_idTousuarios                       inscripciones[]                @relation("inscripciones_usuario_idTousuarios")
+  profesores_programas                                                   profesores_programas[]
+  sesiones                                                               sesiones[]
+  tokens_actualizacion                                                   tokens_actualizacion[]
+  tokens_recuperacion_password                                           tokens_recuperacion_password[]
+  roles                                                                  roles                          @relation(fields: [rol_id], references: [id])
+  tipos_documento                                                        tipos_documento                @relation(fields: [tipo_documento_id], references: [id])
+
+  @@index([rol_id])
+  @@index([tipo_documento_id])
 }

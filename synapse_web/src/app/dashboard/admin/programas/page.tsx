@@ -9,6 +9,7 @@ import FeedbackModal from '../../../../components/FeedbackModal';
 interface Programa {
   id: number;
   nombre: string;
+  slug: string;
   sector: string;
   activo: boolean;
   descripcion: string;
@@ -44,7 +45,7 @@ export default function AdminProgramasPage() {
   const [eliminando, setEliminando]     = useState(false);
   const [mensaje, setMensaje]           = useState('');
   const [form, setForm] = useState({
-    nombre: '', sector: '', descripcion: '',
+    nombre: '', slug: '', sector: '', descripcion: '',
     modalidad: 'Presencial', jornada: 'Mañana',
   });
 
@@ -90,11 +91,11 @@ export default function AdminProgramasPage() {
     finally { setLoading(false); }
   };
 
-  const resetForm = () => setForm({ nombre: '', sector: '', descripcion: '', modalidad: 'Presencial', jornada: 'Mañana' });
+  const resetForm = () => setForm({ nombre: '', slug: 'NULL', sector: '', descripcion: '', modalidad: 'Presencial', jornada: 'Mañana' });
 
   const abrirCrear = () => { resetForm(); setModal('crear'); };
   const abrirEditar = (p: Programa) => {
-    setForm({ nombre: p.nombre, sector: p.sector || '', descripcion: p.descripcion || '', modalidad: 'Presencial', jornada: 'Mañana' });
+    setForm({ nombre: p.nombre, slug: p.slug || 'NULL', sector: p.sector || '', descripcion: p.descripcion || '', modalidad: 'Presencial', jornada: 'Mañana' });
     setEditandoId(p.id);
     setModal('editar');
   };
@@ -105,12 +106,12 @@ export default function AdminProgramasPage() {
     try {
       if (modal === 'crear') {
         await programasAPI.crear({
-          nombre: form.nombre, sector: form.sector, descripcion: form.descripcion,
+          nombre: form.nombre, slug: form.slug, sector: form.sector, descripcion: form.descripcion,
           horarios: [{ modalidad: form.modalidad, jornada: form.jornada, horarios: {} }],
         });
         setMensaje('Programa creado exitosamente.');
       } else if (modal === 'editar' && editandoId) {
-        await programasAPI.actualizar(editandoId, { nombre: form.nombre, sector: form.sector, descripcion: form.descripcion });
+        await programasAPI.actualizar(editandoId, { nombre: form.nombre, slug: form.slug, sector: form.sector, descripcion: form.descripcion });
         setMensaje('Programa actualizado.');
       }
       setModal(null);
@@ -297,6 +298,11 @@ export default function AdminProgramasPage() {
                 <label className="block text-sm font-medium text-gray-700 mb-1">Nombre *</label>
                 <input className="input-field" required value={form.nombre}
                   onChange={e => setForm({ ...form, nombre: e.target.value })} />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Slug</label>
+                <input className="input-field" value={form.slug}
+                  onChange={e => setForm({ ...form, slug: e.target.value })} />
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Sector</label>
