@@ -96,6 +96,26 @@ export class UsersController {
         }
     }
 
+    static async updateRole(
+        req: Request,
+        res: Response
+    ) {
+        try {
+            const id = Number(req.params.id);
+            const rolId = req.body.rolId;
+            const user = await UsersService.update(id, { rol_id: rolId });
+            res.status(200).json({
+                success: true,
+                data: user
+            });
+        } catch (error: any) {
+            res.status(500).json({
+                success: false,
+                message: error.message,
+            });
+        }
+    }
+
     static async delete(
         req: Request,
         res: Response

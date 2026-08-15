@@ -4,6 +4,7 @@ import { programasAPI, usuariosAPI } from '../../../../lib/api';
 import { useAuth } from '../../../../lib/AuthContext';
 import { useRouter } from 'next/navigation';
 import { Plus, Edit2, Trash2, BookOpen, X, AlertTriangle, Users } from 'lucide-react';
+import FeedbackModal from '../../../../components/FeedbackModal';
 
 interface Programa {
   id: number;
@@ -57,6 +58,25 @@ export default function AdminProgramasPage() {
   const [seleccionProf, setSeleccionProf]     = useState('');
   const [asignando, setAsignando]             = useState(false);
 
+  // Estado para el modal de feedback
+  const [modalState, setModalState] = useState<{
+    isOpen: boolean;
+    title: string;
+    message: string;
+    type: 'alert' | 'confirm' | 'success';
+    action?: () => void;
+  }>({ isOpen: false, title: '', message: '', type: 'alert' });
+
+  const openAlert = (title: string, message: string) => {
+    setModalState({ isOpen: true, title, message, type: 'alert' });
+  };
+
+  const openSuccess = (title: string, message: string) => {
+    setModalState({ isOpen: true, title, message, type: 'success' });
+  };
+
+  const closeModalFeedback = () => setModalState(prev => ({ ...prev, isOpen: false }));
+
   useEffect(() => {
     if (!isAdmin()) { router.push('/dashboard'); return; }
     cargar();
@@ -97,7 +117,7 @@ export default function AdminProgramasPage() {
       cargar();
       setTimeout(() => setMensaje(''), 3000);
     } catch (err: any) {
-      alert(err.response?.data?.message || 'Error al guardar.');
+      openAlert('Error de guardado', err.response?.data?.message || 'Error al guardar.');
     } finally {
       setGuardando(false);
     }
@@ -155,7 +175,7 @@ export default function AdminProgramasPage() {
       setSeleccionCoord('');
       await recargarAsignaciones(modalAsignar.id);
     } catch (err: any) {
-      alert(err.response?.data?.message || 'Error al asignar coordinador.');
+      openAlert('Error al asignar', err.response?.data?.message || 'Error al asignar coordinador.');
     } finally {
       setAsignando(false);
     }
@@ -167,7 +187,7 @@ export default function AdminProgramasPage() {
       await programasAPI.quitarCoordinador(modalAsignar.id, usuarioId);
       await recargarAsignaciones(modalAsignar.id);
     } catch {
-      alert('Error al quitar el coordinador.');
+      openAlert('Error al quitar', 'Error al quitar el coordinador.');
     }
   };
 
@@ -179,7 +199,7 @@ export default function AdminProgramasPage() {
       setSeleccionProf('');
       await recargarAsignaciones(modalAsignar.id);
     } catch (err: any) {
-      alert(err.response?.data?.message || 'Error al asignar profesor.');
+      openAlert('Error al asignar', err.response?.data?.message || 'Error al asignar profesor.');
     } finally {
       setAsignando(false);
     }
@@ -191,7 +211,7 @@ export default function AdminProgramasPage() {
       await programasAPI.quitarProfesor(modalAsignar.id, usuarioId);
       await recargarAsignaciones(modalAsignar.id);
     } catch {
-      alert('Error al quitar el profesor.');
+      openAlert('Error al quitar', 'Error al quitar el profesor.');
     }
   };
 
@@ -202,7 +222,21 @@ export default function AdminProgramasPage() {
   );
 
   return (
-    <div className="p-8">
+    <div className="p-8 relative">
+      <FeedbackModal
+        isOpen={modalState.isOpen}
+        title={modalState.title}
+        message={modalState.message}
+        type={modalState.type}
+        onConfirm={() => {
+          if (modalState.type === 'confirm' && modalState.action) {
+            modalState.action();
+          } else {
+            closeModalFeedback();
+          }
+        }}
+        onCancel={closeModalFeedback}
+      />
 
       {/* ── MODAL ELIMINAR ─────────────────────────── */}
       {modalEliminar && (

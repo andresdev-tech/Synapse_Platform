@@ -2,6 +2,7 @@
 import { useEffect, useState } from 'react';
 import { inscripcionesAPI } from '../../../lib/api';
 import { ClipboardList, CheckCircle, XCircle, Clock } from 'lucide-react';
+import FeedbackModal from '../../../components/FeedbackModal';
 
 interface Inscripcion {
   id: number;
@@ -24,6 +25,15 @@ export default function InscripcionesPage() {
   const [loading, setLoading] = useState(true);
   const [cancelando, setCancelando] = useState<number | null>(null);
 
+  // Estado para el modal de feedback
+  const [modalState, setModalState] = useState<{
+    isOpen: boolean;
+    title: string;
+    message: string;
+    type: 'alert' | 'confirm' | 'success';
+    action?: () => void;
+  }>({ isOpen: false, title: '', message: '', type: 'alert' });
+
   const cargar = async () => {
     try {
       const res = await inscripcionesAPI.misInscripciones();
@@ -37,23 +47,55 @@ export default function InscripcionesPage() {
 
   useEffect(() => { cargar(); }, []);
 
-  const cancelar = async (id: number) => {
-    if (!confirm('¿Deseas cancelar esta inscripción?')) return;
-    setCancelando(id);
-    try {
-      await inscripcionesAPI.cancelar(id);
-      cargar();
-    } catch (err: any) {
-      alert(err.response?.data?.message || 'Error al cancelar.');
-    } finally {
-      setCancelando(null);
-    }
+  const openAlert = (title: string, message: string) => {
+    setModalState({ isOpen: true, title, message, type: 'alert' });
+  };
+
+  const openSuccess = (title: string, message: string) => {
+    setModalState({ isOpen: true, title, message, type: 'success' });
+  };
+
+  const openConfirm = (title: string, message: string, action: () => void) => {
+    setModalState({ isOpen: true, title, message, type: 'confirm', action });
+  };
+
+  const closeModal = () => setModalState(prev => ({ ...prev, isOpen: false }));
+
+  const cancelar = (id: number) => {
+    openConfirm('Cancelar Inscripción', '¿Deseas cancelar esta inscripción?', async () => {
+      closeModal();
+      setCancelando(id);
+      try {
+        await inscripcionesAPI.cancelar(id);
+        cargar();
+        openSuccess('Cancelada', 'Inscripción cancelada correctamente.');
+      } catch (err: any) {
+        openAlert('Error al cancelar', err.response?.data?.message || 'Hubo un problema al cancelar.');
+      } finally {
+        setCancelando(null);
+      }
+    });
   };
 
   if (loading) return <div className="p-8 text-gray-500">Cargando inscripciones...</div>;
 
   return (
-    <div className="p-8">
+    <div className="p-8 relative">
+      <FeedbackModal
+        isOpen={modalState.isOpen}
+        title={modalState.title}
+        message={modalState.message}
+        type={modalState.type}
+        onConfirm={() => {
+          if (modalState.type === 'confirm' && modalState.action) {
+            modalState.action();
+          } else {
+            closeModal();
+          }
+        }}
+        onCancel={closeModal}
+      />
+
       <h1 className="text-2xl font-bold text-gray-900 mb-2">Mis Inscripciones</h1>
       <p className="text-gray-500 mb-6">Programas en los que estás inscrito</p>
 
