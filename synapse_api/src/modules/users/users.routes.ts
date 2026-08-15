@@ -165,6 +165,35 @@ router.put("/:id", authMiddleware, UsersController.update);
 
 /**
  * @swagger
+ * /usuarios/{id}/rol:
+ *   put:
+ *     summary: Actualizar rol del usuario (Solo Admin)
+ *     tags: [Usuarios]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               rolId:
+ *                 type: integer
+ *     responses:
+ *       200:
+ *         description: Rol actualizado
+ */
+router.put("/:id/rol", authMiddleware, UsersController.updateRole);
+
+/**
+ * @swagger
  * /usuarios/{id}:
  *   delete:
  *     summary: Eliminar usuario
