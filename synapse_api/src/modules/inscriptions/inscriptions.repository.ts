@@ -1,4 +1,5 @@
 import { prisma } from "../../config/prisma";
+import { generateUUID } from "../../common/utils/uuidcreate";
 
 export class InscriptionsRepository {
 
@@ -7,8 +8,8 @@ export class InscriptionsRepository {
 
             return await prisma.inscripciones.findMany({
                 include: {
-                    usuario: true,
-                    programa: true
+                    usuarios_inscripciones_usuario_idTousuarios: true,
+                    programas: true
                 }
             });
 
@@ -31,7 +32,7 @@ export class InscriptionsRepository {
                     programa_id,
                 },
                 include: {
-                    usuario: true,
+                    usuarios_inscripciones_usuario_idTousuarios: true,
                     programa: true,
                 },
                 orderBy: {
@@ -58,6 +59,7 @@ export class InscriptionsRepository {
                     usuario_id,
                 },
                 include: {
+                    usuarios_inscripciones_usuario_idTousuarios: true,
                     programa: true,
                 },
                 orderBy: {
@@ -108,7 +110,7 @@ export class InscriptionsRepository {
                     id,
                 },
                 include: {
-                    usuario: true,
+                    usuarios_inscripciones_usuario_idTousuarios: true,
                     programa: true,
                 },
             });
@@ -132,12 +134,13 @@ export class InscriptionsRepository {
 
             return await prisma.inscripciones.create({
                 data: {
+                    id: generateUUID(),
                     usuario_id,
                     programa_id,
                     estado: "pendiente",
                 },
                 include: {
-                    programa: true,
+                    programas: true,
                 },
             });
 
