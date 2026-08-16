@@ -4,6 +4,8 @@ import {
   UpdateProgramaDto,
 } from "./programs.types";
 
+import { generateUUID } from "../../common/utils/uuidcreate";
+
 export class ProgramasService {
   static async getAll() {
     return ProgramasRepository.findAll();

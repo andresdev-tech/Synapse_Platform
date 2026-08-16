@@ -13,7 +13,7 @@ app.use(express.json());
 app.use(morgan("combined"));
 app.use(cors(
     {
-        origin: "*",
+        origin: "http://localhost:3000",
     }
 ));
 app.use(express.json());
@@ -22,8 +22,6 @@ app.use(morgan("combined"));
 app.use("/api/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 app.use("/api/v1", router);
-
-console.log('qwenkey: ', process.env.QWEN_API_KEY);
 
 export default app;
 

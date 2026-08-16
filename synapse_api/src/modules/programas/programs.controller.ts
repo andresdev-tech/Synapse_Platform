@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { ProgramasService } from "./programs.service";
-import { StringDecoder } from "node:string_decoder";
+import { generateUUID } from "../../common/utils/uuidcreate";
 
 export class ProgramasController {
   static async getAll(
@@ -42,10 +42,10 @@ export class ProgramasController {
     res: Response
   ) {
     try {
-      const programa =
-        await ProgramasService.create(
-          req.body
-        );
+      const programa = await ProgramasService.create({
+        ...req.body,
+        id: generateUUID(),
+      });
 
       res.status(201).json(programa);
     } catch (error: any) {
