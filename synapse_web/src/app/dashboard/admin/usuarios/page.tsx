@@ -97,7 +97,7 @@ export default function AdminUsuariosPage() {
   if (loading) return <div className="p-8 text-gray-500">Cargando usuarios...</div>;
 
   return (
-    <div className="p-8 relative">
+    <div className="p-4 sm:p-6 lg:p-8 relative">
       <FeedbackModal
         isOpen={modalState.isOpen}
         title={modalState.title}
@@ -113,12 +113,12 @@ export default function AdminUsuariosPage() {
         onCancel={closeModal}
       />
 
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Gestión de Usuarios</h1>
+          <h1 className="text-xl sm:text-2xl font-bold text-gray-900">Gestión de Usuarios</h1>
           <p className="text-gray-500 text-sm mt-1">{usuarios.length} usuarios registrados</p>
         </div>
-        <div className="flex items-center gap-2 bg-white border border-gray-200 rounded-lg px-3 py-2 w-72 shadow-sm">
+        <div className="flex items-center gap-2 bg-white border border-gray-200 rounded-lg px-3 py-2 w-full sm:w-72 shadow-sm">
           <Search size={16} className="text-gray-400" />
           <input
             className="flex-1 text-sm focus:outline-none placeholder-gray-400"
@@ -136,14 +136,16 @@ export default function AdminUsuariosPage() {
         </div>
       ) : (
         <div className="bg-white rounded-xl border border-gray-100 overflow-hidden shadow-sm">
-          <table className="w-full text-sm">
+          <div className="overflow-x-auto -mx-4 sm:mx-0">
+            <div className="inline-block min-w-full align-middle">
+              <table className="w-full text-sm">
             <thead className="bg-gray-50 border-b border-gray-100">
               <tr>
                 <th className="text-left px-4 py-3 text-gray-600 font-medium">Usuario</th>
-                <th className="text-left px-4 py-3 text-gray-600 font-medium">Documento</th>
+                <th className="text-left px-4 py-3 text-gray-600 font-medium hidden sm:table-cell">Documento</th>
                 <th className="text-left px-4 py-3 text-gray-600 font-medium">Correo</th>
                 <th className="text-left px-4 py-3 text-gray-600 font-medium">Rol</th>
-                <th className="text-left px-4 py-3 text-gray-600 font-medium">Registro</th>
+                <th className="text-left px-4 py-3 text-gray-600 font-medium hidden md:table-cell">Registro</th>
                 <th className="text-left px-4 py-3 text-gray-600 font-medium text-center">Acciones</th>
               </tr>
             </thead>
@@ -153,7 +155,7 @@ export default function AdminUsuariosPage() {
                   <td className="px-4 py-3 font-medium text-gray-900">
                     {u.nombres} {u.apellidos}
                   </td>
-                  <td className="px-4 py-3 text-gray-500">
+                  <td className="px-4 py-3 text-gray-500 hidden sm:table-cell">
                     {u.tipo_documento} {u.numero_documento}
                   </td>
                   <td className="px-4 py-3 text-gray-500">{u.correo_electronico}</td>
@@ -170,7 +172,7 @@ export default function AdminUsuariosPage() {
                       <option value={1}>Aprendiz</option>
                     </select>
                   </td>
-                  <td className="px-4 py-3 text-gray-400 text-xs">
+                  <td className="px-4 py-3 text-gray-400 text-xs hidden md:table-cell">
                     {new Date(u.creado_en).toLocaleDateString('es-CO')}
                   </td>
                   <td className="px-4 py-3 text-center">
@@ -186,6 +188,8 @@ export default function AdminUsuariosPage() {
               ))}
             </tbody>
           </table>
+          </div>
+          </div>
         </div>
       )}
     </div>

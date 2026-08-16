@@ -74,16 +74,16 @@ export default function ProfesorPage() {
 
   return (
     <div className="bg-gray-50 min-h-screen">
-      <div className="bg-gradient-to-r from-teal-800 via-teal-600 to-emerald-500 px-8 py-8 text-white">
+      <div className="bg-gradient-to-r from-teal-800 via-teal-600 to-emerald-500 px-4 sm:px-8 py-6 sm:py-8 text-white">
         <div className="flex items-center gap-2 mb-1 text-teal-100 text-sm font-medium">
           <GraduationCap size={16} />
           Panel Docente
         </div>
-        <h1 className="text-3xl font-extrabold mb-1">Hola, {usuario?.nombres}</h1>
+        <h1 className="text-2xl sm:text-3xl font-extrabold mb-1">Hola, {usuario?.nombres}</h1>
         <p className="text-teal-50 text-sm">Consulta tus grupos asignados y registra la asistencia de tus aprendices</p>
       </div>
 
-      <div className="px-8 py-8 max-w-5xl space-y-8">
+      <div className="px-4 sm:px-8 py-6 sm:py-8 max-w-5xl space-y-8">
 
         {/* ── ESTADÍSTICAS ─────────────────────────────── */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">

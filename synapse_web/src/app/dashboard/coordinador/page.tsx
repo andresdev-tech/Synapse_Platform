@@ -55,7 +55,7 @@ export default function CoordinadorPage() {
             <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6">
               <div>
                 <p className="text-sm uppercase tracking-[0.24em] text-sky-800 font-semibold mb-3">Coordinador</p>
-                <h1 className="text-5xl font-extrabold text-slate-900 leading-tight">Bienvenido de nuevo, Coordinador</h1>
+                <h1 className="text-3xl sm:text-5xl font-extrabold text-slate-900 leading-tight">Bienvenido de nuevo, Coordinador</h1>
                 <p className="mt-4 max-w-2xl text-lg text-slate-600">Administra tus programas, asigna aprendices y revisa el estado de grupos desde un panel claro y moderno.</p>
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 w-full sm:w-auto">
@@ -105,7 +105,7 @@ export default function CoordinadorPage() {
       </div>
 
       <div className="relative max-w-7xl mx-auto px-6 mt-6">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {programas.map(programa => (
             <div key={programa.id} className="group relative overflow-hidden rounded-[2rem] border border-slate-200 bg-white shadow-2xl transition hover:-translate-y-1 hover:shadow-2xl">
               <div className="absolute inset-x-0 top-0 h-40 bg-gradient-to-r from-sky-500 via-indigo-500 to-violet-500 opacity-90"></div>

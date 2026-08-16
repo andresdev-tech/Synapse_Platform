@@ -193,7 +193,7 @@ export default function ChatbotPage() {
   return (
     <div className="flex flex-col h-screen">
       {/* Header */}
-      <div className="bg-white border-b border-gray-200 px-8 py-4">
+      <div className="bg-white border-b border-gray-200 px-4 sm:px-8 py-4">
         <div className="flex items-center gap-3">
           <div className="bg-primary-600 p-2 rounded-xl">
             <Bot className="text-white" size={20} />
@@ -208,7 +208,7 @@ export default function ChatbotPage() {
       </div>
 
       {/* Mensajes */}
-      <div className="flex-1 overflow-y-auto px-8 py-6 space-y-4 bg-gray-50">
+      <div className="flex-1 overflow-y-auto px-4 sm:px-8 py-4 sm:py-6 space-y-4 bg-gray-50">
         {cargandoHistorial ? (
           <div className="flex justify-center py-8">
             <Loader className="animate-spin text-primary-500" size={24} />
@@ -230,7 +230,7 @@ export default function ChatbotPage() {
                 </div>
 
                 {/* Burbuja */}
-                <div className={`max-w-lg px-4 py-3 rounded-2xl text-sm leading-relaxed
+                <div className={`max-w-[85%] sm:max-w-lg px-4 py-3 rounded-2xl text-sm leading-relaxed
                   ${msg.tipo === 'usuario'
                     ? 'bg-primary-600 text-white rounded-br-sm'
                     : 'bg-white text-gray-800 shadow-sm border border-gray-100 rounded-bl-sm'
@@ -262,7 +262,7 @@ export default function ChatbotPage() {
 
       {/* Sugerencias */}
       {mensajes.length <= 1 && !cargandoHistorial && (
-        <div className="px-8 py-3 bg-gray-50 border-t border-gray-100">
+        <div className="px-4 sm:px-8 py-3 bg-gray-50 border-t border-gray-100">
           <p className="text-xs text-gray-400 mb-2">Preguntas frecuentes:</p>
           <div className="flex flex-wrap gap-2">
             {sugerencias.map((s) => (
@@ -279,7 +279,7 @@ export default function ChatbotPage() {
       )}
 
       {/* Input */}
-      <div className="bg-white border-t border-gray-200 px-8 py-4">
+      <div className="bg-white border-t border-gray-200 px-4 sm:px-8 py-4">
         <div className="flex items-end gap-3 bg-gray-50 rounded-2xl border border-gray-200 px-4 py-2">
           <textarea
             className="flex-1 bg-transparent resize-none text-sm focus:outline-none text-gray-800 placeholder-gray-400 max-h-32"

@@ -217,13 +217,13 @@ export default function AdminProgramasPage() {
   };
 
   if (loading) return (
-    <div className="p-8 flex items-center justify-center min-h-64">
+    <div className="p-4 sm:p-6 lg:p-8 flex items-center justify-center min-h-64">
       <div className="w-8 h-8 border-4 border-primary-600 border-t-transparent rounded-full animate-spin" />
     </div>
   );
 
   return (
-    <div className="p-8 relative">
+    <div className="p-4 sm:p-6 lg:p-8 relative">
       <FeedbackModal
         isOpen={modalState.isOpen}
         title={modalState.title}
@@ -242,7 +242,7 @@ export default function AdminProgramasPage() {
       {/* ── MODAL ELIMINAR ─────────────────────────── */}
       {modalEliminar && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-4 sm:p-6">
             <div className="flex items-center gap-4 mb-4">
               <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center flex-shrink-0">
                 <AlertTriangle size={22} className="text-red-600" />
@@ -284,7 +284,7 @@ export default function AdminProgramasPage() {
       {/* ── MODAL CREAR/EDITAR ─────────────────────── */}
       {modal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-4 sm:p-6">
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-lg font-bold text-gray-900">
                 {modal === 'crear' ? 'Nuevo Programa' : 'Editar Programa'}
@@ -318,7 +318,7 @@ export default function AdminProgramasPage() {
                   onChange={e => setForm({ ...form, descripcion: e.target.value })} />
               </div>
               {modal === 'crear' && (
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">Modalidad</label>
                     <select className="input-field" value={form.modalidad}
@@ -349,7 +349,7 @@ export default function AdminProgramasPage() {
       {/* ── MODAL ASIGNAR COORDINADORES/PROFESORES ─── */}
       {modalAsignar && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg p-6 max-h-[85vh] overflow-y-auto">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg p-4 sm:p-6 max-h-[85vh] overflow-y-auto">
             <div className="flex items-center justify-between mb-6">
               <div>
                 <h2 className="text-lg font-bold text-gray-900">Asignar responsables</h2>
@@ -426,9 +426,9 @@ export default function AdminProgramasPage() {
       )}
 
       {/* ── CABECERA ───────────────────────────────── */}
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Gestión de Programas</h1>
+          <h1 className="text-xl sm:text-2xl font-bold text-gray-900">Gestión de Programas</h1>
           <p className="text-gray-500 text-sm mt-1">{programas.length} programas registrados</p>
         </div>
         <button onClick={abrirCrear} className="btn-primary flex items-center gap-2">

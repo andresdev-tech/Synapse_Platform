@@ -129,8 +129,8 @@ export default function RecuperarPasswordPage() {
       {/* Estrellas 3D por encima del overlay del fondo y detrás de la tarjeta */}
       <BackgroundStars />
 
-      <div className="relative z-10 min-h-screen flex items-center justify-center px-4">
-        <div className="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-md">
+      <div className="relative z-10 min-h-screen flex items-center justify-center px-4 sm:px-6">
+        <div className="bg-white rounded-2xl shadow-2xl p-6 sm:p-8 w-full max-w-md">
           <div className="text-center mb-6">
             <div className="text-3xl font-extrabold text-primary-700">SYNAPSE</div>
             <p className="text-gray-500 text-sm mt-1">Recuperar contraseña</p>

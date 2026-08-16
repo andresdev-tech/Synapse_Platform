@@ -84,16 +84,16 @@ export default function AdminInscripcionesPage() {
   };
 
   if (loading) return (
-    <div className="p-8 flex items-center justify-center min-h-64">
+    <div className="p-4 sm:p-6 lg:p-8 flex items-center justify-center min-h-64">
       <div className="w-8 h-8 border-4 border-primary-600 border-t-transparent rounded-full animate-spin" />
     </div>
   );
 
   return (
-    <div className="p-8">
-      <div className="flex items-center justify-between mb-6">
+    <div className="p-4 sm:p-6 lg:p-8">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Todas las Inscripciones</h1>
+          <h1 className="text-xl sm:text-2xl font-bold text-gray-900">Todas las Inscripciones</h1>
           <p className="text-gray-500 text-sm mt-1">{filtradas.length} inscripciones encontradas</p>
         </div>
         <button onClick={exportarCSV}
@@ -103,7 +103,7 @@ export default function AdminInscripcionesPage() {
       </div>
 
       {/* Filtros */}
-      <div className="flex flex-col md:flex-row gap-3 mb-6">
+      <div className="flex flex-col sm:flex-row gap-3 mb-6">
         <div className="flex items-center gap-2 bg-white border border-gray-200 rounded-xl px-4 py-2.5 flex-1 shadow-sm">
           <Search size={16} className="text-gray-400" />
           <input className="flex-1 text-sm focus:outline-none placeholder-gray-400"
@@ -124,7 +124,7 @@ export default function AdminInscripcionesPage() {
       </div>
 
       {/* Resumen estados */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
         {Object.entries(estadoConfig).map(([estado, cfg]) => {
           const Icon = cfg.icon;
           const count = inscripciones.filter(i => i.estado === estado).length;
@@ -153,14 +153,16 @@ export default function AdminInscripcionesPage() {
         </div>
       ) : (
         <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-          <table className="w-full text-sm">
+          <div className="overflow-x-auto -mx-4 sm:mx-0">
+            <div className="inline-block min-w-full align-middle">
+              <table className="w-full text-sm">
             <thead className="bg-gray-50 border-b border-gray-100">
               <tr>
                 <th className="text-left px-4 py-3 text-gray-400 font-medium text-xs">#</th>
                 <th className="text-left px-4 py-3 text-gray-400 font-medium text-xs">Usuario</th>
                 <th className="text-left px-4 py-3 text-gray-400 font-medium text-xs">Programa</th>
                 <th className="text-left px-4 py-3 text-gray-400 font-medium text-xs">Estado</th>
-                <th className="text-left px-4 py-3 text-gray-400 font-medium text-xs">Fecha</th>
+                <th className="text-left px-4 py-3 text-gray-400 font-medium text-xs hidden sm:table-cell">Fecha</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-50">
@@ -200,7 +202,7 @@ export default function AdminInscripcionesPage() {
                         <Icon size={11} /> {cfg.label}
                       </span>
                     </td>
-                    <td className="px-4 py-3 text-gray-400 text-xs">
+                    <td className="px-4 py-3 text-gray-400 text-xs hidden sm:table-cell">
                       {new Date(ins.creado_en).toLocaleDateString('es-CO', {
                         day: '2-digit', month: 'short', year: 'numeric'
                       })}
@@ -210,6 +212,8 @@ export default function AdminInscripcionesPage() {
               })}
             </tbody>
           </table>
+          </div>
+          </div>
         </div>
       )}
     </div>

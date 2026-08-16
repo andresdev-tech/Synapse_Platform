@@ -77,12 +77,12 @@ export default function PerfilPage() {
     }
   };
 
-  if (loading) return <div className="p-8 text-gray-500">Cargando perfil...</div>;
-  if (!perfil) return <div className="p-8 text-gray-500">No se pudo cargar el perfil.</div>;
+  if (loading) return <div className="p-4 sm:p-6 lg:p-8 text-gray-500">Cargando perfil...</div>;
+  if (!perfil) return <div className="p-4 sm:p-6 lg:p-8 text-gray-500">No se pudo cargar el perfil.</div>;
 
   return (
-    <div className="p-8 max-w-2xl">
-      <h1 className="text-2xl font-bold text-gray-900 mb-6">Mi Perfil</h1>
+    <div className="p-4 sm:p-6 lg:p-8 max-w-2xl mx-auto">
+      <h1 className="text-xl sm:text-2xl font-bold text-gray-900 mb-6">Mi Perfil</h1>
 
       {mensaje && (
         <div className="mb-4 bg-green-50 border border-green-200 text-green-700 rounded-lg px-4 py-3 text-sm">
@@ -97,11 +97,11 @@ export default function PerfilPage() {
 
       <div className="card">
         {/* Avatar */}
-        <div className="flex items-center gap-4 mb-6 pb-6 border-b border-gray-100">
+        <div className="flex flex-col sm:flex-row sm:items-center gap-4 mb-6 pb-6 border-b border-gray-100">
           <div className="w-16 h-16 bg-primary-100 rounded-full flex items-center justify-center">
             <User size={28} className="text-primary-600" />
           </div>
-          <div>
+          <div className="text-center sm:text-left">
             <h2 className="text-xl font-semibold text-gray-900">
               {perfil.nombres} {perfil.apellidos}
             </h2>
@@ -113,7 +113,7 @@ export default function PerfilPage() {
 
         {!editando ? (
           <>
-            <div className="grid grid-cols-2 gap-4 text-sm">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
               <div>
                 <span className="text-gray-400 block">Nombres</span>
                 <span className="font-medium text-gray-800">{perfil.nombres}</span>
@@ -157,7 +157,7 @@ export default function PerfilPage() {
           </>
         ) : (
           <form onSubmit={guardar} className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Nombres</label>
                 <input

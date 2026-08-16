@@ -203,7 +203,7 @@ export default function DashboardPage() {
     <div className="bg-slate-950 min-h-screen text-slate-100">
 
       {/* ── HERO BANNER ──────────────────────────────── */}
-      <div className="relative overflow-hidden rounded-[2rem] bg-gradient-to-br from-slate-950 via-blue-950 to-indigo-900 px-8 py-10 shadow-2xl ring-1 ring-white/10 text-white">
+      <div className="relative overflow-hidden rounded-[2rem] bg-gradient-to-br from-slate-950 via-blue-950 to-indigo-900 px-4 sm:px-8 py-6 sm:py-10 shadow-2xl ring-1 ring-white/10 text-white">
         <div className="absolute top-0 right-0 h-44 w-44 rounded-full bg-white/10 blur-3xl opacity-50" />
         <div className="absolute -bottom-14 left-10 h-72 w-72 rounded-full bg-cyan-400/10 blur-3xl" />
         <div className="max-w-4xl relative">
@@ -211,7 +211,7 @@ export default function DashboardPage() {
             <Sparkles size={15} />
             Plataforma Académica Inteligente
           </div>
-          <h1 className="text-3xl font-extrabold mb-2 leading-tight text-white drop-shadow-sm">
+          <h1 className="text-2xl sm:text-3xl font-extrabold mb-2 leading-tight text-white drop-shadow-sm">
             {saludo},<br />
             <span className="text-white drop-shadow-md">{usuario?.nombres} {usuario?.apellidos}</span>
           </h1>
@@ -236,7 +236,7 @@ export default function DashboardPage() {
 
           {/* Frase motivacional rotativa en el hero (más llamativa) */}
           <div className="mt-5">
-            <div className="bg-slate-900/60 backdrop-blur-xl rounded-3xl px-5 py-4 inline-flex items-center gap-4 shadow-2xl border border-white/10">
+              <div className="bg-slate-900/60 backdrop-blur-xl rounded-3xl px-4 sm:px-5 py-4 flex flex-col sm:flex-row items-start sm:items-center gap-4 shadow-2xl border border-white/10">
               <div className="text-3xl animate-pulse">{quotes[quoteIndex].emoji}</div>
               <div className="max-w-xl">
                 <p key={quoteIndex} className="text-lg text-white font-extrabold leading-tight transform transition-all duration-700 ease-in-out">
@@ -284,7 +284,7 @@ export default function DashboardPage() {
         </div>
       )}
 
-      <div className="px-8 py-6 max-w-6xl mx-auto space-y-6">
+      <div className="px-4 sm:px-8 py-6 max-w-6xl mx-auto space-y-6">
 
         {/* ── ESTADÍSTICAS (diseño por rol) ───────────────── */}
         {esCoordinador ? (
@@ -301,7 +301,7 @@ export default function DashboardPage() {
                 </div>
               </div>
 
-              <div className="mt-6 grid grid-cols-3 gap-4 relative">
+              <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4 relative">
                 <div className="absolute -top-12 -left-8 w-40 h-40 rounded-full bg-gradient-to-tr from-purple-200 to-indigo-200 opacity-60 blur-2xl transform rotate-[25deg] pointer-events-none" />
                 <div className="absolute -bottom-16 -right-8 w-56 h-56 rounded-full bg-gradient-to-tr from-sky-100 to-blue-200 opacity-60 blur-3xl pointer-events-none" />
                 <button onClick={() => openStatModal('Programas', displayStats.programas)} className="group bg-slate-900/95 text-white rounded-[2rem] p-6 shadow-2xl border border-white/10 hover:-translate-y-1 transform transition overflow-hidden relative">
@@ -455,7 +455,7 @@ export default function DashboardPage() {
             </div>
           </div>
         ) : (
-          <div className="mt-6 grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="mt-6 grid grid-cols-1 xs:grid-cols-2 md:grid-cols-4 gap-4">
             {[
               { label: 'Programas', value: displayStats.programas, icon: BookOpen, bg: 'bg-sky-500/20', color: 'text-sky-300' },
               { label: 'Mis inscripciones', value: displayStats.inscripciones, icon: ClipboardList, bg: 'bg-emerald-500/20', color: 'text-emerald-300', show: isAprendiz() },
@@ -800,9 +800,9 @@ export default function DashboardPage() {
 
         {/* ── BANNER IA ─────────────────────────────────── */}
         {isAprendiz() && (
-          <div className="bg-gradient-to-r from-purple-700 to-purple-500 rounded-2xl p-6 flex items-center justify-between text-white">
+          <div className="bg-gradient-to-r from-purple-700 to-purple-500 rounded-2xl p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 text-white">
             <div className="flex items-center gap-4">
-              <div className="bg-slate-100/10 p-3 rounded-xl">
+              <div className="bg-slate-100/10 p-3 rounded-xl flex-shrink-0">
                 <MessageSquare size={24} className="text-white" />
               </div>
               <div>
@@ -813,7 +813,7 @@ export default function DashboardPage() {
               </div>
             </div>
             <Link href="/dashboard/chatbot"
-              className="flex-shrink-0 bg-slate-100/10 text-white font-bold px-5 py-2.5 rounded-xl hover:bg-slate-100/20 transition-colors flex items-center gap-2 text-sm">
+              className="w-full sm:w-auto text-center bg-slate-100/10 text-white font-bold px-5 py-2.5 rounded-xl hover:bg-slate-100/20 transition-colors flex items-center justify-center gap-2 text-sm">
               Consultar ahora
               <ChevronRight size={15} />
             </Link>

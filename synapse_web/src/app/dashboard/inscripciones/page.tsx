@@ -77,10 +77,10 @@ export default function InscripcionesPage() {
     });
   };
 
-  if (loading) return <div className="p-8 text-gray-500">Cargando inscripciones...</div>;
+  if (loading) return <div className="p-4 sm:p-6 lg:p-8 text-gray-500">Cargando inscripciones...</div>;
 
   return (
-    <div className="p-8 relative">
+    <div className="p-4 sm:p-6 lg:p-8 relative">
       <FeedbackModal
         isOpen={modalState.isOpen}
         title={modalState.title}
@@ -96,7 +96,7 @@ export default function InscripcionesPage() {
         onCancel={closeModal}
       />
 
-      <h1 className="text-2xl font-bold text-gray-900 mb-2">Mis Inscripciones</h1>
+      <h1 className="text-xl sm:text-2xl font-bold text-gray-900 mb-2">Mis Inscripciones</h1>
       <p className="text-gray-500 mb-6">Programas en los que estás inscrito</p>
 
       {inscripciones.length === 0 ? (
@@ -114,9 +114,9 @@ export default function InscripcionesPage() {
             const Icon = cfg.icon;
             return (
               <div key={inscripcion.id} className="card">
-                <div className="flex items-start justify-between">
+                <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
                   <div className="flex-1">
-                    <h3 className="font-semibold text-gray-900 text-lg">{inscripcion.programa}</h3>
+                    <h3 className="font-semibold text-gray-900 text-base sm:text-lg">{inscripcion.programa}</h3>
                     <span className="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full">
                       {inscripcion.sector}
                     </span>
@@ -129,7 +129,7 @@ export default function InscripcionesPage() {
                       })}
                     </p>
                   </div>
-                  <div className="flex flex-col items-end gap-3 ml-4">
+                  <div className="flex flex-row sm:flex-col items-center sm:items-end gap-3 sm:gap-3 sm:ml-4">
                     <span className={`flex items-center gap-1 text-xs font-medium px-3 py-1 rounded-full ${cfg.color}`}>
                       <Icon size={12} />
                       {cfg.label}

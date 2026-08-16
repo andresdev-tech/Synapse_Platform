@@ -155,15 +155,15 @@ export default function RegistroPage() {
       {/* Estrellas 3D por encima del overlay del fondo y detrás del formulario */}
       <BackgroundStars />
 
-      <div className="relative z-10 min-h-screen flex items-center justify-center py-10">
-        <div className="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-lg">
+      <div className="relative z-10 min-h-screen flex items-center justify-center py-6 sm:py-10 px-4">
+        <div className="bg-white rounded-2xl shadow-2xl p-6 sm:p-8 w-full max-w-lg">
           <div className="text-center mb-6">
             <div className="text-3xl font-extrabold text-primary-700">SYNAPSE</div>
             <p className="text-gray-500 text-sm mt-1">Crear nueva cuenta</p>
           </div>
 
           <form onSubmit={handleSubmit} noValidate className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label htmlFor="nombres" className="block text-sm font-medium text-gray-700 mb-1">
                   Nombres
@@ -192,7 +192,7 @@ export default function RegistroPage() {
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label htmlFor="tipo_documento_id" className="block text-sm font-medium text-gray-700 mb-1">
                   Tipo de documento

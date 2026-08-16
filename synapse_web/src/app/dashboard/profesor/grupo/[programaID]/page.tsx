@@ -102,20 +102,20 @@ export default function GrupoProfesorPage() {
   return (
     <div className="bg-gray-50 min-h-screen">
 
-      <div className="bg-white border-b border-gray-100 px-8 py-4">
+      <div className="bg-white border-b border-gray-100 px-4 sm:px-8 py-4">
         <button onClick={() => router.push('/dashboard/profesor')}
           className="flex items-center gap-2 text-gray-500 hover:text-gray-700 text-sm font-medium">
           <ArrowLeft size={18} /> Volver a mis cursos
         </button>
       </div>
 
-      <div className="px-8 py-6 max-w-6xl">
-        <div className="flex items-center justify-between mb-6">
+      <div className="px-4 sm:px-8 py-6 max-w-6xl">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">Grupo del Curso</h1>
+            <h1 className="text-xl sm:text-2xl font-bold text-gray-900">Grupo del Curso</h1>
             <p className="text-gray-500 text-sm mt-1">{filtrados.length} aprendices activos</p>
           </div>
-          <div className="flex items-center gap-2 bg-white border border-gray-200 rounded-xl px-4 py-2.5 shadow-sm w-72">
+          <div className="flex items-center gap-2 bg-white border border-gray-200 rounded-xl px-4 py-2.5 shadow-sm w-full sm:w-72">
             <Search size={16} className="text-gray-400" />
             <input className="flex-1 text-sm focus:outline-none placeholder-gray-400"
               placeholder="Buscar aprendiz..."

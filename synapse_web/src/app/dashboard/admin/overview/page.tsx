@@ -140,26 +140,26 @@ export default function AdminOverviewPage() {
     <div className="bg-gray-50 min-h-screen">
 
       {/* Header */}
-      <div className="bg-gradient-to-r from-[#0f2d6b] via-[#1a4ab5] to-[#2563eb] px-8 py-8 text-white">
+      <div className="bg-gradient-to-r from-[#0f2d6b] via-[#1a4ab5] to-[#2563eb] px-4 sm:px-8 py-6 sm:py-8 text-white">
         <div className="flex items-center gap-3 mb-1">
           <Activity size={20} className="text-blue-200" />
           <span className="text-blue-200 text-sm font-medium">Panel de Control</span>
         </div>
-        <h1 className="text-3xl font-extrabold text-white mb-1">Dashboard Administrativo</h1>
+        <h1 className="text-2xl sm:text-3xl font-extrabold text-white mb-1">Dashboard Administrativo</h1>
         <p className="text-blue-100 text-sm">Resumen general de la plataforma SYNAPSE </p>
       </div>
 
-      <div className="px-8 py-8 space-y-8 max-w-7xl">
+      <div className="px-4 sm:px-8 py-6 sm:py-8 space-y-6 sm:space-y-8 max-w-7xl">
 
         {/* ── KPIs PRINCIPALES ─────────────────────── */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {[
             { label: 'Total Usuarios',       value: stats.totalUsuarios,       icon: Users,         bg: 'bg-blue-50',   color: 'text-blue-600',   border: 'border-blue-100' },
             { label: 'Programas Activos',    value: stats.totalProgramas,      icon: BookOpen,      bg: 'bg-purple-50', color: 'text-purple-600', border: 'border-purple-100' },
             { label: 'Inscripciones',        value: stats.totalInscripciones,  icon: ClipboardList, bg: 'bg-green-50',  color: 'text-green-600',  border: 'border-green-100' },
             { label: 'Tasa de actividad',    value: `${stats.totalInscripciones > 0 ? Math.round((stats.inscripcionesActivas / stats.totalInscripciones) * 100) : 0}%`, icon: TrendingUp, bg: 'bg-orange-50', color: 'text-orange-600', border: 'border-orange-100' },
           ].map(({ label, value, icon: Icon, bg, color, border }) => (
-            <div key={label} className={`bg-white rounded-2xl border ${border} shadow-sm p-5`}>
+            <div key={label} className={`bg-white rounded-2xl border ${border} shadow-sm p-4 sm:p-5`}>
               <div className={`w-11 h-11 ${bg} rounded-xl flex items-center justify-center mb-3`}>
                 <Icon size={20} className={color} />
               </div>
@@ -170,13 +170,13 @@ export default function AdminOverviewPage() {
         </div>
 
         {/* ── ESTADO DE INSCRIPCIONES ───────────────── */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {[
             { label: 'Activas',    value: stats.inscripcionesActivas,    icon: CheckCircle, bg: 'bg-green-500',  light: 'bg-green-50 border-green-100' },
             { label: 'Pendientes', value: stats.inscripcionesPendientes, icon: Clock,       bg: 'bg-yellow-500', light: 'bg-yellow-50 border-yellow-100' },
             { label: 'Canceladas', value: stats.inscripcionesCanceladas, icon: XCircle,     bg: 'bg-red-500',    light: 'bg-red-50 border-red-100' },
           ].map(({ label, value, icon: Icon, bg, light }) => (
-            <div key={label} className={`bg-white rounded-2xl border shadow-sm p-5 flex items-center gap-4 ${light}`}>
+            <div key={label} className={`bg-white rounded-2xl border shadow-sm p-4 sm:p-5 flex items-center gap-3 sm:gap-4 ${light}`}>
               <div className={`${bg} p-3 rounded-xl`}>
                 <Icon size={20} className="text-white" />
               </div>
@@ -290,7 +290,7 @@ export default function AdminOverviewPage() {
               <BarChart2 size={18} className="text-primary-600" />
               <h2 className="font-bold text-gray-900">Inscripciones por sector</h2>
             </div>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
               {stats.inscripcionesPorSector.map((s) => {
                 const sectorEmoji: Record<string, string> = {
                   'Tecnología':           '💻',
@@ -332,8 +332,9 @@ export default function AdminOverviewPage() {
           {stats.ultimasInscripciones.length === 0 ? (
             <p className="text-gray-400 text-sm text-center py-6">Sin inscripciones aún</p>
           ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm">
+            <div className="overflow-x-auto -mx-4 sm:mx-0">
+              <div className="inline-block min-w-full align-middle">
+                <table className="w-full text-sm">
                 <thead>
                   <tr className="border-b border-gray-100">
                     <th className="text-left py-2 px-3 text-gray-400 font-medium text-xs">Usuario</th>
@@ -372,12 +373,13 @@ export default function AdminOverviewPage() {
                   })}
                 </tbody>
               </table>
+              </div>
             </div>
           )}
         </div>
 
         {/* ── ACCESOS RÁPIDOS ADMIN ─────────────────── */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pb-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 pb-8">
           {[
             { href: '/dashboard/admin/usuarios',      icon: Users,         gradient: 'from-orange-500 to-orange-400', title: 'Gestionar Usuarios',      desc: 'Ver, editar roles y eliminar usuarios' },
             { href: '/dashboard/admin/programas',     icon: BookOpen,      gradient: 'from-blue-600 to-blue-400',     title: 'Gestionar Programas',     desc: 'Crear, editar y desactivar programas' },
