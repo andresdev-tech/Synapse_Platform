@@ -1,4 +1,5 @@
 import { prisma } from "../../config/prisma";
+import { generateUUID } from "../../common/utils/uuidcreate";
 
 export class ChatbotRepository {
   async searchDocuments(question: string) {
@@ -66,6 +67,7 @@ async saveHistory(data: {
 }) {
   return prisma.chatbot_historial.create({
     data: {
+      id: generateUUID(),
       usuario_id: data.usuarioId,
       pregunta_usuario: data.pregunta,
       respuesta_bot: data.respuesta

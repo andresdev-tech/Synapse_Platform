@@ -73,6 +73,8 @@ export class ChatbotService {
     question: string
     
   ) {
+    console.log('ChatbotService: askQuestion llamado con usuarioId:', usuarioId);
+    console.log('ChatbotService: Tipo de usuarioId:', typeof usuarioId);
     const documents =
       await this.repository.searchDocuments(question);
 
@@ -175,6 +177,7 @@ Genera una respuesta clara para el usuario, o usa otra herramienta si es necesar
     });
 
     // Enviar respuesta vía SSE para actualización en tiempo real
+    console.log('SSE: Enviando mensaje a usuario:', usuarioId);
     sseManager.sendToUser(usuarioId, {
       type: 'message',
       data: {
@@ -183,6 +186,7 @@ Genera una respuesta clara para el usuario, o usa otra herramienta si es necesar
         timestamp: new Date().toISOString()
       }
     });
+    console.log('SSE: Mensaje enviado exitosamente');
 
     return {
       response: finalResponse,

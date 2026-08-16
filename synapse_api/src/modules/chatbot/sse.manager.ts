@@ -34,17 +34,47 @@ class SSEManager {
   }
 
   sendToUser(userId: string, data: any) {
+    console.log('SSE Manager: Buscando clientes para userId:', userId);
+    console.log('SSE Manager: Tipo de userId:', typeof userId);
+    console.log('SSE Manager: Keys en clients map:', Array.from(this.clients.keys()));
+    
     const userClients = this.clients.get(userId);
+    console.log('SSE Manager: Clientes conectados para este usuario:', userClients?.length || 0);
+    console.log('SSE Manager: Total clientes:', this.clients.size);
+    
     if (userClients) {
       const message = `data: ${JSON.stringify(data)}\n\n`;
+      console.log('SSE Manager: Mensaje a enviar:', message.substring(0, 100) + '...');
+      
       userClients.forEach(client => {
         try {
           client.write(message);
+          console.log('SSE Manager: Mensaje enviado exitosamente a un cliente');
         } catch (error) {
           console.error('Error sending SSE message:', error);
           this.removeClient(userId, client);
         }
       });
+    } else {
+      console.log('SSE Manager: No hay clientes conectados para el usuario:', userId);
+      // Intentar buscar con conversión de tipos
+      console.log('SSE Manager: Intentando búsqueda con conversión de tipos...');
+      for (const [key, clients] of this.clients.entries()) {
+        console.log(`SSE Manager: Comparando '${key}' (${typeof key}) con '${userId}' (${typeof userId})`);
+        if (String(key) === String(userId)) {
+          console.log('SSE Manager: ¡Match encontrado con conversión!');
+          const message = `data: ${JSON.stringify(data)}\n\n`;
+          clients.forEach(client => {
+            try {
+              client.write(message);
+            } catch (error) {
+              console.error('Error sending SSE message:', error);
+              this.removeClient(key, client);
+            }
+          });
+          return;
+        }
+      }
     }
   }
 

@@ -15,25 +15,27 @@ export default function ChatbotPage() {
   const [input, setInput] = useState('');
   const [enviando, setEnviando] = useState(false);
   const [cargandoHistorial, setCargandoHistorial] = useState(true);
+  const [conectadoSSE, setConectadoSSE] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
+  const eventSourceRef = useRef<EventSource | null>(null);
 
   // Cargar historial previo
   useEffect(() => {
     chatbotAPI.obtenerHistorial()
       .then((res) => {
         const historial: Mensaje[] = [];
-        res.data.forEach((item: any, i: number) => {
+        res.data.data.forEach((item: any, i: number) => {
           historial.push({
             id: `h-u-${i}`,
             tipo: 'usuario',
             texto: item.pregunta_usuario,
-            fecha: new Date(item.fecha_consulta),
+            fecha: new Date(item.creado_en),
           });
           historial.push({
             id: `h-b-${i}`,
             tipo: 'bot',
             texto: item.respuesta_bot,
-            fecha: new Date(item.fecha_consulta),
+            fecha: new Date(item.creado_en),
           });
         });
         if (historial.length === 0) {
@@ -57,6 +59,83 @@ export default function ChatbotPage() {
       .finally(() => setCargandoHistorial(false));
   }, []);
 
+  // Conectar al SSE para mensajes en tiempo real
+  useEffect(() => {
+    let eventSource: EventSource | null = null;
+
+    try {
+      eventSource = chatbotAPI.conectarSSE(
+        (data) => {
+          console.log('SSE message received:', data);
+          
+          if (data.type === 'connected') {
+            console.log('SSE: Conexión confirmada por el servidor');
+            setConectadoSSE(true);
+            return;
+          }
+
+          if (data.type === 'message' && data.data) {
+            const { question, response, timestamp } = data.data;
+            
+            console.log('SSE: Mensaje de chat recibido:', { question, response: response.substring(0, 50) + '...' });
+            
+            // Verificar si el mensaje ya existe para evitar duplicados
+            setMensajes((prev) => {
+              console.log('SSE: Estado actual de mensajes:', prev.length);
+              
+              // Buscar el último mensaje del usuario que coincida con la pregunta
+              const lastUserMessageIndex = prev.findLastIndex(msg => msg.tipo === 'usuario' && msg.texto === question);
+              
+              if (lastUserMessageIndex === -1) {
+                console.log('SSE: No se encontró mensaje del usuario que coincida');
+                return prev;
+              }
+              
+              // Verificar si ya hay una respuesta del bot después de ese mensaje
+              const hasBotResponse = prev.slice(lastUserMessageIndex + 1).some(msg => msg.tipo === 'bot');
+              
+              if (hasBotResponse) {
+                console.log('SSE: Ya existe respuesta del bot para este mensaje');
+                return prev;
+              }
+              
+              console.log('SSE: Agregando respuesta del bot');
+              // Detener el indicador de enviando cuando llega la respuesta
+              setEnviando(false);
+              return [
+                ...prev,
+                {
+                  id: `sse-${Date.now()}`,
+                  tipo: 'bot' as const,
+                  texto: response,
+                  fecha: new Date(timestamp),
+                },
+              ];
+            });
+          }
+        },
+        (error) => {
+          console.error('SSE connection error:', error);
+          setConectadoSSE(false);
+        }
+      );
+
+      eventSourceRef.current = eventSource;
+    } catch (error) {
+      console.error('Error connecting to SSE:', error);
+      setConectadoSSE(false);
+    }
+
+    // Cleanup: desconectar SSE cuando el componente se desmonte
+    return () => {
+      if (eventSource) {
+        console.log('SSE: Cerrando conexión...');
+        eventSource.close();
+        eventSourceRef.current = null;
+      }
+    };
+  }, []);
+
   // Scroll al fondo cuando llegan mensajes
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -78,16 +157,11 @@ export default function ChatbotPage() {
     setEnviando(true);
 
     try {
-      const res = await chatbotAPI.enviarMensaje(texto);
-      setMensajes((prev) => [
-        ...prev,
-        {
-          id: Date.now() + 1,
-          tipo: 'bot',
-          texto: res.data.respuesta,
-          fecha: new Date(),
-        },
-      ]);
+      // Enviar mensaje al backend
+      await chatbotAPI.enviarMensaje(texto);
+      
+      // La respuesta llegará vía SSE, no la agregamos aquí
+      // El indicador de enviando se mantendrá hasta que llegue la respuesta por SSE
     } catch {
       setMensajes((prev) => [
         ...prev,
@@ -98,7 +172,6 @@ export default function ChatbotPage() {
           fecha: new Date(),
         },
       ]);
-    } finally {
       setEnviando(false);
     }
   };
@@ -127,7 +200,9 @@ export default function ChatbotPage() {
           </div>
           <div>
             <h1 className="font-bold text-gray-900">NEXUS ChatBot</h1>
-            <p className="text-xs text-green-500 font-medium">● En línea · Powered by Gemini AI</p>
+            <p className={`text-xs font-medium ${conectadoSSE ? 'text-green-500' : 'text-yellow-500'}`}>
+              ● {conectadoSSE ? 'Conectado en tiempo real' : 'Conectando...'} · Powered by Gemini AI
+            </p>
           </div>
         </div>
       </div>

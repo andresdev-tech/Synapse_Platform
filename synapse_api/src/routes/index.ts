@@ -10,7 +10,7 @@ const router = Router();
 router.use("/auth", authRoutes);
 router.use("/usuarios", usersRoutes);
 router.use("/programas", programsRoutes);
-router.use("/chat", chatRoutes);
+router.use("/chatbot", chatRoutes);
 router.use("/inscripciones", inscriptionsRoutes);
 
 export default router;

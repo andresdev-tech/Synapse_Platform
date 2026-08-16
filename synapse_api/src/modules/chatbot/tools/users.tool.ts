@@ -2,8 +2,8 @@ import { prisma } from '../../../config/prisma';
 
 // Tool para obtener información de usuarios por usuario loggeado
 export const getUsersInfo = async (userId: any) => {
-    const parsedUserId = Number(userId);
-    if (isNaN(parsedUserId)) {
+    const parsedUserId = String(userId);
+    if (!parsedUserId) {
         return null;
     }
     const users = await prisma.usuarios.findUnique({
@@ -32,9 +32,9 @@ export const updateUser = async (userId: any, data: any) => {
     console.log('data received:', data);
 
     try {
-        const parsedUserId = Number(userId);
-        if (isNaN(parsedUserId)) {
-            throw new Error('El ID de usuario proporcionado no es un número válido');
+        const parsedUserId = String(userId);
+        if (!parsedUserId) {
+            throw new Error('El ID de usuario proporcionado no es válido');
         }
 
         // Mapear aliases comunes que el modelo de IA o usuario puedan enviar
@@ -130,8 +130,8 @@ export const updateUser = async (userId: any, data: any) => {
 // Tool para actualizar todos los datos del usuario
 export const updateAllUser = async (userId: any, data: any) => {
     try {
-        const parsedUserId = Number(userId);
-        if (isNaN(parsedUserId)) {
+        const parsedUserId = String(userId);
+        if (!parsedUserId) {
             throw new Error('ID de usuario inválido');
         }
         const user = await prisma.usuarios.update({
