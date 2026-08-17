@@ -203,19 +203,19 @@ export default function DashboardPage() {
     <div className="bg-slate-950 min-h-screen text-slate-100">
 
       {/* ── HERO BANNER ──────────────────────────────── */}
-      <div className="relative overflow-hidden rounded-[2rem] bg-gradient-to-br from-slate-950 via-blue-950 to-indigo-900 px-4 sm:px-8 py-6 sm:py-10 shadow-2xl ring-1 ring-white/10 text-white">
-        <div className="absolute top-0 right-0 h-44 w-44 rounded-full bg-white/10 blur-3xl opacity-50" />
-        <div className="absolute -bottom-14 left-10 h-72 w-72 rounded-full bg-cyan-400/10 blur-3xl" />
+      <div className="relative overflow-hidden rounded-[1.5rem] sm:rounded-[2rem] bg-gradient-to-br from-slate-950 via-blue-950 to-indigo-900 px-4 sm:px-8 py-4 sm:py-6 lg:py-10 shadow-2xl ring-1 ring-white/10 text-white">
+        <div className="absolute top-0 right-0 h-32 sm:h-44 w-32 sm:w-44 rounded-full bg-white/10 blur-3xl opacity-50" />
+        <div className="absolute -bottom-10 sm:-bottom-14 left-6 sm:left-10 h-48 sm:h-72 w-48 sm:w-72 rounded-full bg-cyan-400/10 blur-3xl" />
         <div className="max-w-4xl relative">
-          <div className="flex items-center gap-2 mb-3 text-blue-100 text-sm font-semibold">
-            <Sparkles size={15} />
+          <div className="flex items-center gap-2 mb-2 sm:mb-3 text-blue-100 text-xs sm:text-sm font-semibold">
+            <Sparkles size={14} />
             Plataforma Académica Inteligente
           </div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold mb-2 leading-tight text-white drop-shadow-sm">
+          <h1 className="text-xl sm:text-2xl lg:text-3xl font-extrabold mb-2 leading-tight text-white drop-shadow-sm">
             {saludo},<br />
             <span className="text-white drop-shadow-md">{usuario?.nombres} {usuario?.apellidos}</span>
           </h1>
-          <p className="text-blue-50 text-sm max-w-lg font-medium">
+          <p className="text-blue-50 text-xs sm:text-sm max-w-lg font-medium">
             {isAdmin()
               ? 'Gestiona usuarios, programas e inscripciones desde tu panel de administración.'
               : esProfesor
@@ -235,18 +235,18 @@ export default function DashboardPage() {
           </div>
 
           {/* Frase motivacional rotativa en el hero (más llamativa) */}
-          <div className="mt-5">
-              <div className="bg-slate-900/60 backdrop-blur-xl rounded-3xl px-4 sm:px-5 py-4 flex flex-col sm:flex-row items-start sm:items-center gap-4 shadow-2xl border border-white/10">
-              <div className="text-3xl animate-pulse">{quotes[quoteIndex].emoji}</div>
+          <div className="mt-3 sm:mt-5">
+              <div className="bg-slate-900/60 backdrop-blur-xl rounded-2xl sm:rounded-3xl px-3 sm:px-5 py-3 sm:py-4 flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4 shadow-2xl border border-white/10">
+              <div className="text-2xl sm:text-3xl animate-pulse">{quotes[quoteIndex].emoji}</div>
               <div className="max-w-xl">
-                <p key={quoteIndex} className="text-lg text-white font-extrabold leading-tight transform transition-all duration-700 ease-in-out">
+                <p key={quoteIndex} className="text-base sm:text-lg text-white font-extrabold leading-tight transform transition-all duration-700 ease-in-out">
                   {typingText}
                   <span className="text-white/80">|</span>
                 </p>
-                <p key={`sub-${quoteIndex}`} className="text-sm text-white/90 mt-1 opacity-95">{quotes[quoteIndex].subtitle}</p>
-                <div className="mt-3 flex items-center gap-2">
+                <p key={`sub-${quoteIndex}`} className="text-xs sm:text-sm text-white/90 mt-1 opacity-95">{quotes[quoteIndex].subtitle}</p>
+                <div className="mt-2 sm:mt-3 flex items-center gap-2">
                   {quotes.map((_, i) => (
-                    <span key={i} className={`w-2.5 h-2.5 rounded-full transition-all ${i === quoteIndex ? 'bg-white scale-110' : 'bg-white/30'}`} />
+                    <span key={i} className={`w-2 sm:w-2.5 h-2 sm:h-2.5 rounded-full transition-all ${i === quoteIndex ? 'bg-white scale-110' : 'bg-white/30'}`} />
                   ))}
                 </div>
               </div>
@@ -284,7 +284,7 @@ export default function DashboardPage() {
         </div>
       )}
 
-      <div className="px-4 sm:px-8 py-6 max-w-6xl mx-auto space-y-6">
+      <div className="px-4 sm:px-8 py-4 sm:py-6 max-w-6xl mx-auto space-y-4 sm:space-y-6">
 
         {/* ── ESTADÍSTICAS (diseño por rol) ───────────────── */}
         {esCoordinador ? (
