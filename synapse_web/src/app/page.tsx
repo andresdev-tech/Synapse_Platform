@@ -40,16 +40,16 @@ export default function LandingPage() {
 
       {/* ── NAVBAR ─────────────────────────────────── */}
       <nav className="bg-white border-b border-gray-100 sticky top-0 z-50 shadow-sm">
-        <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <GraduationCap size={24} className="text-primary-600" />
-            <span className="text-2xl font-extrabold text-primary-700">SYNAPSE PLATFORM</span>
+            <span className="text-lg sm:text-2xl font-extrabold text-primary-700">SYNAPSE PLATFORM</span>
           </div>
           <div className="flex items-center gap-3">
             <Link href="/login" className="text-gray-600 hover:text-primary-700 text-sm font-medium transition-colors">
               Iniciar sesión
             </Link>
-            <Link href="/registro" className="btn-primary text-sm px-5 py-2 flex items-center gap-1.5">
+            <Link href="/registro" className="btn-primary text-sm px-4 sm:px-5 py-2 flex items-center gap-1.5">
               Registrarse <ChevronRight size={15} />
             </Link>
           </div>
@@ -58,15 +58,15 @@ export default function LandingPage() {
 
       {/* ── HERO ───────────────────────────────────── */}
       <div className="bg-gradient-to-br from-primary-900 via-primary-700 to-primary-500 text-white">
-        <div className="max-w-6xl mx-auto px-6 py-24 text-center">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-16 sm:py-24 text-center">
           <div className="inline-flex items-center gap-2 bg-white/10 border border-white/20 rounded-full px-4 py-1.5 mb-6 text-sm font-medium">
             <Sparkles size={14} className="text-yellow-300" />
             Plataforma con Inteligencia Artificial
           </div>
-          <h1 className="text-6xl font-extrabold mb-6 leading-tight">
+          <h1 className="text-3xl sm:text-5xl lg:text-6xl font-extrabold mb-6 leading-tight">
             Bienvenido a <span className="text-blue-300">SYNAPSE PLATFORM</span>
           </h1>
-          <p className="text-blue-100 text-xl leading-relaxed max-w-2xl mx-auto">
+          <p className="text-blue-100 text-base sm:text-lg md:text-xl leading-relaxed max-w-2xl mx-auto">
             Una plataforma inteligente que conecta personas con programas de
             formación técnica y tecnológica. Gestiona tu inscripción y accede
             a orientación personalizada con inteligencia artificial.
@@ -75,10 +75,10 @@ export default function LandingPage() {
       </div>
 
       {/* ── SOBRE EL PROYECTO ──────────────────────── */}
-      <div className="max-w-6xl mx-auto px-6 py-20">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-12 sm:py-20">
         <div className="text-center mb-12">
-          <h2 className="text-3xl font-bold text-gray-900 mb-4">Sobre el Proyecto</h2>
-          <p className="text-gray-500 text-lg max-w-3xl mx-auto leading-relaxed">
+          <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-4">Sobre el Proyecto</h2>
+          <p className="text-gray-500 text-sm sm:text-base md:text-lg max-w-3xl mx-auto leading-relaxed">
             SYNAPSE PLATFORM es una plataforma diseñada para orientar a los aprendices en sus procesos
             académicos y administrativos. A través de un ChatBot inteligente, brindamos una
             guía paso a paso para que el usuario sepa exactamente cómo realizar sus trámites
@@ -106,9 +106,9 @@ export default function LandingPage() {
 
       {/* ── MISIÓN VISIÓN VALORES ──────────────────── */}
       <div className="bg-white border-y border-gray-100">
-        <div className="max-w-6xl mx-auto px-6 py-20">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-12 sm:py-20">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-gray-900 mb-3">¿Quiénes somos?</h2>
+            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-3">¿Quiénes somos?</h2>
             <p className="text-gray-500 max-w-xl mx-auto">Conoce los principios que guían el desarrollo de SYNAPSE PLATFORM</p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -149,9 +149,9 @@ export default function LandingPage() {
       </div>
 
       {/* ── EQUIPO ─────────────────────────────────── */}
-      <div className="max-w-6xl mx-auto px-6 py-20">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-12 sm:py-20">
         <div className="text-center mb-12">
-          <h2 className="text-3xl font-bold text-gray-900 mb-3">Nuestro Equipo</h2>
+          <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-3">Nuestro Equipo</h2>
           <p className="text-gray-500">Las personas detrás de SYNAPSE PLATFORM</p>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -178,7 +178,7 @@ export default function LandingPage() {
 
       {/* ── FOOTER ─────────────────────────────────── */}
       <div className="bg-gray-950 text-gray-500 text-sm">
-        <div className="max-w-6xl mx-auto px-6 py-6 flex items-center justify-between">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-center">
           <div className="flex items-center gap-2">
             <GraduationCap size={18} className="text-primary-500" />
             <span className="font-bold text-gray-300">SYNAPSE PLATFORM</span>

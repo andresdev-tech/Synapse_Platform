@@ -1,12 +1,12 @@
 'use client';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { memo, useMemo } from 'react';
+import { memo, useMemo, useState } from 'react';
 import { useAuth } from '../lib/AuthContext';
 import {
   LayoutDashboard, BookOpen, ClipboardList,
   MessageSquare, User, Users, Settings, LogOut,
-  BarChart2, GraduationCap
+  BarChart2, GraduationCap, Menu, X
 } from 'lucide-react';
 
 const navAprendiz = [
@@ -37,7 +37,7 @@ const navProfesor = [
   { href: '/dashboard/perfil',        label: 'Mi Perfil',         icon: User },
 ];
 
-const Sidebar = memo(function Sidebar() {
+const Sidebar = memo(function Sidebar({ isOpen, onToggle }: { isOpen: boolean; onToggle: () => void }) {
   const pathname = usePathname();
   const { usuario, logout } = useAuth();
 
@@ -49,7 +49,32 @@ const Sidebar = memo(function Sidebar() {
   }, [usuario?.rol]);
 
   return (
-    <aside className="w-64 bg-primary-900 text-white flex flex-col min-h-screen flex-shrink-0">
+    <>
+      {/* Mobile menu button */}
+      <button
+        onClick={onToggle}
+        className="lg:hidden fixed top-4 left-4 z-50 bg-primary-600 text-white p-2 rounded-lg shadow-lg hover:bg-primary-700 transition-colors"
+        aria-label="Toggle menu"
+      >
+        {isOpen ? <X size={24} /> : <Menu size={24} />}
+      </button>
+
+      {/* Overlay for mobile */}
+      {isOpen && (
+        <div
+          className="lg:hidden fixed inset-0 bg-black/50 z-40"
+          onClick={onToggle}
+          aria-hidden="true"
+        />
+      )}
+
+      {/* Sidebar */}
+      <aside className={`
+        fixed lg:static inset-y-0 left-0 z-40
+        w-64 bg-primary-900 text-white flex flex-col min-h-screen flex-shrink-0
+        transform transition-transform duration-300 ease-in-out
+        ${isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
+      `}>
 
       {/* Logo */}
       <div className="p-6 border-b border-primary-700">
@@ -156,6 +181,7 @@ const Sidebar = memo(function Sidebar() {
         </button>
       </div>
     </aside>
+    </>
   );
 });
 

@@ -63,7 +63,7 @@ export default function ProfesorPage() {
   };
 
   if (loading) return (
-    <div className="p-8 flex items-center justify-center min-h-64">
+    <div className="p-4 sm:p-6 lg:p-8 flex items-center justify-center min-h-64">
       <div className="w-8 h-8 border-4 border-primary-600 border-t-transparent rounded-full animate-spin" />
     </div>
   );
@@ -74,16 +74,16 @@ export default function ProfesorPage() {
 
   return (
     <div className="bg-gray-50 min-h-screen">
-      <div className="bg-gradient-to-r from-teal-800 via-teal-600 to-emerald-500 px-8 py-8 text-white">
+      <div className="bg-gradient-to-r from-teal-800 via-teal-600 to-emerald-500 px-4 sm:px-8 py-6 sm:py-8 text-white">
         <div className="flex items-center gap-2 mb-1 text-teal-100 text-sm font-medium">
           <GraduationCap size={16} />
           Panel Docente
         </div>
-        <h1 className="text-3xl font-extrabold mb-1">Hola, {usuario?.nombres}</h1>
+        <h1 className="text-2xl sm:text-3xl font-extrabold mb-1">Hola, {usuario?.nombres}</h1>
         <p className="text-teal-50 text-sm">Consulta tus grupos asignados y registra la asistencia de tus aprendices</p>
       </div>
 
-      <div className="px-8 py-8 max-w-5xl space-y-8">
+      <div className="px-4 sm:px-8 py-6 sm:py-8 max-w-5xl space-y-8">
 
         {/* ── ESTADÍSTICAS ─────────────────────────────── */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -92,7 +92,7 @@ export default function ProfesorPage() {
             { label: 'Aprendices totales',  value: totalAprendices,    icon: Users,       bg: 'bg-blue-50',   color: 'text-blue-600' },
             { label: 'Condicionados',       value: totalCondicionados, icon: ShieldAlert, bg: totalCondicionados > 0 ? 'bg-red-50' : 'bg-gray-50', color: totalCondicionados > 0 ? 'text-red-600' : 'text-gray-400' },
           ].map(({ label, value, icon: Icon, bg, color }) => (
-            <div key={label} className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
+            <div key={label} className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 sm:p-5">
               <div className={`w-10 h-10 ${bg} rounded-xl flex items-center justify-center mb-3`}>
                 <Icon size={18} className={color} />
               </div>
@@ -125,7 +125,7 @@ export default function ProfesorPage() {
               </a>
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {programas.map((p) => (
                 <button
                   key={p.id}

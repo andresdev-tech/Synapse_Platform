@@ -49,6 +49,7 @@ export class AuthRepository {
   static createSession(sessionInfo: { userId: string; token: string; ipAddress: string; navegadorInfo?: string; expiresAt: Date }) {
     return prisma.sesiones.create({
       data: {
+        id: generateUUID(),
         usuario_id: sessionInfo.userId,
         token_sesion: sessionInfo.token,
         ip_direccion: sessionInfo.ipAddress,

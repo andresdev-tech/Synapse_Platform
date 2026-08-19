@@ -23,8 +23,6 @@ app.use("/api/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 app.use("/api/v1", router);
 
-console.log('qwenkey: ', process.env.QWEN_API_KEY);
-
 export default app;
 
 //waggerUi.serve, swaggerUi.setup(swaggerSpec)

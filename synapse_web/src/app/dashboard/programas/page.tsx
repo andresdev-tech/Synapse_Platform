@@ -76,14 +76,14 @@ export default function ProgramasPage() {
   );
 
   return (
-    <div className="p-8">
+    <div className="p-4 sm:p-6 lg:p-8">
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">Programas de Formación</h1>
+        <h1 className="text-xl sm:text-2xl font-bold text-gray-900">Programas de Formación</h1>
         <p className="text-gray-500 mt-1">{programas.length} programas disponibles · Haz clic en un programa para ver detalles e inscribirte</p>
       </div>
 
       {/* Buscador + Filtro */}
-      <div className="flex flex-col md:flex-row gap-3 mb-6">
+      <div className="flex flex-col sm:flex-row gap-3 mb-6">
         <div className="flex items-center gap-2 bg-white border border-gray-200 rounded-xl px-4 py-2.5 flex-1 shadow-sm">
           <Search size={16} className="text-gray-400" />
           <input

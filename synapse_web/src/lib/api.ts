@@ -356,6 +356,54 @@ export const chatbotAPI = {
 
   obtenerHistorial: () =>
     cachedGet('/chatbot/historial'),
+
+  // Conexión SSE para mensajes en tiempo real
+  conectarSSE: (onMessage: (data: any) => void, onError?: (error: Event) => void) => {
+    const token = typeof window !== 'undefined' ? localStorage.getItem('nexus_token') : null;
+    if (!token) {
+      console.error('SSE: No hay token de autenticación');
+      throw new Error('No hay token de autenticación');
+    }
+
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api';
+    const sseUrl = `${apiUrl}/chatbot/stream?token=${token}`;
+    
+    console.log('SSE: Conectando a:', sseUrl);
+    console.log('SSE: Token:', token.substring(0, 20) + '...');
+    
+    const eventSource = new EventSource(sseUrl);
+
+    eventSource.onopen = () => {
+      console.log('SSE: Conexión abierta exitosamente');
+    };
+
+    eventSource.onmessage = (event) => {
+      console.log('SSE: Mensaje recibido:', event.data);
+      try {
+        const data = JSON.parse(event.data);
+        onMessage(data);
+      } catch (error) {
+        console.error('Error parsing SSE message:', error);
+      }
+    };
+
+    eventSource.onerror = (error) => {
+      console.error('SSE connection error:', error);
+      console.error('SSE: EventSource readyState:', eventSource.readyState);
+      
+      if (onError) {
+        onError(error);
+      }
+      
+      // Si el error es de conexión, EventSource intentará reconectar automáticamente
+      // pero si es un error de autenticación, cerramos la conexión
+      if (eventSource.readyState === EventSource.CLOSED) {
+        console.log('SSE: Conexión cerrada permanentemente');
+      }
+    };
+
+    return eventSource;
+  },
 };
 
 /**

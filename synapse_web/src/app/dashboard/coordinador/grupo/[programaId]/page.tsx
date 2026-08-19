@@ -262,9 +262,9 @@ export default function GestorGruposPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 p-8">
+    <div className="min-h-screen bg-gray-50 p-4 sm:p-8">
       <div className="max-w-7xl mx-auto">
-        <h1 className="text-4xl font-bold text-gray-900 mb-2">Gestor de Grupos</h1>
+        <h1 className="text-2xl sm:text-4xl font-bold text-gray-900 mb-2">Gestor de Grupos</h1>
         <p className="text-gray-600 mb-8">Asigna y gestiona aprendices en los grupos del programa</p>
 
         {/* MENSAJES DE ERROR Y ÉXITO */}
@@ -284,7 +284,7 @@ export default function GestorGruposPage() {
 
         {/* ESTADÍSTICAS */}
         {estadisticas && (
-          <div className="grid grid-cols-1 md:grid-cols-5 gap-4 mb-8">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 mb-8">
             <div className="bg-white rounded-lg shadow p-6 border-l-4 border-blue-500">
               <p className="text-gray-600 text-sm font-medium">Total Grupos</p>
               <p className="text-3xl font-bold text-gray-900 mt-2">{estadisticas.total_grupos}</p>
@@ -471,7 +471,7 @@ export default function GestorGruposPage() {
               ) : (
                 <>
                   {/* ESTADÍSTICAS DEL GRUPO */}
-                  <div className="grid grid-cols-4 gap-3 mb-6">
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
                     <div className="bg-blue-50 p-3 rounded-lg">
                       <p className="text-xs text-blue-600 font-semibold">Ocupación</p>
                       <p className="text-xl font-bold text-blue-900">{detallesGrupo.estadisticas.porcentajeOcupacion}%</p>

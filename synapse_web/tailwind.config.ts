@@ -7,6 +7,14 @@ module.exports = {
   ],
   theme: {
     extend: {
+      screens: {
+        'xs': '475px',    // Extra small phones
+        'sm': '640px',    // Small tablets/large phones
+        'md': '768px',    // Tablets
+        'lg': '1024px',   // Small laptops
+        'xl': '1280px',   // Desktops
+        '2xl': '1536px',  // Large screens
+      },
       colors: {
         primary: {
           50:  '#eff6ff',

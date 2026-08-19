@@ -55,7 +55,7 @@ export default function LoginPage() {
         {/* Las estrellas de React Three Fiber cargadas solo en el cliente */}
         <BackgroundStars />
 
-        <div className="relative z-10 min-h-screen flex flex-col items-center justify-center px-4">
+        <div className="relative z-10 min-h-screen flex flex-col items-center justify-center px-4 sm:px-6">
           <div className="w-full max-w-md mb-4">
             <Link
               href="/"
@@ -65,7 +65,7 @@ export default function LoginPage() {
             </Link>
           </div>
 
-          <div className="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-md">
+          <div className="bg-white rounded-2xl shadow-2xl p-6 sm:p-8 w-full max-w-md">
             {/* Logo */}
             <div className="text-center mb-8">
               <div className="text-4xl font-extrabold text-primary-700 tracking-tight">SYNAPSE</div>

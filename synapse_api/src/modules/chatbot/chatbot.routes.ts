@@ -18,7 +18,7 @@ const controller =
 
 /**
  * @swagger
- * /chat/ask:
+ * /chatbot/consulta:
  *   post:
  *     summary: Enviar mensaje al chatbot
  *     tags: [Chatbot]
@@ -38,11 +38,22 @@ const controller =
  */
 
 router.post(
-  "/ask",
+  "/consulta",
   authMiddleware,
   controller.askQuestion
 );
 
+
+/**
+ * @swagger
+ * /chatbot/historial:
+ *   get:
+ *     summary: Obtener historial de conversaciones
+ *     tags: [Chatbot]
+ *     responses:
+ *       200:
+ *         description: Historial obtenido
+ */
 router.get(
   "/historial",
   authMiddleware,
@@ -51,7 +62,7 @@ router.get(
 
 /**
  * @swagger
- * /chat/stream:
+ * /chatbot/stream:
  *   get:
  *     summary: Conectar al chatbot en tiempo real (SSE)
  *     tags: [Chatbot]

@@ -1,4 +1,5 @@
 import { prisma } from "../../config/prisma";
+import { generateUUID } from '../../common/utils/uuidcreate'
 
 export class ProgramasRepository {
   static async findAll() {
@@ -17,7 +18,23 @@ export class ProgramasRepository {
 
   static async create(data: any) {
     return prisma.programas.create({
-      data,
+      data: {
+        id: data.id,
+        nombre: data.nombre,
+        slug: data.slug,
+        sector: data.sector,
+        estado: data.estado,
+        imagen_url: null,
+        descripcion: data.descripcion,
+        programas_horarios: {
+          create: data.horarios.map((horario: any) => ({
+            id: generateUUID(),
+            modalidad: horario.modalidad,
+            jornada: horario.jornada,
+            horarios_json: horario.horarios
+          }))
+        }
+      },
     });
   }
 
@@ -27,7 +44,13 @@ export class ProgramasRepository {
   ) {
     return prisma.programas.update({
       where: { id },
-      data,
+      data: {
+        ...data,
+        programas_horarios: {
+          deleteMany: {},
+          create: data.programas_horarios
+        }
+      },
     });
   }
 
