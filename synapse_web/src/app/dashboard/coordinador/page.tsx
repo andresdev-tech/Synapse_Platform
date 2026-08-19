@@ -78,7 +78,7 @@ export default function CoordinadorPage() {
               <div className="rounded-2xl sm:rounded-3xl bg-slate-50 p-4 sm:p-6 shadow-lg border border-slate-200">
                 <div className="flex items-center gap-3 mb-4 sm:mb-5 text-slate-800">
                   <div className="rounded-2xl bg-sky-100 p-2 sm:p-3 text-sky-600">
-                    <LayoutGrid size={20} sm:size={24} />
+                    <LayoutGrid size={20} />
                   </div>
                   <div>
                     <p className="text-xs sm:text-sm uppercase tracking-[0.24em] text-slate-500">Estado general</p>
@@ -90,7 +90,7 @@ export default function CoordinadorPage() {
               <div className="rounded-2xl sm:rounded-3xl bg-slate-900 p-4 sm:p-6 shadow-xl border border-white/10 text-white">
                 <div className="flex items-center gap-3 mb-4 sm:mb-5">
                   <div className="rounded-2xl bg-white/10 p-2 sm:p-3 text-cyan-200">
-                    <Sparkles size={20} sm:size={24} />
+                    <Sparkles size={20} />
                   </div>
                   <div>
                     <p className="text-xs sm:text-sm uppercase tracking-[0.24em] text-slate-300">Consejo rápido</p>
@@ -116,7 +116,7 @@ export default function CoordinadorPage() {
                     <h2 className="text-xl sm:text-2xl font-bold text-slate-900">{programa.nombre}</h2>
                   </div>
                   <div className="rounded-2xl sm:rounded-3xl bg-white/95 p-2 sm:p-3 shadow-sm text-slate-900">
-                    <BookOpen size={18} sm:size={22} />
+                    <BookOpen size={18} />
                   </div>
                 </div>
 
@@ -139,12 +139,12 @@ export default function CoordinadorPage() {
                 <div className="space-y-2 sm:space-y-3">
                   <Link href={`/dashboard/coordinador/grupo/${programa.id}`}>
                     <button className="w-full inline-flex items-center justify-center gap-2 rounded-2xl sm:rounded-3xl bg-slate-900 px-3 sm:px-4 py-2.5 sm:py-3 text-xs sm:text-sm font-semibold text-white transition hover:bg-slate-800">
-                      <ArrowRightCircle size={16} sm:size={18} /> Gestionar programa
+                      <ArrowRightCircle size={16} /> Gestionar programa
                     </button>
                   </Link>
                   <Link href={`/dashboard/coordinador/grupo/${programa.id}`}>
                     <button className="w-full inline-flex items-center justify-center gap-2 rounded-2xl sm:rounded-3xl bg-slate-100 px-3 sm:px-4 py-2.5 sm:py-3 text-xs sm:text-sm font-semibold text-slate-900 transition hover:bg-slate-200">
-                      <ChevronRight size={16} sm:size={18} /> Ver grupos
+                      <ChevronRight size={16} /> Ver grupos
                     </button>
                   </Link>
                 </div>
