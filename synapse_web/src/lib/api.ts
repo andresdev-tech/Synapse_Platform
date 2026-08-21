@@ -406,6 +406,11 @@ export const chatbotAPI = {
   },
 };
 
+export const storageAPI = {
+  obtenerUrlsFotos: () =>
+    api.get('/storage/photos').then((response) => response.data),
+};
+
 /**
  * EXPORTAR API POR DEFECTO
  */

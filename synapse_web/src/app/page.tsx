@@ -7,8 +7,26 @@ import {
   ChevronRight, Sparkles, GraduationCap, Target, Award, Shield
 } from 'lucide-react';
 
-const equipo = [
+import { storageAPI } from '@/lib/api';
+
+interface StoragePhoto {
+  key: string;
+  url: string;
+}
+
+export interface MiembroEquipo {
+  s3Key?: string;
+  nombre: string;
+  rol: string;
+  descripcion: string;
+  foto: string;
+  iniciales: string;
+  color: string;
+}
+
+const equipoBase: MiembroEquipo[] = [
   {
+    s3Key: 'jhonlenis.jpeg',
     nombre: 'Jhon Alexander Lenis Holguín',
     rol: 'Líder de Proyecto / Frontend & IA',
     descripcion: 'Líder encargado de la interfaz de usuario, integración de inteligencia artificial y coordinación general del proyecto.',
@@ -17,6 +35,7 @@ const equipo = [
     color: 'bg-blue-600',
   },
   {
+    s3Key: 'andresgarcia.jpeg',
     nombre: 'Juan Andrés Jaramillo García',
     rol: 'Desarrollador Backend',
     descripcion: 'Responsable de la base de datos de programas y la lógica del servidor, APIs REST y conexión con Neon PostgreSQL.',
@@ -25,6 +44,7 @@ const equipo = [
     color: 'bg-purple-600',
   },
   {
+    s3Key: undefined,
     nombre: 'Mariana Bastidas Quintero',
     rol: 'Analista de Requerimientos',
     descripcion: 'Encargada de la documentación técnica, validación de requerimientos y análisis de casos de uso del sistema.',
@@ -34,7 +54,44 @@ const equipo = [
   },
 ];
 
-export default function LandingPage() {
+// Revalidar cada hora (3600 segundos) para actualizar las fotos desde S3
+export const revalidate = 3600;
+
+export async function getEquipoActualizado(): Promise<MiembroEquipo[]> {
+  try {
+    const response = await storageAPI.obtenerUrlsFotos();
+
+    // Soporta tanto { data: [...] } como { Photos: [...] } o si la respuesta es la lista directa
+    const fotosList: StoragePhoto[] = 
+      response?.Photos || response?.data || (Array.isArray(response) ? response : []);
+
+    if (!Array.isArray(fotosList) || fotosList.length === 0) {
+      return equipoBase;
+    }
+
+    const fotosMap = new Map<string, string>(
+      fotosList.map((item: StoragePhoto) => [item.key, item.url])
+    );
+
+    return equipoBase.map((integrante) => {
+      if (integrante.s3Key && fotosMap.has(integrante.s3Key)) {
+        return {
+          ...integrante,
+          foto: fotosMap.get(integrante.s3Key)!,
+        };
+      }
+      return integrante;
+    });
+  } catch (error) {
+    console.error('Error al actualizar fotos del equipo:', error);
+    return equipoBase;
+  }
+}
+
+export default async function LandingPage() {
+  // Llama a la función asíncrona para obtener las URLs reales de S3
+  const equipo = await getEquipoActualizado();
+
   return (
     <div className="min-h-screen bg-gray-50">
 
@@ -155,16 +212,15 @@ export default function LandingPage() {
           <p className="text-gray-500">Las personas detrás de SYNAPSE PLATFORM</p>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {equipo.map((m) => (
+          {equipo.map((m: MiembroEquipo) => (
             <div key={m.nombre} className="bg-white rounded-2xl border border-gray-100 shadow-sm p-8 text-center hover:shadow-md transition-shadow">
               <div className="w-24 h-24 mx-auto mb-4 relative">
-                {/* Next.js Image: optimización WebP/AVIF + lazy loading automático */}
                 <Image
                   src={m.foto}
                   alt={m.nombre}
                   width={96}
                   height={96}
-                  className="rounded-full object-cover border-4 border-gray-100 shadow-md"
+                  className="rounded-full object-cover border-4 border-gray-100 shadow-md h-24 w-24"
                   loading="lazy"
                 />
               </div>

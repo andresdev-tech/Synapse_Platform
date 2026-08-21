@@ -9,7 +9,15 @@ const nextConfig = {
   // Optimización de imágenes con formatos modernos
   images: {
     formats: ['image/avif', 'image/webp'],
-    minimumCacheTTL: 86400, // 24 h de caché para imágenes optimizadas
+    minimumCacheTTL: 60, // 1 minuto de caché para imágenes optimizadas
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'br-super-truth-ax7mtw32.storage.c-4.us-east-2.aws.neon.tech',
+        port: '',
+        pathname: '/**',
+      },
+    ],
   },
 
   experimental: {
