@@ -84,6 +84,7 @@ model Note {
   title      String
   content    String    @db.Text
   imageUrl   String?
+  attachments Json? @default("[]")
   published  Boolean   @default(true)
   isGlobal   Boolean   @default(false)
   authorId   String

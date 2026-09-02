@@ -34,10 +34,10 @@ export const getPersonalNotes = async (req: Request, res: Response): Promise<voi
 };
 
 export const createNote = async (req: Request, res: Response): Promise<void> => {
-  const { title, content, isGlobal, authorId, imageUrl, published, categoryId } = req.body;
+  const { title, content, isGlobal, authorId, imageUrl, attachments, published, categoryId } = req.body;
   try {
     const note = await prisma.note.create({
-      data: { title, content, isGlobal, authorId, imageUrl, published, categoryId },
+      data: { title, content, isGlobal, authorId, imageUrl, attachments, published, categoryId },
     });
     res.status(201).json(note);
   } catch (error) {
@@ -47,12 +47,12 @@ export const createNote = async (req: Request, res: Response): Promise<void> => 
 
 export const updateNote = async (req: Request, res: Response): Promise<void> => {
   const { id } = req.params;
-  const { title, content, isGlobal, imageUrl, published, categoryId } = req.body;
+  const { title, content, isGlobal, imageUrl, attachments, published, categoryId } = req.body;
   try {
     const note = await prisma.note.update({
       // Se fuerza a string para evitar errores de tipo 'string | string[]'
       where: { id: String(id) },
-      data: { title, content, isGlobal, imageUrl, published, categoryId },
+      data: { title, content, isGlobal, imageUrl, attachments, published, categoryId },
     });
     res.json(note);
   } catch (error) {

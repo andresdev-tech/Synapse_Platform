@@ -9,11 +9,57 @@ import { arrayMove, SortableContext, sortableKeyboardCoordinates, rectSortingStr
 import { useSortable } from "@dnd-kit/sortable"
 import { CSS } from "@dnd-kit/utilities"
 
+const InlineVideoPlayer = ({ videoId, videoUrl }: { videoId: string, videoUrl: string }) => {
+  const [playing, setPlaying] = useState(false);
+  
+  if (!playing) {
+    return (
+      <div 
+        onClick={() => setPlaying(true)}
+        className="mt-3 group relative rounded-xl overflow-hidden border border-slate-200 dark:border-zinc-700 shadow-sm aspect-video bg-black cursor-pointer hover:shadow-xl transition-all duration-300"
+      >
+        <img 
+          src={`https://img.youtube.com/vi/${videoId}/hqdefault.jpg`} 
+          alt="Miniatura de Video YouTube" 
+          className="w-full h-full object-cover opacity-70 group-hover:opacity-100 transition-all duration-300" 
+        />
+        <div className="absolute inset-0 flex flex-col items-center justify-center">
+          <div className="w-16 h-16 bg-red-600/90 group-hover:bg-red-600 rounded-full flex items-center justify-center shadow-[0_0_20px_rgba(220,38,38,0.5)] group-hover:scale-110 transition-all duration-300">
+            <svg className="w-8 h-8 text-white translate-x-0.5" fill="currentColor" viewBox="0 0 24 24"><path d="M7 6v12l10-6z"/></svg>
+          </div>
+          <span className="mt-4 text-white font-bold text-sm bg-black/70 px-4 py-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300 backdrop-blur-sm">
+            Haz clic para reproducir inline
+          </span>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="mt-3 flex flex-col gap-2">
+      <div className="rounded-xl overflow-hidden border border-slate-200 dark:border-zinc-700 shadow-sm aspect-video relative bg-black">
+        <iframe 
+          src={`https://www.youtube-nocookie.com/embed/${videoId}?autoplay=1`} 
+          className="absolute inset-0 w-full h-full"
+          title="YouTube video player"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+          referrerPolicy="strict-origin-when-cross-origin"
+          allowFullScreen
+        ></iframe>
+      </div>
+      <a href={`https://www.youtube.com/watch?v=${videoId}`} target="_blank" rel="noopener noreferrer" className="text-xs text-slate-500 dark:text-slate-400 hover:text-sena-500 transition-colors flex items-center gap-1 w-fit">
+        <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/></svg>
+        ¿El video no carga por tu navegador? Ábrelo en YouTube aquí
+      </a>
+    </div>
+  );
+};
+
 interface Note {
   id: string
   title: string
   content: string
-  imageUrl?: string
+  imageUrl?: string; attachments?: {type: string, url: string}[];
   isGlobal: boolean
   authorId: string
   author?: { name: string; role: string }
@@ -49,7 +95,7 @@ function SortableNoteItem({ note }: { note: Note }) {
     <article 
       ref={setNodeRef} 
       style={style} 
-      className={`group bg-white dark:bg-zinc-800 rounded-3xl shadow-sm hover:shadow-xl border border-slate-100 dark:border-zinc-700 hover:border-sena-100 dark:hover:border-sena-500/50 transition-all duration-300 flex flex-col overflow-hidden relative ${isDragging ? 'opacity-50 ring-2 ring-sena-500 scale-105' : ''}`}
+      className={`group bg-white dark:bg-zinc-800 rounded-3xl shadow-sm hover:shadow-xl border border-slate-100 dark:border-zinc-700 hover:border-sena-100 dark:hover:border-sena-500/50 transition-all duration-300 flex flex-col overflow-hidden relative h-max break-inside-avoid mb-8 ${isDragging ? 'opacity-50 ring-2 ring-sena-500 scale-105' : ''}`}
     >
       <div 
         {...attributes} 
@@ -91,6 +137,55 @@ function SortableNoteItem({ note }: { note: Note }) {
         <p className="text-slate-600 dark:text-slate-400 text-base leading-relaxed flex-grow whitespace-pre-wrap line-clamp-4">
           {note.content}
         </p>
+
+        {note.attachments && note.attachments.length > 0 && (
+          <div className="mt-4 space-y-2">
+            {note.attachments.map((att, idx) => {
+              if (att.type === 'image') {
+                return (
+                  <div key={idx} className="rounded-xl overflow-hidden mt-2 border border-slate-100 dark:border-zinc-700">
+                    <img src={att.url} alt="Adjunto" className="w-full h-auto object-cover" />
+                  </div>
+                );
+              } else if (att.type === 'video') {
+                let videoUrl = att.url;
+                let videoId = "";
+                
+                const ytMatch = att.url.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))([^&?"']+)/);
+                if (ytMatch) {
+                  videoId = ytMatch[1];
+                  videoUrl = `https://www.youtube.com/watch?v=${videoId}`;
+                } else {
+                  const iframeMatch = att.url.match(/src=["'](.*?)["']/);
+                  if (iframeMatch) {
+                    videoUrl = iframeMatch[1];
+                    const backupMatch = videoUrl.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))([^&?"']+)/);
+                    if (backupMatch) videoId = backupMatch[1];
+                  }
+                }
+
+                if (!videoId) {
+                  return (
+                    <a key={idx} href={videoUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 mt-2 p-3 bg-red-50 text-red-600 rounded-xl font-bold text-sm">
+                      Ver Video
+                    </a>
+                  );
+                }
+
+                return (
+                  <InlineVideoPlayer key={idx} videoId={videoId} videoUrl={videoUrl} />
+                );
+              } else {
+                return (
+                  <a key={idx} href={att.url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 mt-2 p-3 bg-slate-50 dark:bg-zinc-800 text-slate-700 dark:text-slate-300 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-700 transition-colors font-bold text-sm border border-slate-200 dark:border-zinc-700">
+                    <svg className="w-5 h-5 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
+                    Descargar PDF / Documento
+                  </a>
+                );
+              }
+            })}
+          </div>
+        )}
         
         <div className="mt-8 pt-5 border-t border-slate-100 dark:border-zinc-700 flex items-center justify-between text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">
           <div className="flex items-center">
@@ -413,7 +508,7 @@ export function ApprenticeDashboard() {
               searchQuery === "" && selectedFilter === "ALL" ? (
                 <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
                   <SortableContext items={filteredNotes.map(n => n.id)} strategy={rectSortingStrategy}>
-                    <div className="grid gap-8 md:grid-cols-2">
+                    <div className="columns-1 md:columns-2 gap-8">
                       {filteredNotes.map(n => (
                         <SortableNoteItem key={n.id} note={n} />
                       ))}
@@ -421,7 +516,7 @@ export function ApprenticeDashboard() {
                   </SortableContext>
                 </DndContext>
               ) : (
-                <div className="grid gap-8 md:grid-cols-2">
+                <div className="columns-1 md:columns-2 gap-8">
                   {filteredNotes.map(n => (
                     <SortableNoteItem key={n.id} note={n} />
                   ))}

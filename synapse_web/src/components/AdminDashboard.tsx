@@ -14,7 +14,7 @@ interface Note {
   id: string
   title: string
   content: string
-  imageUrl?: string
+  imageUrl?: string; attachments?: {type: string, url: string}[];
   isGlobal: boolean
   authorId: string
   categoryId?: string
@@ -32,7 +32,7 @@ export function AdminDashboard() {
   const [newTitle, setNewTitle] = useState("")
   const [newContent, setNewContent] = useState("")
   const [newImageUrl, setNewImageUrl] = useState("")
-  const [newCategoryId, setNewCategoryId] = useState("")
+  const [newCategoryId, setNewCategoryId] = useState(""); const [newAttachments, setNewAttachments] = useState<{type: string, url: string}[]>([]);
   const [editingId, setEditingId] = useState<string | null>(null)
   const [isFormOpen, setIsFormOpen] = useState(false)
   const [isExtracting, setIsExtracting] = useState(false)
@@ -124,7 +124,7 @@ export function AdminDashboard() {
     const payload = {
       title: newTitle.trim(),
       content: newContent.trim(),
-      imageUrl: newImageUrl.trim() || null,
+      imageUrl: newImageUrl.trim() || null, attachments: newAttachments,
       categoryId: newCategoryId || null,
       isGlobal: true,
       published: true,
@@ -149,7 +149,7 @@ export function AdminDashboard() {
       setNewTitle("")
       setNewContent("")
       setNewImageUrl("")
-      setNewCategoryId("")
+      setNewCategoryId(""); setNewAttachments([]);
       setEditingId(null)
       setIsFormOpen(false)
       fetchGlobalNotes()
@@ -162,7 +162,7 @@ export function AdminDashboard() {
     setNewTitle(note.title)
     setNewContent(note.content)
     setNewImageUrl(note.imageUrl || "")
-    setNewCategoryId(note.categoryId || "")
+    setNewCategoryId(note.categoryId || ""); setNewAttachments(note.attachments || []);
     setEditingId(note.id)
     setIsFormOpen(true)
   }
@@ -190,7 +190,7 @@ export function AdminDashboard() {
         </div>
       </div>
 
-      {/* HEADER ESTADÃSTICAS */}
+      {/* HEADER ESTADISTICAS */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
         <div className="bg-white p-6 rounded-3xl shadow-sm hover:shadow-md transition-shadow border border-slate-100 flex items-center space-x-5 relative overflow-hidden">
           <div className="absolute w-2 h-full bg-blue-500 left-0 top-0"></div>
@@ -396,7 +396,7 @@ export function AdminDashboard() {
               setNewTitle("")
               setNewContent("")
               setNewImageUrl("")
-              setNewCategoryId("")
+              setNewCategoryId(""); setNewAttachments([]);
               setIsFormOpen(!isFormOpen)
             }}
             className={`flex items-center space-x-2 px-6 py-3 rounded-xl text-sm font-bold transition-all shadow-md ${isFormOpen ? 'bg-slate-100 text-zinc-700 hover:bg-slate-200' : 'bg-sena-500 text-white hover:bg-sena-600 hover:shadow-sena-200 hover:-translate-y-0.5'}`}
@@ -492,6 +492,79 @@ export function AdminDashboard() {
                 />
               </div>
             </div>
+
+            <div className="pt-2">
+                <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-3">Multimedias y Enlaces Adjuntos (Videos, PDFs, Más imágenes)</label>
+                <div className="space-y-3">
+                  {newAttachments.map((att, idx) => (
+                    <div key={idx} className="flex gap-2">
+                      <select 
+                        value={att.type} 
+                        onChange={(e) => {
+                          const n = [...newAttachments];
+                          n[idx].type = e.target.value;
+                          setNewAttachments(n);
+                        }} 
+                        className="p-2 border border-slate-200 rounded-lg text-sm bg-white focus:outline-none focus:border-sena-500"
+                      >
+                        <option value="image">Imagen</option>
+                        <option value="pdf">Documento PDF</option>
+                        <option value="video">Video (YouTube/Vimeo)</option>
+                      </select>
+                      <input 
+                        type="text" 
+                        value={att.url} 
+                        onChange={(e) => {
+                          const n = [...newAttachments];
+                          n[idx].url = e.target.value;
+                          setNewAttachments(n);
+                        }}
+                        placeholder="https://... o pega el código <iframe..."
+                        className="flex-1 p-2 border border-slate-200 rounded-lg text-sm bg-white focus:outline-none focus:border-sena-500"
+                      />
+                      <div className="flex flex-col sm:flex-row gap-1">
+                        <button 
+                          onClick={() => {
+                            if (idx === 0) return;
+                            const n = [...newAttachments];
+                            [n[idx - 1], n[idx]] = [n[idx], n[idx - 1]];
+                            setNewAttachments(n);
+                          }} 
+                          disabled={idx === 0}
+                          className="p-2 text-slate-500 hover:bg-slate-100 rounded-lg disabled:opacity-30 disabled:cursor-not-allowed"
+                          title="Mover Arriba"
+                        >
+                          ↑
+                        </button>
+                        <button 
+                          onClick={() => {
+                            if (idx === newAttachments.length - 1) return;
+                            const n = [...newAttachments];
+                            [n[idx], n[idx + 1]] = [n[idx + 1], n[idx]];
+                            setNewAttachments(n);
+                          }} 
+                          disabled={idx === newAttachments.length - 1}
+                          className="p-2 text-slate-500 hover:bg-slate-100 rounded-lg disabled:opacity-30 disabled:cursor-not-allowed"
+                          title="Mover Abajo"
+                        >
+                          ↓
+                        </button>
+                        <button onClick={() => {
+                          const n = [...newAttachments];
+                          n.splice(idx, 1);
+                          setNewAttachments(n);
+                        }} className="p-2 text-red-500 hover:bg-red-50 rounded-lg" title="Eliminar">X</button>
+                      </div>
+                    </div>
+                  ))}
+                  <button 
+                    onClick={() => setNewAttachments([...newAttachments, { type: "image", url: "" }])}
+                    className="text-sm font-bold text-sena-600 hover:text-sena-700 bg-sena-50 px-4 py-2 rounded-lg transition-colors border border-sena-200 border-dashed w-full md:w-auto"
+                  >
+                    + Agregar Archivo o Enlace Adjunto
+                  </button>
+                </div>
+              </div>
             
             <div className="flex justify-end pt-4">
               <button 
