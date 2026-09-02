@@ -1,0 +1,75 @@
+"use client"
+
+import { signIn, signOut, useSession } from "next-auth/react"
+import { LogOut, ArrowLeft } from "lucide-react"
+import { usePathname, useSearchParams } from "next/navigation"
+import Link from "next/link"
+import { Suspense } from "react"
+import { CtmaMenu } from "./CtmaMenu"
+
+function HeaderActions() {
+  const { data: session } = useSession()
+  const pathname = usePathname()
+  const searchParams = useSearchParams()
+  const isGuestMode = pathname === "/" && searchParams.get("guest") === "true"
+
+  return (
+    <>
+      <div className="flex items-center space-x-6">
+        <Link href="/" className="flex items-center group">
+          <h1 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-indigo-500 group-hover:from-indigo-400 group-hover:to-blue-500 transition-all">
+            Synapse
+          </h1>
+        </Link>
+
+        {/* CTMA Blog Navigation Links */}
+        <CtmaMenu />
+        
+        {(!session && isGuestMode) && (
+          <Link href="/" className="text-sm font-medium text-slate-400 hover:text-white transition-colors flex items-center bg-slate-800/50 px-4 py-2 rounded-full border border-slate-700/50 hover:border-slate-500 hover:shadow-lg">
+            <ArrowLeft className="w-4 h-4 mr-2" />
+            Volver
+          </Link>
+        )}
+      </div>
+
+      <div className="flex items-center space-x-4">
+        {session && (
+          <div className="flex items-center space-x-4">
+            <span className="text-sm font-medium text-slate-300">
+              {session.user?.name} ({session.user?.role})
+            </span>
+            <button
+              onClick={() => signOut()}
+              className="p-2 text-slate-300 hover:text-white hover:bg-slate-800 rounded-full transition-colors flex items-center"
+              title="Cerrar sesión"
+              aria-label="Cerrar sesión"
+            >
+              <LogOut className="w-5 h-5" />
+            </button>
+          </div>
+        )}
+      </div>
+    </>
+  )
+}
+
+export const Header = () => {
+  return (
+    <header className="bg-slate-900 text-white shadow-md sticky top-0 z-50">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex justify-between items-center h-16">
+          <Suspense fallback={
+            <div className="flex items-center">
+              <h1 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-indigo-500">
+                Synapse
+              </h1>
+            </div>
+          }>
+            <HeaderActions />
+          </Suspense>
+        </div>
+      </div>
+    </header>
+  )
+}
