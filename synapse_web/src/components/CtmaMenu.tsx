@@ -48,18 +48,18 @@ export const CtmaMenu = () => {
     <nav className="hidden md:flex items-center space-x-1 ml-6">
       {menuItems.map((menu) => (
         <div key={menu.title} className="relative group">
-          <button className="flex items-center space-x-1 px-3 py-2 text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-800 rounded-md transition-colors">
+          <button className="flex items-center space-x-1 px-3 py-2 text-sm font-medium text-slate-300 hover:text-white hover:bg-zinc-800 rounded-md transition-colors">
             <span>{menu.title}</span>
             <ChevronDown className="w-4 h-4 opacity-70 group-hover:opacity-100 transition-opacity" />
           </button>
           
           <div className="absolute top-full left-0 mt-1 w-56 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
-            <div className="py-2 bg-white dark:bg-slate-800 rounded-xl shadow-xl ring-1 ring-slate-900/5 overflow-hidden">
+            <div className="py-2 bg-white dark:bg-zinc-800 rounded-xl shadow-xl ring-1 ring-zinc-900/5 overflow-hidden">
               {menu.links.map((link) => (
                 <Link
                   key={link.name}
                   href={link.url}
-                  className="block px-4 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
+                  className="block px-4 py-2 text-sm text-zinc-700 dark:text-slate-300 hover:bg-sena-50 dark:hover:bg-sena-900/30 hover:text-sena-500 dark:hover:text-sena-400 transition-colors"
                 >
                   {link.name}
                 </Link>
@@ -70,7 +70,7 @@ export const CtmaMenu = () => {
       ))}
       <Link 
         href="/ctma/directorio" 
-        className="px-3 py-2 text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-800 rounded-md transition-colors"
+        className="px-3 py-2 text-sm font-medium text-slate-300 hover:text-white hover:bg-zinc-800 rounded-md transition-colors"
       >
         Directorio
       </Link>

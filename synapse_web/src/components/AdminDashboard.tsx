@@ -180,13 +180,13 @@ export function AdminDashboard() {
   return (
     <div className="max-w-6xl mx-auto space-y-8">
       {/* BANNER DE BIENVENIDA */}
-      <div className="bg-gradient-to-r from-indigo-900 via-indigo-800 to-indigo-600 rounded-3xl p-8 text-white shadow-xl relative overflow-hidden">
+      <div className="bg-gradient-to-r from-sena-600 via-sena-500 to-sena-400 rounded-3xl p-8 text-white shadow-xl relative overflow-hidden">
         <div className="absolute top-0 right-0 opacity-10">
           <svg width="400" height="400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>
         </div>
         <div className="relative z-10">
           <h1 className="text-3xl font-extrabold mb-2">Panel de Control General</h1>
-          <p className="text-indigo-200 text-lg">Administra los anuncios, notas y recursos de Synapse CTMA.</p>
+          <p className="text-sena-100 text-lg">Administra los anuncios, notas y recursos de Synapse CTMA.</p>
         </div>
       </div>
 
@@ -199,7 +199,7 @@ export function AdminDashboard() {
           </div>
           <div>
             <p className="text-sm font-bold text-slate-400 uppercase tracking-wider">Anuncios</p>
-            <h3 className="text-3xl font-extrabold text-slate-800">{globalNotes.length}</h3>
+            <h3 className="text-3xl font-extrabold text-zinc-800">{globalNotes.length}</h3>
           </div>
         </div>
         <div className="bg-white p-6 rounded-3xl shadow-sm hover:shadow-md transition-shadow border border-slate-100 flex items-center space-x-5 relative overflow-hidden">
@@ -209,7 +209,7 @@ export function AdminDashboard() {
           </div>
           <div>
             <p className="text-sm font-bold text-slate-400 uppercase tracking-wider">Categorias</p>
-            <h3 className="text-3xl font-extrabold text-slate-800">{categories.length}</h3>
+            <h3 className="text-3xl font-extrabold text-zinc-800">{categories.length}</h3>
           </div>
         </div>
         <div className="bg-white p-6 rounded-3xl shadow-sm hover:shadow-md transition-shadow border border-slate-100 flex items-center space-x-5 relative overflow-hidden">
@@ -219,7 +219,7 @@ export function AdminDashboard() {
           </div>
           <div>
             <p className="text-sm font-bold text-slate-400 uppercase tracking-wider">Estado</p>
-            <h3 className="text-3xl font-extrabold text-slate-800 flex items-center">
+            <h3 className="text-3xl font-extrabold text-zinc-800 flex items-center">
               En linea
               <span className="ml-2 w-3 h-3 bg-emerald-500 rounded-full animate-pulse"></span>
             </h3>
@@ -231,44 +231,44 @@ export function AdminDashboard() {
       <div className="flex space-x-2 border-b border-slate-200 mb-6 px-4">
         <button 
           onClick={() => setActiveTab("anuncios")}
-          className={`pb-4 px-4 font-bold text-sm tracking-wide transition-colors border-b-2 ${activeTab === "anuncios" ? "text-indigo-600 border-indigo-600" : "text-slate-500 border-transparent hover:text-slate-700"}`}
+          className={`pb-4 px-4 font-bold text-sm tracking-wide transition-colors border-b-2 ${activeTab === "anuncios" ? "text-sena-500 border-sena-500" : "text-slate-500 border-transparent hover:text-zinc-700"}`}
         >
           ANUNCIOS OFICIALES
         </button>
         <button 
           onClick={() => setActiveTab("categorias")}
-          className={`pb-4 px-4 font-bold text-sm tracking-wide transition-colors border-b-2 ${activeTab === "categorias" ? "text-indigo-600 border-indigo-600" : "text-slate-500 border-transparent hover:text-slate-700"}`}
+          className={`pb-4 px-4 font-bold text-sm tracking-wide transition-colors border-b-2 ${activeTab === "categorias" ? "text-sena-500 border-sena-500" : "text-slate-500 border-transparent hover:text-zinc-700"}`}
         >
           ADMINISTRAR CATEGORÍAS
         </button>
         <button 
           onClick={() => setActiveTab("sugerencias")}
-          className={`pb-4 px-4 font-bold text-sm tracking-wide transition-colors border-b-2 flex items-center space-x-2 ${activeTab === "sugerencias" ? "text-indigo-600 border-indigo-600" : "text-slate-500 border-transparent hover:text-slate-700"}`}
+          className={`pb-4 px-4 font-bold text-sm tracking-wide transition-colors border-b-2 flex items-center space-x-2 ${activeTab === "sugerencias" ? "text-sena-500 border-sena-500" : "text-slate-500 border-transparent hover:text-zinc-700"}`}
         >
           <span>BUZÓN DE SUGERENCIAS</span>
           {suggestions.length > 0 && (
-            <span className="bg-indigo-100 text-indigo-700 py-0.5 px-2 rounded-full text-xs">{suggestions.length}</span>
+            <span className="bg-sena-100 text-sena-600 py-0.5 px-2 rounded-full text-xs">{suggestions.length}</span>
           )}
         </button>
       </div>
 
             {activeTab === "categorias" ? (
-        <div className="bg-white p-8 rounded-3xl shadow-lg shadow-indigo-100/50 border border-slate-100">
+        <div className="bg-white p-8 rounded-3xl shadow-lg shadow-sena-100/50 border border-slate-100">
           <div className="flex items-center justify-between mb-8 border-b border-slate-100 pb-5">
             <div>
-              <h2 className="text-2xl font-extrabold text-slate-900 tracking-tight">Administrar Categorías</h2>
+              <h2 className="text-2xl font-extrabold text-zinc-900 tracking-tight">Administrar Categorías</h2>
               <p className="text-slate-500 mt-1">Crea nuevas categorías para organizar los anuncios y recursos del portal.</p>
             </div>
           </div>
           
           <div className="mb-8 p-6 bg-slate-50 rounded-2xl border border-slate-200">
-            <h3 className="text-lg font-bold text-slate-800 mb-4">Añadir nueva categoría</h3>
+            <h3 className="text-lg font-bold text-zinc-800 mb-4">Añadir nueva categoría</h3>
             <div className="flex gap-4">
               <input 
                 type="text" 
                 id="newCategoryName"
                 placeholder="Ej. Bienestar, Eventos, Académico..." 
-                className="flex-1 p-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none"
+                className="flex-1 p-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-sena-500 focus:border-sena-500 outline-none"
               />
               <button 
                 onClick={async () => {
@@ -286,7 +286,7 @@ export function AdminDashboard() {
                     console.error(e);
                   }
                 }}
-                className="bg-indigo-600 text-white px-6 py-3 rounded-xl font-bold hover:bg-indigo-700 transition-colors flex items-center"
+                className="bg-sena-500 text-white px-6 py-3 rounded-xl font-bold hover:bg-sena-600 transition-colors flex items-center"
               >
                 <Plus className="w-5 h-5 mr-2" />
                 Crear Categoría
@@ -295,14 +295,14 @@ export function AdminDashboard() {
           </div>
 
           <div className="space-y-3">
-            <h3 className="text-lg font-bold text-slate-800 mb-4">Categorías existentes ({categories.length})</h3>
+            <h3 className="text-lg font-bold text-zinc-800 mb-4">Categorías existentes ({categories.length})</h3>
             {categories.map(cat => (
               <div key={cat.id} className="flex items-center justify-between p-4 bg-white border border-slate-100 rounded-xl hover:shadow-md transition-shadow group">
                 <div className="flex items-center">
-                  <div className="w-10 h-10 rounded-lg bg-indigo-50 flex items-center justify-center mr-4">
-                    <Tag className="w-5 h-5 text-indigo-500" />
+                  <div className="w-10 h-10 rounded-lg bg-sena-50 flex items-center justify-center mr-4">
+                    <Tag className="w-5 h-5 text-sena-500" />
                   </div>
-                  <span className="font-bold text-slate-700">{cat.name}</span>
+                  <span className="font-bold text-zinc-700">{cat.name}</span>
                 </div>
                 <button 
                   onClick={async () => {
@@ -320,10 +320,10 @@ export function AdminDashboard() {
           </div>
         </div>
       ) : activeTab === "sugerencias" ? (
-        <div className="bg-white p-8 rounded-3xl shadow-lg shadow-indigo-100/50 border border-slate-100">
+        <div className="bg-white p-8 rounded-3xl shadow-lg shadow-sena-100/50 border border-slate-100">
           <div className="flex items-center justify-between mb-8 border-b border-slate-100 pb-5">
             <div>
-              <h2 className="text-2xl font-extrabold text-slate-900 tracking-tight">Bandeja de Entrada</h2>
+              <h2 className="text-2xl font-extrabold text-zinc-900 tracking-tight">Bandeja de Entrada</h2>
               <p className="text-slate-500 mt-1">Lee los mensajes, preguntas y sugerencias enviadas por los aprendices.</p>
             </div>
           </div>
@@ -331,7 +331,7 @@ export function AdminDashboard() {
           {suggestions.length === 0 ? (
             <div className="text-center py-20 px-4 bg-slate-50 rounded-3xl border border-slate-100 border-dashed">
               <Megaphone className="w-16 h-16 text-slate-300 mx-auto mb-5" />
-              <h3 className="text-xl font-bold text-slate-700 mb-2">Buzón vacío</h3>
+              <h3 className="text-xl font-bold text-zinc-700 mb-2">Buzón vacío</h3>
               <p className="text-slate-500 text-sm">No hay nuevas sugerencias por parte de los aprendices.</p>
             </div>
           ) : (
@@ -345,23 +345,23 @@ export function AdminDashboard() {
                 }, {} as Record<string, typeof suggestions>)
               ).map(([categoryName, group]) => (
                 <div key={categoryName}>
-                  <h3 className="text-lg font-black text-slate-800 mb-4 flex items-center border-b border-slate-100 pb-2">
-                    <span className="w-2 h-2 bg-indigo-500 rounded-full mr-3"></span>
+                  <h3 className="text-lg font-black text-zinc-800 mb-4 flex items-center border-b border-slate-100 pb-2">
+                    <span className="w-2 h-2 bg-sena-500 rounded-full mr-3"></span>
                     {categoryName}
                     <span className="ml-3 text-xs font-bold text-slate-400 bg-slate-100 px-2.5 py-0.5 rounded-full">{group.length}</span>
                   </h3>
                   <div className="grid gap-4">
                     {group.map(sug => (
-                      <div key={sug.id} className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 hover:border-indigo-300 transition-colors">
+                      <div key={sug.id} className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 hover:border-sena-300 transition-colors">
                         <div className="flex justify-between items-start mb-4">
                           <div className="flex flex-col">
-                            <h4 className="font-extrabold text-slate-800 text-lg">{sug.title}</h4>
+                            <h4 className="font-extrabold text-zinc-800 text-lg">{sug.title}</h4>
                           </div>
                           <span className="text-xs text-slate-400 font-bold uppercase">{new Date(sug.createdAt).toLocaleDateString()}</span>
                         </div>
                         <p className="text-slate-600 text-sm mb-4 bg-slate-50 p-4 rounded-xl border border-slate-100 whitespace-pre-wrap">{sug.content}</p>
                         <div className="flex justify-between items-center text-xs">
-                          <div className="font-medium text-slate-500">Enviado por: <span className="text-slate-800 font-bold">{sug.author?.name || "Desconocido"}</span></div>
+                          <div className="font-medium text-slate-500">Enviado por: <span className="text-zinc-800 font-bold">{sug.author?.name || "Desconocido"}</span></div>
                           <button onClick={async () => {
                             if (confirm("¿Eliminar esta sugerencia?")) {
                               await fetchApi(`/api/notes/${sug.id}`, { method: "DELETE" });
@@ -381,11 +381,11 @@ export function AdminDashboard() {
         </div>
       ) : (
       /* SECCIÓN PRINCIPAL */
-      <div className="bg-white p-8 rounded-3xl shadow-lg shadow-indigo-100/50 border border-slate-100">
+      <div className="bg-white p-8 rounded-3xl shadow-lg shadow-sena-100/50 border border-slate-100">
         <div className="flex justify-between items-center mb-8 border-b border-slate-100 pb-5">
           <div>
-            <h2 className="text-2xl font-extrabold text-slate-900 flex items-center">
-              <Megaphone className="w-6 h-6 mr-3 text-indigo-600" />
+            <h2 className="text-2xl font-extrabold text-zinc-900 flex items-center">
+              <Megaphone className="w-6 h-6 mr-3 text-sena-500" />
               Gestion de Anuncios
             </h2>
             <p className="text-slate-500 text-sm mt-1 ml-9">Publica y administra el contenido que ven los aprendices.</p>
@@ -399,7 +399,7 @@ export function AdminDashboard() {
               setNewCategoryId("")
               setIsFormOpen(!isFormOpen)
             }}
-            className={`flex items-center space-x-2 px-6 py-3 rounded-xl text-sm font-bold transition-all shadow-md ${isFormOpen ? 'bg-slate-100 text-slate-700 hover:bg-slate-200' : 'bg-indigo-600 text-white hover:bg-indigo-700 hover:shadow-indigo-200 hover:-translate-y-0.5'}`}
+            className={`flex items-center space-x-2 px-6 py-3 rounded-xl text-sm font-bold transition-all shadow-md ${isFormOpen ? 'bg-slate-100 text-zinc-700 hover:bg-slate-200' : 'bg-sena-500 text-white hover:bg-sena-600 hover:shadow-sena-200 hover:-translate-y-0.5'}`}
           >
             {isFormOpen ? "Cerrar Panel" : <><Plus className="w-5 h-5" /> <span>Crear Nuevo</span></>}
           </button>
@@ -414,7 +414,7 @@ export function AdminDashboard() {
                 <input 
                   type="text" 
                   placeholder="Ej. Inscripciones Abiertas 2026..." 
-                  className="w-full p-4 bg-white border border-slate-200 rounded-xl focus:ring-4 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none text-slate-800 font-medium transition-all"
+                  className="w-full p-4 bg-white border border-slate-200 rounded-xl focus:ring-4 focus:ring-sena-500/20 focus:border-sena-500 outline-none text-zinc-800 font-medium transition-all"
                   value={newTitle}
                   onChange={(e) => setNewTitle(e.target.value)}
                 />
@@ -422,7 +422,7 @@ export function AdminDashboard() {
               <div>
                 <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">Categoria</label>
                 <select 
-                  className="w-full p-4 bg-white border border-slate-200 rounded-xl focus:ring-4 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none text-slate-800 font-medium transition-all appearance-none"
+                  className="w-full p-4 bg-white border border-slate-200 rounded-xl focus:ring-4 focus:ring-sena-500/20 focus:border-sena-500 outline-none text-zinc-800 font-medium transition-all appearance-none"
                   value={newCategoryId}
                   onChange={(e) => setNewCategoryId(e.target.value)}
                 >
@@ -443,7 +443,7 @@ export function AdminDashboard() {
                     <input 
                       type="url" 
                       placeholder="https://ejemplo.com/imagen.jpg o link del blog..." 
-                      className="w-full pl-12 p-4 bg-white border border-slate-200 rounded-xl focus:ring-4 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none text-slate-800 transition-all font-medium"
+                      className="w-full pl-12 p-4 bg-white border border-slate-200 rounded-xl focus:ring-4 focus:ring-sena-500/20 focus:border-sena-500 outline-none text-zinc-800 transition-all font-medium"
                       value={newImageUrl}
                       onChange={(e) => setNewImageUrl(e.target.value)}
                     />
@@ -461,10 +461,10 @@ export function AdminDashboard() {
                     <span className="absolute text-xs font-bold bg-black/50 text-white px-2 py-1 rounded bottom-2 right-2">Vista Previa</span>
                   </div>
                 ) : newImageUrl ? (
-                  <div className={`rounded-xl border p-4 text-xs font-medium flex items-center ${extractError ? 'border-red-200 bg-red-50 text-red-700' : 'border-indigo-200 bg-indigo-50 text-indigo-700'}`}>
+                  <div className={`rounded-xl border p-4 text-xs font-medium flex items-center ${extractError ? 'border-red-200 bg-red-50 text-red-700' : 'border-sena-200 bg-sena-50 text-sena-600'}`}>
                     {isExtracting ? (
                       <>
-                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-indigo-700 mr-2"></div>
+                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-sena-600 mr-2"></div>
                         <span>Verificando enlace magicamente...</span>
                       </>
                     ) : extractError ? (
@@ -474,7 +474,7 @@ export function AdminDashboard() {
                       </>
                     ) : (
                       <>
-                        <div className="animate-pulse rounded-full h-2 w-2 bg-indigo-500 mr-3"></div>
+                        <div className="animate-pulse rounded-full h-2 w-2 bg-sena-500 mr-3"></div>
                         <span>Procesando enlace...</span>
                       </>
                     )}
@@ -486,7 +486,7 @@ export function AdminDashboard() {
                 <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">Contenido Detallado</label>
                 <textarea 
                   placeholder="Escribe toda la informaciÃ³n relevante aquÃ­..." 
-                  className="w-full p-5 bg-white border border-slate-200 rounded-xl focus:ring-4 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none min-h-[160px] h-full resize-y text-slate-800 transition-all font-medium"
+                  className="w-full p-5 bg-white border border-slate-200 rounded-xl focus:ring-4 focus:ring-sena-500/20 focus:border-sena-500 outline-none min-h-[160px] h-full resize-y text-zinc-800 transition-all font-medium"
                   value={newContent}
                   onChange={(e) => setNewContent(e.target.value)}
                 />
@@ -497,7 +497,7 @@ export function AdminDashboard() {
               <button 
                 onClick={handleSaveNote}
                 disabled={!newTitle.trim() || !newContent.trim()}
-                className="bg-indigo-900 text-white px-8 py-4 rounded-xl font-bold hover:bg-indigo-800 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-xl shadow-indigo-900/20 hover:-translate-y-0.5"
+                className="bg-sena-900 text-white px-8 py-4 rounded-xl font-bold hover:bg-sena-800 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-xl shadow-sena-900/20 hover:-translate-y-0.5"
               >
                 {editingId ? "Actualizar Anuncio" : "Publicar Anuncio Ahora"}
               </button>
@@ -509,15 +509,15 @@ export function AdminDashboard() {
         {globalNotes.length === 0 ? (
           <div className="text-center py-20 px-4 bg-slate-50/50 rounded-3xl border-2 border-slate-100 border-dashed">
             <div className="mx-auto w-20 h-20 bg-white rounded-full flex items-center justify-center shadow-sm border border-slate-100 mb-5">
-              <Megaphone className="w-10 h-10 text-indigo-300" />
+              <Megaphone className="w-10 h-10 text-sena-300" />
             </div>
-            <h3 className="text-xl font-bold text-slate-800">No hay anuncios publicados</h3>
+            <h3 className="text-xl font-bold text-zinc-800">No hay anuncios publicados</h3>
             <p className="text-slate-500 mt-2 max-w-sm mx-auto">Haz clic en "Crear Nuevo" para publicar el primer anuncio oficial del centro.</p>
           </div>
         ) : (
           <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
             {globalNotes.map(note => (
-              <div key={note.id} className={`group bg-white rounded-3xl p-6 shadow-sm border border-slate-100 hover:border-indigo-200 hover:shadow-xl hover:shadow-indigo-100/40 transition-all duration-300 flex flex-col relative overflow-hidden hover:-translate-y-1 ${note.deletedAt ? 'opacity-60 grayscale' : ''}`}>
+              <div key={note.id} className={`group bg-white rounded-3xl p-6 shadow-sm border border-slate-100 hover:border-sena-200 hover:shadow-xl hover:shadow-sena-100/40 transition-all duration-300 flex flex-col relative overflow-hidden hover:-translate-y-1 ${note.deletedAt ? 'opacity-60 grayscale' : ''}`}>
                 
                 {note.deletedAt && (
                   <div className="absolute top-4 right-4 z-10 bg-red-500 text-white text-[10px] font-black px-2 py-1 rounded-md uppercase tracking-wider shadow-sm">
@@ -536,17 +536,17 @@ export function AdminDashboard() {
                         e.currentTarget.parentElement!.style.display = 'none';
                       }}
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-slate-900/40 to-transparent"></div>
+                    <div className="absolute inset-0 bg-gradient-to-t from-zinc-900/40 to-transparent"></div>
                   </div>
                 )}
                 
                 <div className="flex-1">
                   {note.category && (
-                    <span className="inline-block px-3 py-1 bg-indigo-50 text-indigo-700 text-xs font-bold rounded-lg mb-3 uppercase tracking-wider">
+                    <span className="inline-block px-3 py-1 bg-sena-50 text-sena-600 text-xs font-bold rounded-lg mb-3 uppercase tracking-wider">
                       {note.category.name}
                     </span>
                   )}
-                  <h3 className="font-extrabold text-slate-900 text-xl mb-3 leading-tight">{note.title}</h3>
+                  <h3 className="font-extrabold text-zinc-900 text-xl mb-3 leading-tight">{note.title}</h3>
                   <p className="text-slate-600 text-sm line-clamp-3 mb-4 leading-relaxed">{note.content}</p>
                 </div>
                 
@@ -556,7 +556,7 @@ export function AdminDashboard() {
                   </span>
                   {!note.deletedAt && (
                     <div className="flex space-x-2">
-                      <button onClick={() => handleEdit(note)} className="p-2.5 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-xl transition-colors">
+                      <button onClick={() => handleEdit(note)} className="p-2.5 text-slate-400 hover:text-sena-500 hover:bg-sena-50 rounded-xl transition-colors">
                         <Edit2 className="w-4 h-4" />
                       </button>
                       <button onClick={() => handleDelete(note.id)} className="p-2.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-xl transition-colors">
