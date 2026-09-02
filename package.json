@@ -1,0 +1,24 @@
+{
+  "name": "Proyecto",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "concurrently -c \"cyan,magenta\" -n \"backend,frontend\" \"cd synapse_api && pnpm dev\" \"cd synapse_web && pnpm dev\""
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "@prisma/client",
+      "@prisma/engines",
+      "esbuild",
+      "prisma"
+    ]
+  },
+  "dependencies": {
+    "concurrently": "^10.0.5"
+  }
+}
