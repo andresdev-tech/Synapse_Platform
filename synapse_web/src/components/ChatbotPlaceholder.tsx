@@ -7,7 +7,7 @@ export function ChatbotPlaceholder() {
   return (
     <div className="fixed bottom-6 right-6 z-50">
       <button 
-        className="bg-indigo-600 hover:bg-indigo-700 text-white p-4 rounded-full shadow-lg flex items-center gap-2 group transition-all"
+        className="bg-sena-500 hover:bg-sena-600 text-white p-4 rounded-full shadow-lg flex items-center gap-2 group transition-all"
         title="Chatbot (Próximamente)"
         type="button"
         onClick={() => alert("El Chatbot se integrará en la siguiente fase del proyecto.")}

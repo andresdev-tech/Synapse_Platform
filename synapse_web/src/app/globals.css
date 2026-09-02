@@ -10,6 +10,22 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+
+  /* Paleta SENA Verde (Institucional) */
+  --color-sena-50: #f2fbf2;
+  --color-sena-100: #e2f5e1;
+  --color-sena-200: #c6ebc4;
+  --color-sena-300: #9cdb9a;
+  --color-sena-400: #6bc669;
+  --color-sena-500: #39a900;
+  --color-sena-600: #2d8500;
+  --color-sena-700: #236800;
+  --color-sena-800: #1d5400;
+  --color-sena-900: #174503;
+  --color-sena-950: #0b2600;
+
+  /* Naranja SENA (Acento) */
+  --color-sena-orange: #FF6E00;
 }
 
 body {

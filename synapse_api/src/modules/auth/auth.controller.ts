@@ -41,7 +41,7 @@ export class AuthController {
         res.status(400).json({ error: error.errors[0].message });
         return;
       }
-      res.status(500).json({ error: "Error en el servidor" });
+      console.error('[Login Error]', error); res.status(500).json({ error: "Error en el servidor" });
     }
   }
 
@@ -61,7 +61,7 @@ export class AuthController {
         res.status(400).json({ error: error.errors[0].message });
         return;
       }
-      res.status(500).json({ error: "Error en el servidor" });
+      console.error('[Login Error]', error); res.status(500).json({ error: "Error en el servidor" });
     }
   }
 
@@ -75,7 +75,7 @@ export class AuthController {
         res.status(400).json({ error: error.errors[0].message });
         return;
       }
-      res.status(500).json({ error: "Error en el servidor" });
+      console.error('[Login Error]', error); res.status(500).json({ error: "Error en el servidor" });
     }
   }
 
@@ -93,7 +93,7 @@ export class AuthController {
         res.status(400).json({ error: error.errors[0].message });
         return;
       }
-      res.status(500).json({ error: "Error en el servidor" });
+      console.error('[Login Error]', error); res.status(500).json({ error: "Error en el servidor" });
     }
   }
 
