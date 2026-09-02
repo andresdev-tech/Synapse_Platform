@@ -1,8 +1,8 @@
 import { Response } from "express";
-import { PrismaClient } from "@prisma/client";
+import { prisma } from "../../config/prisma";
 import { AuthRequest } from "../../middleware/auth.middleware";
 
-const prisma = new PrismaClient();
+
 
 export const updateLayout = async (req: AuthRequest, res: Response): Promise<void> => {
   const userId = req.user?.id;
