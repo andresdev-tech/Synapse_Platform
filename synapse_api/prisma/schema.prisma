@@ -78,21 +78,22 @@ model Category {
 }
 
 model Note {
-  id          String    @id @default(uuid())
-  title       String
-  content     String
-  isGlobal    Boolean   @default(false)
-  authorId    String
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-  imageUrl    String?
-  published   Boolean   @default(true)
-  categoryId  String?
-  deletedAt   DateTime?
-  attachments Json?     @default("[]")
-  comments    Comment[]
-  author      User      @relation(fields: [authorId], references: [id], onDelete: Cascade)
-  category    Category? @relation(fields: [categoryId], references: [id])
+  id         String    @id @default(uuid())
+  title      String
+  content    String    @db.Text
+  imageUrl   String?
+  attachments Json? @default("[]")
+  published  Boolean   @default(true)
+  isGlobal   Boolean   @default(false)
+  authorId   String
+  categoryId String?
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  deletedAt  DateTime? // Para soft-delete
+
+  author     User      @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  category   Category? @relation(fields: [categoryId], references: [id])
+  comments   Comment[]
 }
 
 model Comment {
