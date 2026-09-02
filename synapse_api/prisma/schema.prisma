@@ -1,27 +1,26 @@
-datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
 }
 
-generator client {
-  provider = "prisma-client-js"
+datasource db {
+  provider = "postgresql"
 }
 
 model Account {
-  id                 String  @id @default(uuid())
-  userId             String
-  type               String
-  provider           String
-  providerAccountId  String
-  refresh_token      String?  @db.Text
-  access_token       String?  @db.Text
-  expires_at         Int?
-  token_type         String?
-  scope              String?
-  id_token           String?  @db.Text
-  session_state      String?
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id                String  @id @default(uuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerAccountId])
 }
@@ -39,16 +38,15 @@ model User {
   name          String?
   email         String?   @unique
   emailVerified DateTime?
-  password      String?
   image         String?
+  layoutPrefs   String?
+  password      String?
   roleId        String?
-  layoutPrefs   String?   @db.Text
-  
-  role          Role?     @relation(fields: [roleId], references: [id])
   accounts      Account[]
-  sessions      Session[]
-  notes         Note[]
   comments      Comment[]
+  notes         Note[]
+  sessions      Session[]
+  role          Role?     @relation(fields: [roleId], references: [id])
 }
 
 model Role {
@@ -74,38 +72,35 @@ model PasswordReset {
 }
 
 model Category {
-  id        String   @id @default(uuid())
-  name      String   @unique
-  notes     Note[]
+  id    String @id @default(uuid())
+  name  String @unique
+  notes Note[]
 }
 
 model Note {
-  id         String    @id @default(uuid())
-  title      String
-  content    String    @db.Text
-  imageUrl   String?
-  published  Boolean   @default(true)
-  isGlobal   Boolean   @default(false)
-  authorId   String
-  categoryId String?
-  createdAt  DateTime  @default(now())
-  updatedAt  DateTime  @updatedAt
-  deletedAt  DateTime? // Para soft-delete
-
-  author     User      @relation(fields: [authorId], references: [id], onDelete: Cascade)
-  category   Category? @relation(fields: [categoryId], references: [id])
-  comments   Comment[]
+  id          String    @id @default(uuid())
+  title       String
+  content     String
+  isGlobal    Boolean   @default(false)
+  authorId    String
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  imageUrl    String?
+  published   Boolean   @default(true)
+  categoryId  String?
+  deletedAt   DateTime?
+  attachments Json?     @default("[]")
+  comments    Comment[]
+  author      User      @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  category    Category? @relation(fields: [categoryId], references: [id])
 }
 
 model Comment {
   id        String   @id @default(uuid())
-  content   String   @db.Text
+  content   String
   noteId    String
   authorId  String
   createdAt DateTime @default(now())
-
-  note      Note     @relation(fields: [noteId], references: [id], onDelete: Cascade)
   author    User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  note      Note     @relation(fields: [noteId], references: [id], onDelete: Cascade)
 }
-
-

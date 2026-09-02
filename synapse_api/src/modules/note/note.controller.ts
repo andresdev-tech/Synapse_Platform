@@ -1,7 +1,6 @@
 import { Request, Response } from "express";
-import { PrismaClient } from "@prisma/client";
+import { prisma } from "../../config/prisma";
 
-const prisma = new PrismaClient();
 
 export const getGlobalNotes = async (req: Request, res: Response): Promise<void> => {
   try {
