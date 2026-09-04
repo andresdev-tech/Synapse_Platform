@@ -28,7 +28,7 @@ const pageContent: Record<string, { title: string, content: React.ReactNode }> =
         <ImageZoom 
           src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgP1V5c2lsk-WXnlrf_YCS0qHh6BN_2V2_3pnVbCq6cOBwiXlZk0wFfoW3EPGIl5rCHIY9Vs5htiCw1YEdfR_ter4BAGmaQq89hq8zo315Cbx8Tihh2qWCIV1dApseYw6599iwVlCjmSDbd/s0/2.+Promesa+de+valor-01.png" 
           alt="Promesa de Valor CTMA"
-          className="relative rounded-xl shadow-lg w-full max-w-3xl transform transition-transform duration-700 hover:scale-[1.02]"
+          className="relative rounded-xl shadow-lg w-full max-w-7xl transform transition-transform duration-700 hover:scale-[1.02]"
           loading="lazy"
         />
       </div>
@@ -42,7 +42,7 @@ const pageContent: Record<string, { title: string, content: React.ReactNode }> =
         <ImageZoom 
           src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhFHPfanPZjm2uUK0Bki55SD0TQ9oN_ORD9ZAfyR7JrazHwaysqzO6ximuQygQEvVGYXTeqTe1QdZQflzZ_1jtSDmW-FAjDUweB52fXsvsd8tbpOcDUyiufKha2_nnbhHZiA-oFP042Qv7V/s0/3.+Organigrama-01.png" 
           alt="Organigrama CTMA"
-          className="relative rounded-xl shadow-lg w-full max-w-4xl bg-white p-4 transform transition-transform duration-700 hover:scale-[1.02]"
+          className="relative rounded-xl shadow-lg w-full w-full bg-white p-4 transform transition-transform duration-700 hover:scale-[1.02]"
           loading="lazy"
         />
       </div>
@@ -56,19 +56,19 @@ const pageContent: Record<string, { title: string, content: React.ReactNode }> =
           <ImageZoom 
             src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjfyG1rQRjJJ3OC40Q6zdQyLwXwF9ikZKVRLeghhXyafCl-urVl1wHrDLswugjQG3tFPVF0_pRLmMWkDymbkFAcjeN15KZY-zHQGtjVyUuVhuv61q1gzTQVjm2V5vIoJi0rdXD-WFIZ1pj6JofV16KW60U1GNicU0D6ggl0CLiieq1jK-lp-yTM7NzxbIpO/s0/Directorio.jpg" 
             alt="Directorio CTMA"
-            className="rounded-xl shadow-md w-full max-w-3xl transform transition-transform duration-500 hover:scale-[1.01]"
+            className="rounded-xl shadow-md w-full max-w-7xl transform transition-transform duration-500 hover:scale-[1.01]"
             loading="lazy"
           />
           <ImageZoom 
             src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgzZN4cYrfFrX7TSAmlOCrd_a0_L8fC7J9OfgNox23Ws263VSgVs-Pj1lnSvtz1XQJHLm0Ingq33oN9v9BLXPmKA4cyBkJbG1DaSm4B_-KgNW0VqKqZTzZwYGXz2RXOjwUSjJLLBKe1dB70gkkfJzGyK2P-gvWQ1vlWKZkWlsq-vVhyphenhyphen0f_NzYjMS8FQ4bgs/s0/3.jpg" 
             alt="Contacto 1"
-            className="rounded-xl shadow-md w-full max-w-3xl transform transition-transform duration-500 hover:scale-[1.01]"
+            className="rounded-xl shadow-md w-full max-w-7xl transform transition-transform duration-500 hover:scale-[1.01]"
             loading="lazy"
           />
           <ImageZoom 
             src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgchLU_EUuaaRzf0SqeUu7a2ffOze5zA5N_qpCI7f9CQqwD1iPmeRLCTmuUzaTfgdJ43GYbcTPfTnegmafgCJvFY6aos4W8WvzLAFcrmGkKkblWCxGWlEf3uufhTakCX028a6SkpF8e4pjddGx8_ABpgdrMbHWGWdib8RpvJlqzXEZODfhQPkiIgQnsfLEy/s0/5.jpg" 
             alt="Contacto 2"
-            className="rounded-xl shadow-md w-full max-w-3xl transform transition-transform duration-500 hover:scale-[1.01]"
+            className="rounded-xl shadow-md w-full max-w-7xl transform transition-transform duration-500 hover:scale-[1.01]"
             loading="lazy"
           />
         </div>
@@ -160,7 +160,7 @@ const pageContent: Record<string, { title: string, content: React.ReactNode }> =
   "bienestar-al-aprendiz": {
     title: "Bienestar al Aprendiz",
     content: (
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 w-full max-w-7xl mx-auto py-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 w-full w-full mx-auto py-8">
         
         {/* Card 1: Sala de Atención */}
         <div className="flex flex-col h-full bg-slate-100 dark:bg-slate-800/50 rounded-3xl p-6 shadow-sm border border-slate-200 dark:border-slate-700/50 hover:shadow-xl transition-all duration-300">
@@ -318,7 +318,7 @@ const pageContent: Record<string, { title: string, content: React.ReactNode }> =
           </p>
         </div>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 sm:gap-8 w-full max-w-7xl mx-auto py-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 sm:gap-8 w-full w-full mx-auto py-8">
           
           {/* Card 1 */}
           <div className="flex flex-col h-full bg-slate-100 dark:bg-slate-800/50 rounded-3xl p-6 shadow-sm border border-slate-200 dark:border-slate-700/50 hover:shadow-xl transition-all duration-300">
@@ -485,15 +485,20 @@ export default async function CtmaPage({ params }: { params: Promise<{ slug: str
   };
 
   return (
-    <div className="min-h-[calc(100vh-64px)] bg-slate-50 dark:bg-slate-900 py-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden flex flex-col items-center">
+    <div className="min-h-[calc(100vh-64px)] bg-slate-50 dark:bg-slate-950 py-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden flex flex-col items-center">
       
-      {/* Fondo Decorativo Avanzado */}
-      <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none z-0">
-        <div className="absolute -top-[10%] -left-[10%] w-[40%] h-[40%] bg-indigo-500/10 dark:bg-indigo-600/10 rounded-full blur-[120px] animate-pulse"></div>
-        <div className="absolute bottom-[20%] -right-[10%] w-[30%] h-[50%] bg-blue-500/10 dark:bg-blue-600/10 rounded-full blur-[100px]"></div>
+      {/* Fondo Decorativo Grid y Glows MUY VISIBLES */}
+      <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
+        {/* Patrón de puntos (Grid Pattern) más oscuro y visible */}
+        <div className="absolute inset-0 bg-[radial-gradient(#94a3b8_2px,transparent_2px)] dark:bg-[radial-gradient(#475569_2px,transparent_2px)] [background-size:32px_32px] opacity-100 dark:opacity-80"></div>
+        
+        {/* Gradientes ambientales gigantes y coloridos (Mesh Gradient) */}
+        <div className="absolute top-[-10%] left-[-10%] w-[60%] h-[60%] bg-indigo-500/40 dark:bg-indigo-600/30 rounded-full blur-[150px] mix-blend-multiply dark:mix-blend-screen animate-pulse"></div>
+        <div className="absolute bottom-[-10%] right-[-10%] w-[60%] h-[60%] bg-blue-400/40 dark:bg-blue-600/30 rounded-full blur-[150px] mix-blend-multiply dark:mix-blend-screen"></div>
+        <div className="absolute top-[20%] right-[20%] w-[40%] h-[40%] bg-purple-400/30 dark:bg-purple-600/20 rounded-full blur-[120px] mix-blend-multiply dark:mix-blend-screen"></div>
       </div>
 
-      <div className="max-w-4xl w-full relative z-10">
+      <div className="w-full relative z-10">
         {/* BOTÓN DE VOLVER MEJORADO */}
         <Link 
           href="/?guest=true" 
@@ -506,10 +511,15 @@ export default async function CtmaPage({ params }: { params: Promise<{ slug: str
         <div className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-xl rounded-[2.5rem] shadow-2xl border border-slate-200/50 dark:border-slate-700/50 overflow-hidden transform transition-all hover:shadow-indigo-500/10 duration-700">
           
           {/* Cabecera del Documento */}
-          <div className="bg-gradient-to-br from-indigo-600 via-blue-600 to-indigo-800 px-10 py-16 text-white relative overflow-hidden group">
-            <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-20 mix-blend-overlay"></div>
-            <div className="absolute -top-24 -right-24 bg-white/10 w-64 h-64 rounded-full blur-3xl group-hover:scale-150 transition-transform duration-1000"></div>
-            <div className="absolute top-8 right-12 opacity-10 transform group-hover:rotate-12 transition-transform duration-700">
+          <div className="bg-gradient-to-br from-indigo-700 via-blue-700 to-indigo-900 px-10 py-16 text-white relative overflow-hidden group">
+            {/* Patrón CSS Puro (Líneas Diagonales) Muy Visible */}
+            <div className="absolute inset-0 opacity-30 mix-blend-overlay" style={{ backgroundImage: 'repeating-linear-gradient(45deg, #ffffff 0, #ffffff 2px, transparent 0, transparent 50%)', backgroundSize: '24px 24px' }}></div>
+            
+            {/* Figuras geométricas brillantes para darle más vida */}
+            <div className="absolute -top-32 -right-32 bg-cyan-400/40 w-96 h-96 rounded-full blur-[80px] group-hover:scale-125 transition-transform duration-1000"></div>
+            <div className="absolute -bottom-32 -left-32 bg-purple-500/40 w-96 h-96 rounded-full blur-[80px] group-hover:scale-125 transition-transform duration-1000 delay-100"></div>
+            
+            <div className="absolute top-8 right-12 opacity-20 transform group-hover:rotate-12 group-hover:scale-110 transition-all duration-700">
               <Info className="w-40 h-40" />
             </div>
             
