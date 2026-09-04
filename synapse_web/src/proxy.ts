@@ -18,7 +18,7 @@ export default withAuth(
       base-uri 'self';
       form-action 'self';
       frame-ancestors 'none';
-      frame-src 'self' https://www.google.com/ https://www.google.com/maps/ https://app.powerbi.com/;
+      frame-src 'self' https://www.google.com/ https://www.google.com/maps/ https://app.powerbi.com/ https://*.youtube.com https://*.youtube-nocookie.com;
       ${isProd ? "upgrade-insecure-requests;" : ""}
     `;
     
