@@ -407,7 +407,7 @@ export function ApprenticeDashboard() {
 
   return (
     <div className="bg-slate-50 dark:bg-zinc-900 text-zinc-900 dark:text-slate-100 min-h-screen transition-colors duration-300">
-      <div className="max-w-7xl mx-auto space-y-8 px-4 py-8">
+      <div className="w-full mx-auto space-y-8 px-4 md:px-8 py-8">
         
         {/* HEADER TIPO BLOG */}
         <div className="bg-gradient-to-br from-sena-500 via-sena-400 to-sena-600 dark:from-zinc-800 dark:via-zinc-900 dark:to-zinc-900 dark:border-sena-500/50 dark:shadow-[0_0_30px_rgba(57,169,0,0.1)] rounded-[2rem] p-10 text-white shadow-2xl relative overflow-hidden flex flex-col md:flex-row items-center justify-between border border-transparent dark:border-sena-500/20">
