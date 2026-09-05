@@ -178,7 +178,7 @@ export function AdminDashboard() {
   }
 
   return (
-    <div className="max-w-6xl mx-auto space-y-8">
+    <div className="w-full mx-auto space-y-8 px-4 md:px-8 py-8">
       {/* BANNER DE BIENVENIDA */}
       <div className="bg-gradient-to-r from-sena-600 via-sena-500 to-sena-400 rounded-3xl p-8 text-white shadow-xl relative overflow-hidden">
         <div className="absolute top-0 right-0 opacity-10">
