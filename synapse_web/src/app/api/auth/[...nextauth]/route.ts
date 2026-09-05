@@ -41,8 +41,8 @@ export const authOptions: NextAuthOptions = {
             }
           }
           return null
-        } catch (e: any) {
-          throw new Error(e.message || "Error de conexión con la API")
+        } catch (e: unknown) {
+          throw new Error((e as Error).message || "Error de conexión con la API")
         }
       }
     })
@@ -70,7 +70,7 @@ export const authOptions: NextAuthOptions = {
         token.id = user.id
         token.role = user.role || "Usuario"
         token.layoutPrefs = user.layoutPrefs
-        token.apiToken = (user as any).apiToken
+        token.apiToken = user.apiToken
       }
       return token
     },
@@ -79,7 +79,7 @@ export const authOptions: NextAuthOptions = {
         session.user.id = token.id as string
         session.user.role = token.role as string
         session.user.layoutPrefs = token.layoutPrefs as string
-        ;(session as any).apiToken = token.apiToken
+        session.apiToken = token.apiToken
       }
       return session
     }
