@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { getGlobalNotes, getPersonalNotes, createNote, updateNote, deleteNote, getSuggestions } from "../modules/note/note.controller";
+import { getGlobalNotes, getPersonalNotes, createNote, updateNote, deleteNote, getSuggestions, getNoteById } from "../modules/note/note.controller";
 import { verifyToken, requireAdmin } from "../middleware/auth.middleware";
 
 const router = Router();
@@ -76,19 +76,25 @@ router.get("/apprentice/:userId", verifyToken, getPersonalNotes);
  *         application/json:
  *           schema:
  *             type: object
- *             required: [title, content]
+ *             required: [title, body]
  *             properties:
  *               title:
  *                 type: string
- *               content:
+ *               body:
  *                 type: string
- *               imageUrl:
+ *               excerpt:
+ *                 type: string
+ *               seoImage:
  *                 type: string
  *               categoryId:
  *                 type: string
  *               isGlobal:
  *                 type: boolean
  *               authorId:
+ *                 type: string
+ *               seoTitle:
+ *                 type: string
+ *               seoDescription:
  *                 type: string
  *     responses:
  *       201:
@@ -119,16 +125,23 @@ router.post("/", verifyToken, createNote);
  *             properties:
  *               title:
  *                 type: string
- *               content:
+ *               body:
  *                 type: string
- *               imageUrl:
+ *               excerpt:
+ *                 type: string
+ *               seoImage:
  *                 type: string
  *               categoryId:
+ *                 type: string
+ *               seoTitle:
+ *                 type: string
+ *               seoDescription:
  *                 type: string
  *     responses:
  *       200:
  *         description: Nota actualizada
  */
+router.get("/:id", verifyToken, getNoteById);
 router.put("/:id", verifyToken, updateNote);
 
 /**

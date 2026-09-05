@@ -3,6 +3,7 @@ import { RegisterDTO, LoginDTO, ForgotPasswordDTO, ResetPasswordDTO, AuthRespons
 import bcrypt from "bcryptjs";
 import nodemailer from "nodemailer";
 import jwt from "jsonwebtoken";
+import { RoleNames } from "../../config/prisma";
 
 export class AuthService {
   private static getTransporter() {
@@ -23,9 +24,9 @@ export class AuthService {
 
     const hashedPassword = await bcrypt.hash(data.password, 10);
 
-    let userRole = await AuthRepository.findRoleByName("Usuario");
+    let userRole = await AuthRepository.findRoleByName(RoleNames.USER);
     if (!userRole) {
-      userRole = await AuthRepository.createRole("Usuario");
+      userRole = await AuthRepository.createRole(RoleNames.USER);
     }
 
     const newUser = await AuthRepository.createUser({
@@ -70,7 +71,7 @@ export class AuthService {
 
     const secret = process.env.JWT_SECRET || "default_dev_secret_for_synapse";
     const token = jwt.sign(
-      { id: user.id, email: user.email, role: user.role?.name || "Usuario" }, 
+      { id: user.id, email: user.email, role: user.role?.name || RoleNames.USER }, 
       secret, 
       { expiresIn: "24h" }
     );
@@ -79,7 +80,7 @@ export class AuthService {
       success: true, 
       data: { 
         token, 
-        user: { id: user.id, name: user.name, email: user.email, role: user.role?.name || "Usuario", layoutPrefs: user.layoutPrefs } 
+        user: { id: user.id, name: user.name, email: user.email, role: user.role?.name || RoleNames.USER, layoutPrefs: user.layoutPrefs } 
       } 
     };
   }

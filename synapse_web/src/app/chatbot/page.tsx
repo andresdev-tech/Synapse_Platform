@@ -88,8 +88,8 @@ export default function ChatbotPage() {
               className={`flex gap-3 ${message.sender === 'user' ? 'justify-end' : 'justify-start'}`}
             >
               {message.sender === 'bot' && (
-                <div className="shrink-0 bg-sena-500 text-white p-2 rounded-full">
-                  <Bot className="w-5 h-5" />
+                <div className="shrink-0 bg-sena-500 text-white p-3 rounded-full">
+                  <Bot className="w-6 h-6" />
                 </div>
               )}
               <div
@@ -105,16 +105,16 @@ export default function ChatbotPage() {
                 </p>
               </div>
               {message.sender === 'user' && (
-                <div className="shrink-0 bg-sena-600 text-white p-2 rounded-full">
-                  <User className="w-5 h-5" />
+                <div className="shrink-0 bg-sena-600 text-white p-3 rounded-full">
+                  <User className="w-6 h-6" />
                 </div>
               )}
             </div>
           ))}
           {isTyping && (
             <div className="flex gap-3 justify-start">
-              <div className="shrink-0 bg-sena-500 text-white p-2 rounded-full">
-                <Bot className="w-5 h-5" />
+              <div className="shrink-0 bg-sena-500 text-white p-3 rounded-full">
+                <Bot className="w-6 h-6" />
               </div>
               <div className="bg-white rounded-2xl rounded-bl-sm px-4 py-3 border border-sena-200">
                 <div className="flex gap-1">

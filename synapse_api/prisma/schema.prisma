@@ -7,101 +7,498 @@ datasource db {
   provider = "postgresql"
 }
 
+// ======================================================
+// ENUMS
+// ======================================================
+// NOTA: El diagrama suministrado muestra los nombres de estos enums,
+// pero no sus valores. Los siguientes valores se dejan como una base
+// razonable y deben ajustarse a los valores reales de tu aplicación.
+
+enum UserStatus {
+  ACTIVE
+  INACTIVE
+  SUSPENDED
+}
+
+enum RoleName {
+  SUPER_ADMIN
+  ADMIN
+  EDITOR
+  AUTHOR
+  USER
+}
+
+enum ContentType {
+  ARTICLE
+  NEWS
+  PAGE
+  EVENT
+}
+
+enum ContentStatus {
+  DRAFT
+  PUBLISHED
+  SCHEDULED
+  ARCHIVED
+}
+
+enum Visibility {
+  PUBLIC
+  PRIVATE
+  INTERNAL
+}
+
+enum EventStatus {
+  DRAFT
+  SCHEDULED
+  ACTIVE
+  COMPLETED
+  CANCELLED
+}
+
+enum ReactionType {
+  LIKE
+  LOVE
+  CELEBRATE
+}
+
+enum ResourceType {
+  IMAGE
+  VIDEO
+  AUDIO
+  DOCUMENT
+  OTHER
+}
+
+enum NotificationType {
+  SYSTEM
+  CONTENT
+  EVENT
+  COMMENT
+}
+
+enum NotificationChannel {
+  IN_APP
+  EMAIL
+  PUSH
+}
+
+enum AuditAction {
+  CREATE
+  UPDATE
+  DELETE
+  LOGIN
+  LOGOUT
+}
+
+// ======================================================
+// AUTH
+// ======================================================
+
 model Account {
-  id                String  @id @default(uuid())
-  userId            String
-  type              String
-  provider          String
-  providerAccountId String
-  refresh_token     String?
-  access_token      String?
+  id                String  @id @default(uuid()) @db.Uuid
+  userId            String  @db.Uuid
+  type              String  @db.VarChar(255)
+  provider          String  @db.VarChar(255)
+  providerAccountId String  @db.VarChar(255)
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
   expires_at        Int?
-  token_type        String?
-  scope             String?
-  id_token          String?
-  session_state     String?
-  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  token_type        String? @db.VarChar(255)
+  scope             String? @db.VarChar(255)
+  id_token          String? @db.Text
+  session_state     String? @db.VarChar(255)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerAccountId])
+  @@index([userId])
 }
 
 model Session {
-  id           String   @id @default(uuid())
-  sessionToken String   @unique
-  userId       String
-  expires      DateTime
-  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-}
+  id           String   @id @default(uuid()) @db.Uuid
+  sessionToken String   @unique @db.VarChar(255)
+  userId       String   @db.Uuid
+  expires      DateTime @db.Timestamp(6)
 
-model User {
-  id            String    @id @default(uuid())
-  name          String?
-  email         String?   @unique
-  emailVerified DateTime?
-  image         String?
-  layoutPrefs   String?
-  password      String?
-  roleId        String?
-  accounts      Account[]
-  comments      Comment[]
-  notes         Note[]
-  sessions      Session[]
-  role          Role?     @relation(fields: [roleId], references: [id])
-}
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-model Role {
-  id    String @id @default(uuid())
-  name  String @unique
-  users User[]
+  @@index([userId])
 }
 
 model VerificationCode {
-  id        String   @id @default(uuid())
-  email     String
-  code      String
-  expiresAt DateTime
-  createdAt DateTime @default(now())
+  id        String   @id @default(uuid()) @db.Uuid
+  email     String   @db.VarChar(255)
+  code      String   @db.VarChar(255)
+  expiresAt DateTime @db.Timestamp(6)
+  createdAt DateTime @default(now()) @db.Timestamp(6)
+
+  @@index([email])
 }
 
 model PasswordReset {
-  id        String   @id @default(uuid())
-  email     String
-  code      String
-  expiresAt DateTime
-  createdAt DateTime @default(now())
+  id        String    @id @default(uuid()) @db.Uuid
+  email     String    @db.VarChar(255)
+  code      String    @db.VarChar(255)
+  expiresAt DateTime  @db.Timestamp(6)
+  createdAt DateTime  @default(now()) @db.Timestamp(6)
+  usedAt    DateTime? @db.Timestamp(6)
+
+  @@index([email])
+}
+
+// ======================================================
+// USERS / RBAC
+// ======================================================
+
+model User {
+  id            String     @id @default(uuid()) @db.Uuid
+  name          String?    @db.VarChar(255)
+  email         String     @unique @db.VarChar(255)
+  emailVerified DateTime?  @db.Timestamp(6)
+  password      String?    @db.Text
+  image         String?    @db.VarChar(255)
+  status        UserStatus @default(ACTIVE)
+  roleId        String     @db.Uuid
+  layoutPrefs   Json?
+  lastLoginAt   DateTime?  @db.Timestamp(6)
+  createdAt     DateTime   @default(now()) @db.Timestamp(6)
+  updatedAt     DateTime   @updatedAt @db.Timestamp(6)
+
+  role           Role             @relation(fields: [roleId], references: [id])
+  accounts       Account[]
+  sessions       Session[]
+  preferences    UserPreference[]
+  contents       Content[]        @relation("ContentAuthor")
+  eventAttendees EventAttendee[]
+  comments       Comment[]        @relation("CommentAuthor")
+  reactions      Reaction[]
+  bookmarks      Bookmark[]
+  resources      Resource[]       @relation("ResourceUploader")
+  notifications  Notification[]
+
+  @@index([roleId])
+  @@index([status])
+}
+
+model Role {
+  id          String   @id @default(uuid()) @db.Uuid
+  name        RoleName @unique
+  description String?  @db.VarChar(255)
+  createdAt   DateTime @default(now()) @db.Timestamp(6)
+  updatedAt   DateTime @updatedAt @db.Timestamp(6)
+
+  users       User[]
+  permissions RolePermission[]
+}
+
+model Permission {
+  id          String  @id @default(uuid()) @db.Uuid
+  name        String  @unique @db.VarChar(255)
+  description String? @db.VarChar(255)
+
+  roles RolePermission[]
+}
+
+model RolePermission {
+  roleId       String @db.Uuid
+  permissionId String @db.Uuid
+
+  role       Role       @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  permission Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+
+  @@id([roleId, permissionId])
+  @@index([permissionId])
+}
+
+model UserPreference {
+  id        String   @id @default(uuid()) @db.Uuid
+  userId    String   @db.Uuid
+  key       String   @db.VarChar(255)
+  value     Json
+  createdAt DateTime @default(now()) @db.Timestamp(6)
+  updatedAt DateTime @updatedAt @db.Timestamp(6)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, key])
+  @@index([userId])
+}
+
+// ======================================================
+// CONTENT
+// ======================================================
+
+model Content {
+  id             String        @id @default(uuid()) @db.Uuid
+  title          String        @db.VarChar(255)
+  slug           String        @unique @db.VarChar(255)
+  excerpt        String?       @db.VarChar(255)
+  body           String        @db.Text
+  type           ContentType
+  status         ContentStatus
+  visibility     Visibility
+  featured       Boolean       @default(false)
+  isGlobal       Boolean       @default(false)
+  authorId       String        @db.Uuid
+  categoryId     String?       @db.Uuid
+  publishedAt    DateTime?     @db.Timestamp(6)
+  scheduledAt    DateTime?     @db.Timestamp(6)
+  expiresAt      DateTime?     @db.Timestamp(6)
+  viewCount      Int           @default(0)
+  seoTitle       String?       @db.VarChar(255)
+  seoDescription String?       @db.VarChar(255)
+  seoImage       String?       @db.VarChar(255)
+  createdAt      DateTime      @default(now()) @db.Timestamp(6)
+  updatedAt      DateTime      @updatedAt @db.Timestamp(6)
+
+  author    User              @relation("ContentAuthor", fields: [authorId], references: [id])
+  category  Category?         @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  tags      ContentTag[]
+  event     Event?
+  comments  Comment[]
+  reactions Reaction[]
+  bookmarks Bookmark[]
+  resources ContentResource[]
+  chunks    DocumentChunk[]
+
+  @@index([authorId])
+  @@index([categoryId])
+  @@index([status])
+  @@index([type])
+  @@index([publishedAt])
 }
 
 model Category {
-  id    String @id @default(uuid())
-  name  String @unique
-  notes Note[]
+  id          String   @id @default(uuid()) @db.Uuid
+  name        String   @db.VarChar(255)
+  slug        String   @unique @db.VarChar(255)
+  description String?  @db.VarChar(255)
+  imageUrl    String?  @db.VarChar(255)
+  color       String?  @db.VarChar(255)
+  parentId    String?  @db.Uuid
+  createdAt   DateTime @default(now()) @db.Timestamp(6)
+  updatedAt   DateTime @updatedAt @db.Timestamp(6)
+
+  parent   Category?  @relation("CategoryHierarchy", fields: [parentId], references: [id], onDelete: SetNull)
+  children Category[] @relation("CategoryHierarchy")
+  contents Content[]
+
+  @@index([parentId])
 }
 
-model Note {
-  id         String    @id @default(uuid())
-  title      String
-  content    String    @db.Text
-  imageUrl   String?
-  attachments Json? @default("[]")
-  published  Boolean   @default(true)
-  isGlobal   Boolean   @default(false)
-  authorId   String
-  categoryId String?
-  createdAt  DateTime  @default(now())
-  updatedAt  DateTime  @updatedAt
-  deletedAt  DateTime? // Para soft-delete
+model Tag {
+  id        String   @id @default(uuid()) @db.Uuid
+  name      String   @unique @db.VarChar(255)
+  slug      String   @unique @db.VarChar(255)
+  createdAt DateTime @default(now()) @db.Timestamp(6)
 
-  author     User      @relation(fields: [authorId], references: [id], onDelete: Cascade)
-  category   Category? @relation(fields: [categoryId], references: [id])
-  comments   Comment[]
+  contents ContentTag[]
+}
+
+model ContentTag {
+  contentId String @db.Uuid
+  tagId     String @db.Uuid
+
+  content Content @relation(fields: [contentId], references: [id], onDelete: Cascade)
+  tag     Tag     @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([contentId, tagId])
+  @@index([tagId])
+}
+
+// ======================================================
+// EVENTS / SOCIAL
+// ======================================================
+
+model Event {
+  id                   String      @id @default(uuid()) @db.Uuid
+  contentId            String      @unique @db.Uuid
+  startAt              DateTime    @db.Timestamp(6)
+  endAt                DateTime?   @db.Timestamp(6)
+  location             String?     @db.VarChar(255)
+  address              String?     @db.VarChar(255)
+  status               EventStatus
+  capacity             Int?
+  registrationRequired Boolean     @default(false)
+  createdAt            DateTime    @default(now()) @db.Timestamp(6)
+  updatedAt            DateTime    @updatedAt @db.Timestamp(6)
+
+  content   Content         @relation(fields: [contentId], references: [id], onDelete: Cascade)
+  attendees EventAttendee[]
+
+  @@index([startAt])
+  @@index([status])
+}
+
+model EventAttendee {
+  id           String   @id @default(uuid()) @db.Uuid
+  eventId      String   @db.Uuid
+  userId       String   @db.Uuid
+  registeredAt DateTime @default(now()) @db.Timestamp(6)
+
+  event Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([eventId, userId])
+  @@index([userId])
 }
 
 model Comment {
-  id        String   @id @default(uuid())
-  content   String
-  noteId    String
-  authorId  String
-  createdAt DateTime @default(now())
-  author    User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
-  note      Note     @relation(fields: [noteId], references: [id], onDelete: Cascade)
+  id        String   @id @default(uuid()) @db.Uuid
+  content   String   @db.Text
+  contentId String   @db.Uuid
+  authorId  String   @db.Uuid
+  parentId  String?  @db.Uuid
+  approved  Boolean  @default(false)
+  deleted   Boolean  @default(false)
+  createdAt DateTime @default(now()) @db.Timestamp(6)
+  updatedAt DateTime @updatedAt @db.Timestamp(6)
+
+  contentItem Content   @relation(fields: [contentId], references: [id], onDelete: Cascade)
+  author      User      @relation("CommentAuthor", fields: [authorId], references: [id])
+  parent      Comment?  @relation("CommentReplies", fields: [parentId], references: [id], onDelete: SetNull)
+  replies     Comment[] @relation("CommentReplies")
+
+  @@index([contentId])
+  @@index([authorId])
+  @@index([parentId])
+}
+
+model Reaction {
+  id        String       @id @default(uuid()) @db.Uuid
+  type      ReactionType
+  userId    String       @db.Uuid
+  contentId String       @db.Uuid
+  createdAt DateTime     @default(now()) @db.Timestamp(6)
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  content Content @relation(fields: [contentId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, contentId, type])
+  @@index([contentId])
+}
+
+model Bookmark {
+  id        String   @id @default(uuid()) @db.Uuid
+  userId    String   @db.Uuid
+  contentId String   @db.Uuid
+  createdAt DateTime @default(now()) @db.Timestamp(6)
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  content Content @relation(fields: [contentId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, contentId])
+  @@index([contentId])
+}
+
+// ======================================================
+// RESOURCES / RAG
+// ======================================================
+
+model Resource {
+  id           String       @id @default(uuid()) @db.Uuid
+  name         String       @db.VarChar(255)
+  url          String       @db.Text
+  type         ResourceType
+  mimeType     String?      @db.VarChar(255)
+  size         BigInt?
+  altText      String?      @db.VarChar(255)
+  uploadedById String       @db.Uuid
+  createdAt    DateTime     @default(now()) @db.Timestamp(6)
+  updatedAt    DateTime     @updatedAt @db.Timestamp(6)
+
+  uploadedBy User              @relation("ResourceUploader", fields: [uploadedById], references: [id])
+  contents   ContentResource[]
+  chunks     DocumentChunk[]
+
+  @@index([uploadedById])
+}
+
+model ContentResource {
+  contentId  String  @db.Uuid
+  resourceId String  @db.Uuid
+  position   Int
+  caption    String? @db.VarChar(255)
+
+  content  Content  @relation(fields: [contentId], references: [id], onDelete: Cascade)
+  resource Resource @relation(fields: [resourceId], references: [id], onDelete: Cascade)
+
+  @@id([contentId, resourceId])
+  @@index([resourceId])
+}
+
+model DocumentChunk {
+  id         String                      @id @default(uuid()) @db.Uuid
+  content    String                      @db.Text
+  embedding  Unsupported("vector(1536)")
+  chunkIndex Int
+  resourceId String                      @db.Uuid
+  contentId  String?                     @db.Uuid
+  createdAt  DateTime                    @default(now()) @db.Timestamp(6)
+
+  resource    Resource @relation(fields: [resourceId], references: [id], onDelete: Cascade)
+  contentItem Content? @relation(fields: [contentId], references: [id], onDelete: Cascade)
+
+  @@unique([resourceId, chunkIndex])
+  @@index([contentId])
+}
+
+// ======================================================
+// NOTIFICATIONS / AUDIT / SETTINGS
+// ======================================================
+
+model Notification {
+  id        String              @id @default(uuid()) @db.Uuid
+  userId    String              @db.Uuid
+  type      NotificationType
+  channel   NotificationChannel
+  title     String              @db.VarChar(255)
+  message   String              @db.Text
+  link      String?             @db.VarChar(255)
+  metadata  Json?
+  readAt    DateTime?           @db.Timestamp(6)
+  sentAt    DateTime?           @db.Timestamp(6)
+  createdAt DateTime            @default(now()) @db.Timestamp(6)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, readAt])
+  @@index([createdAt])
+}
+
+model AuditLog {
+  id        String      @id @default(uuid()) @db.Uuid
+  actorId   String?     @db.VarChar(255)
+  action    AuditAction
+  entity    String      @db.VarChar(255)
+  entityId  String?     @db.VarChar(255)
+  oldData   Json?
+  newData   Json?
+  ipAddress String?     @db.VarChar(255)
+  userAgent String?     @db.VarChar(255)
+  createdAt DateTime    @default(now()) @db.Timestamp(6)
+
+  @@index([actorId])
+  @@index([entity, entityId])
+  @@index([createdAt])
+}
+
+model SystemSetting {
+  id          String   @id @default(uuid()) @db.Uuid
+  key         String   @unique @db.VarChar(255)
+  value       Json
+  description String?  @db.VarChar(255)
+  public      Boolean  @default(false)
+  createdAt   DateTime @default(now()) @db.Timestamp(6)
+  updatedAt   DateTime @updatedAt @db.Timestamp(6)
+}
+
+model FeatureFlag {
+  id          String   @id @default(uuid()) @db.Uuid
+  key         String   @unique @db.VarChar(255)
+  enabled     Boolean  @default(false)
+  description String?  @db.VarChar(255)
+  createdAt   DateTime @default(now()) @db.Timestamp(6)
+  updatedAt   DateTime @updatedAt @db.Timestamp(6)
 }
