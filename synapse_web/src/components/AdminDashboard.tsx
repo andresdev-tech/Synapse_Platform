@@ -8,13 +8,22 @@ import { Edit2, Trash2, Megaphone, Plus, Users, Image as ImageIcon, Tag, Activit
 interface Category {
   id: string
   name: string
+  slug: string
+  description?: string
+  imageUrl?: string
+  color?: string
+  parentId?: string
+  parent?: { name: string }
+  _count?: { contents: number }
 }
 
 interface Note {
   id: string
   title: string
-  content: string
-  imageUrl?: string; attachments?: {type: string, url: string}[];
+  body: string
+  excerpt?: string
+  seoImage?: string
+  attachments?: {type: string, url: string}[];
   isGlobal: boolean
   authorId: string
   categoryId?: string
@@ -38,6 +47,15 @@ export function AdminDashboard() {
   const [isExtracting, setIsExtracting] = useState(false)
   const [extractError, setExtractError] = useState(false)
   const [validImageUrl, setValidImageUrl] = useState<string | null>(null)
+  
+  // Category form state
+  const [newCategoryName, setNewCategoryName] = useState("")
+  const [newCategoryDescription, setNewCategoryDescription] = useState("")
+  const [newCategoryImageUrl, setNewCategoryImageUrl] = useState("")
+  const [newCategoryColor, setNewCategoryColor] = useState("")
+  const [newCategoryParentId, setNewCategoryParentId] = useState("")
+  const [editingCategoryId, setEditingCategoryId] = useState<string | null>(null)
+  const [isCategoryFormOpen, setIsCategoryFormOpen] = useState(false)
   
   const [activeTab, setActiveTab] = useState<"anuncios" | "sugerencias" | "categorias">("anuncios")
   const [suggestions, setSuggestions] = useState<Note[]>([])
@@ -123,12 +141,16 @@ export function AdminDashboard() {
 
     const payload = {
       title: newTitle.trim(),
-      content: newContent.trim(),
-      imageUrl: newImageUrl.trim() || null, attachments: newAttachments,
+      body: newContent.trim(),
+      excerpt: newContent.trim().substring(0, 200),
+      imageUrl: newImageUrl.trim() || null,
+      attachments: newAttachments,
       categoryId: newCategoryId || null,
       isGlobal: true,
       published: true,
-      authorId: session?.user?.id
+      authorId: session?.user?.id,
+      seoTitle: newTitle.trim(),
+      seoDescription: newContent.trim().substring(0, 150)
     }
 
     try {
@@ -160,8 +182,8 @@ export function AdminDashboard() {
 
   const handleEdit = (note: Note) => {
     setNewTitle(note.title)
-    setNewContent(note.content)
-    setNewImageUrl(note.imageUrl || "")
+    setNewContent(note.body)
+    setNewImageUrl(note.seoImage || "")
     setNewCategoryId(note.categoryId || ""); setNewAttachments(note.attachments || []);
     setEditingId(note.id)
     setIsFormOpen(true)
@@ -259,62 +281,195 @@ export function AdminDashboard() {
               <h2 className="text-2xl font-extrabold text-zinc-900 tracking-tight">Administrar Categorías</h2>
               <p className="text-slate-500 mt-1">Crea nuevas categorías para organizar los anuncios y recursos del portal.</p>
             </div>
+            <button 
+              onClick={() => {
+                setEditingCategoryId(null)
+                setNewCategoryName("")
+                setNewCategoryDescription("")
+                setNewCategoryImageUrl("")
+                setNewCategoryColor("")
+                setNewCategoryParentId("")
+                setIsCategoryFormOpen(!isCategoryFormOpen)
+              }}
+              className={`flex items-center space-x-2 px-6 py-3 rounded-xl text-sm font-bold transition-all shadow-md ${isCategoryFormOpen ? 'bg-slate-100 text-zinc-700 hover:bg-slate-200' : 'bg-sena-500 text-white hover:bg-sena-600 hover:shadow-sena-200 hover:-translate-y-0.5'}`}
+            >
+              {isCategoryFormOpen ? "Cerrar Panel" : <><Plus className="w-5 h-5" /> <span>Crear Nueva</span></>}
+            </button>
           </div>
           
-          <div className="mb-8 p-6 bg-slate-50 rounded-2xl border border-slate-200">
-            <h3 className="text-lg font-bold text-zinc-800 mb-4">Añadir nueva categoría</h3>
-            <div className="flex gap-4">
-              <input 
-                type="text" 
-                id="newCategoryName"
-                placeholder="Ej. Bienestar, Eventos, Académico..." 
-                className="flex-1 p-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-sena-500 focus:border-sena-500 outline-none"
-              />
-              <button 
-                onClick={async () => {
-                  const input = document.getElementById('newCategoryName') as HTMLInputElement;
-                  if (!input || !input.value.trim()) return;
-                  try {
-                    await fetchApi('/api/categories', {
-                      method: 'POST',
-                      headers: { 'Content-Type': 'application/json' },
-                      body: JSON.stringify({ name: input.value.trim() })
-                    });
-                    input.value = '';
-                    fetchCategories();
-                  } catch (e) {
-                    console.error(e);
-                  }
-                }}
-                className="bg-sena-500 text-white px-6 py-3 rounded-xl font-bold hover:bg-sena-600 transition-colors flex items-center"
-              >
-                <Plus className="w-5 h-5 mr-2" />
-                Crear Categoría
-              </button>
+          {/* FORMULARIO DE CATEGORÍA */}
+          <div className={`overflow-hidden transition-all duration-300 ease-in-out ${isCategoryFormOpen ? "max-h-[800px] opacity-100 mb-8" : "max-h-0 opacity-0"}`}>
+            <div className="bg-slate-50/80 p-8 rounded-3xl border border-slate-200 space-y-5">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">Nombre de la Categoría</label>
+                  <input 
+                    type="text" 
+                    placeholder="Ej. Bienestar, Eventos, Académico..." 
+                    className="w-full p-4 bg-white border border-slate-200 rounded-xl focus:ring-4 focus:ring-sena-500/20 focus:border-sena-500 outline-none text-zinc-800 font-medium transition-all"
+                    value={newCategoryName}
+                    onChange={(e) => setNewCategoryName(e.target.value)}
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">Categoría Padre (Opcional)</label>
+                  <select 
+                    className="w-full p-4 bg-white border border-slate-200 rounded-xl focus:ring-4 focus:ring-sena-500/20 focus:border-sena-500 outline-none text-zinc-800 font-medium transition-all appearance-none"
+                    value={newCategoryParentId}
+                    onChange={(e) => setNewCategoryParentId(e.target.value)}
+                  >
+                    <option value="">-- Sin categoría padre --</option>
+                    {categories.filter(c => c.id !== editingCategoryId).map(cat => (
+                      <option key={cat.id} value={cat.id}>{cat.name}</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+              
+              <div>
+                <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">Descripción (Opcional)</label>
+                <textarea 
+                  placeholder="Describe brevemente esta categoría..." 
+                  className="w-full p-4 bg-white border border-slate-200 rounded-xl focus:ring-4 focus:ring-sena-500/20 focus:border-sena-500 outline-none min-h-[100px] resize-y text-zinc-800 transition-all font-medium"
+                  value={newCategoryDescription}
+                  onChange={(e) => setNewCategoryDescription(e.target.value)}
+                />
+              </div>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">URL de Imagen (Opcional)</label>
+                  <input 
+                    type="url" 
+                    placeholder="https://ejemplo.com/imagen.jpg" 
+                    className="w-full p-4 bg-white border border-slate-200 rounded-xl focus:ring-4 focus:ring-sena-500/20 focus:border-sena-500 outline-none text-zinc-800 transition-all font-medium"
+                    value={newCategoryImageUrl}
+                    onChange={(e) => setNewCategoryImageUrl(e.target.value)}
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">Color (Opcional)</label>
+                  <div className="flex gap-2">
+                    <input 
+                      type="color" 
+                      className="w-12 h-12 border border-slate-200 rounded-lg cursor-pointer"
+                      value={newCategoryColor}
+                      onChange={(e) => setNewCategoryColor(e.target.value)}
+                    />
+                    <input 
+                      type="text" 
+                      placeholder="#FF5733 o color name" 
+                      className="flex-1 p-4 bg-white border border-slate-200 rounded-xl focus:ring-4 focus:ring-sena-500/20 focus:border-sena-500 outline-none text-zinc-800 transition-all font-medium"
+                      value={newCategoryColor}
+                      onChange={(e) => setNewCategoryColor(e.target.value)}
+                    />
+                  </div>
+                </div>
+              </div>
+              
+              <div className="flex justify-end pt-4">
+                <button 
+                  onClick={async () => {
+                    if (!newCategoryName.trim()) return;
+                    
+                    const payload = {
+                      name: newCategoryName.trim(),
+                      description: newCategoryDescription.trim() || null,
+                      imageUrl: newCategoryImageUrl.trim() || null,
+                      color: newCategoryColor.trim() || null,
+                      parentId: newCategoryParentId || null
+                    };
+                    
+                    try {
+                      if (editingCategoryId) {
+                        await fetchApi(`/api/categories/${editingCategoryId}`, {
+                          method: 'PUT',
+                          headers: { 'Content-Type': 'application/json' },
+                          body: JSON.stringify(payload)
+                        });
+                      } else {
+                        await fetchApi('/api/categories', {
+                          method: 'POST',
+                          headers: { 'Content-Type': 'application/json' },
+                          body: JSON.stringify(payload)
+                        });
+                      }
+                      
+                      setNewCategoryName("")
+                      setNewCategoryDescription("")
+                      setNewCategoryImageUrl("")
+                      setNewCategoryColor("")
+                      setNewCategoryParentId("")
+                      setEditingCategoryId(null)
+                      setIsCategoryFormOpen(false)
+                      fetchCategories()
+                    } catch (e) {
+                      console.error(e);
+                    }
+                  }}
+                  disabled={!newCategoryName.trim()}
+                  className="bg-sena-900 text-white px-8 py-4 rounded-xl font-bold hover:bg-sena-800 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-xl shadow-sena-900/20 hover:-translate-y-0.5"
+                >
+                  {editingCategoryId ? "Actualizar Categoría" : "Crear Categoría"}
+                </button>
+              </div>
             </div>
           </div>
 
+          {/* LISTADO DE CATEGORÍAS */}
           <div className="space-y-3">
             <h3 className="text-lg font-bold text-zinc-800 mb-4">Categorías existentes ({categories.length})</h3>
             {categories.map(cat => (
               <div key={cat.id} className="flex items-center justify-between p-4 bg-white border border-slate-100 rounded-xl hover:shadow-md transition-shadow group">
                 <div className="flex items-center">
-                  <div className="w-10 h-10 rounded-lg bg-sena-50 flex items-center justify-center mr-4">
-                    <Tag className="w-5 h-5 text-sena-500" />
+                  {cat.color ? (
+                    <div 
+                      className="w-10 h-10 rounded-lg flex items-center justify-center mr-4"
+                      style={{ backgroundColor: cat.color }}
+                    >
+                      <Tag className="w-5 h-5 text-white" />
+                    </div>
+                  ) : (
+                    <div className="w-10 h-10 rounded-lg bg-sena-50 flex items-center justify-center mr-4">
+                      <Tag className="w-5 h-5 text-sena-500" />
+                    </div>
+                  )}
+                  <div className="flex flex-col">
+                    <span className="font-bold text-zinc-700">{cat.name}</span>
+                    {cat.description && <span className="text-xs text-slate-500">{cat.description}</span>}
+                    {cat._count && cat._count.contents > 0 && (
+                      <span className="text-xs text-sena-600 font-medium">{cat._count.contents} anuncios</span>
+                    )}
                   </div>
-                  <span className="font-bold text-zinc-700">{cat.name}</span>
                 </div>
-                <button 
-                  onClick={async () => {
-                    if(!confirm('¿Eliminar esta categoría? Se desvinculará de los anuncios que la tengan.')) return;
-                    await fetchApi('/api/categories/' + cat.id, { method: 'DELETE' });
-                    fetchCategories();
-                  }}
-                  className="p-2 text-slate-400 hover:bg-red-50 hover:text-red-600 rounded-lg transition-colors opacity-0 group-hover:opacity-100"
-                  title="Eliminar categoría"
-                >
-                  <Trash2 className="w-5 h-5" />
-                </button>
+                <div className="flex space-x-2">
+                  <button 
+                    onClick={() => {
+                      setEditingCategoryId(cat.id)
+                      setNewCategoryName(cat.name)
+                      setNewCategoryDescription(cat.description || "")
+                      setNewCategoryImageUrl(cat.imageUrl || "")
+                      setNewCategoryColor(cat.color || "")
+                      setNewCategoryParentId(cat.parentId || "")
+                      setIsCategoryFormOpen(true)
+                    }}
+                    className="p-2 text-slate-400 hover:text-sena-500 hover:bg-sena-50 rounded-lg transition-colors"
+                    title="Editar categoría"
+                  >
+                    <Edit2 className="w-4 h-4" />
+                  </button>
+                  <button 
+                    onClick={async () => {
+                      if(!confirm('¿Eliminar esta categoría? Se desvinculará de los anuncios que la tengan.')) return;
+                      await fetchApi('/api/categories/' + cat.id, { method: 'DELETE' });
+                      fetchCategories();
+                    }}
+                    className="p-2 text-slate-400 hover:bg-red-50 hover:text-red-600 rounded-lg transition-colors"
+                    title="Eliminar categoría"
+                  >
+                    <Trash2 className="w-5 h-5" />
+                  </button>
+                </div>
               </div>
             ))}
           </div>
@@ -359,7 +514,7 @@ export function AdminDashboard() {
                           </div>
                           <span className="text-xs text-slate-400 font-bold uppercase">{new Date(sug.createdAt).toLocaleDateString()}</span>
                         </div>
-                        <p className="text-slate-600 text-sm mb-4 bg-slate-50 p-4 rounded-xl border border-slate-100 whitespace-pre-wrap">{sug.content}</p>
+                        <p className="text-slate-600 text-sm mb-4 bg-slate-50 p-4 rounded-xl border border-slate-100 whitespace-pre-wrap">{sug.body}</p>
                         <div className="flex justify-between items-center text-xs">
                           <div className="font-medium text-slate-500">Enviado por: <span className="text-zinc-800 font-bold">{sug.author?.name || "Desconocido"}</span></div>
                           <button onClick={async () => {
@@ -598,10 +753,10 @@ export function AdminDashboard() {
                   </div>
                 )}
 
-                {note.imageUrl && (
+                {note.seoImage && (
                   <div className="h-40 -mx-6 -mt-6 mb-5 bg-slate-100 overflow-hidden relative">
                     <img 
-                      src={note.imageUrl} 
+                      src={note.seoImage} 
                       alt={note.title} 
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                       onError={(e) => {
@@ -620,7 +775,7 @@ export function AdminDashboard() {
                     </span>
                   )}
                   <h3 className="font-extrabold text-zinc-900 text-xl mb-3 leading-tight">{note.title}</h3>
-                  <p className="text-slate-600 text-sm line-clamp-3 mb-4 leading-relaxed">{note.content}</p>
+                  <p className="text-slate-600 text-sm line-clamp-3 mb-4 leading-relaxed">{note.body}</p>
                 </div>
                 
                 <div className="flex items-center justify-between mt-auto pt-5 border-t border-slate-100/80">

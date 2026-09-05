@@ -59,7 +59,7 @@ interface Note {
   id: string
   title: string
   content: string
-  imageUrl?: string; attachments?: {type: string, url: string}[];
+  seoImage?: string; attachments?: {type: string, url: string}[];
   isGlobal: boolean
   authorId: string
   author?: { name: string; role: string }
@@ -106,10 +106,10 @@ function SortableNoteItem({ note }: { note: Note }) {
         <GripHorizontal className="w-5 h-5" />
       </div>
 
-      {note.imageUrl && (
+      {note.seoImage && (
         <div className="h-56 bg-slate-100 dark:bg-zinc-900 overflow-hidden relative">
           <img loading="lazy" 
-            src={note.imageUrl} 
+            src={note.seoImage} 
             alt={note.title} 
             className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-in-out" 
             onError={(e) => { e.currentTarget.style.display = 'none'; }}
@@ -126,7 +126,7 @@ function SortableNoteItem({ note }: { note: Note }) {
       )}
       
       <div className="p-8 flex flex-col flex-grow">
-        {!note.imageUrl && note.category && (
+        {!note.seoImage && note.category && (
           <span className="inline-block px-3 py-1 mb-4 bg-sena-50 dark:bg-sena-900/30 text-sena-600 dark:text-sena-300 text-xs font-bold rounded-lg uppercase tracking-wider w-fit border border-sena-100 dark:border-sena-800/50">
             {note.category.name}
           </span>
