@@ -28,13 +28,13 @@ export type NoteMinAggregateOutputType = {
   id: string | null
   title: string | null
   content: string | null
-  imageUrl: string | null
-  published: boolean | null
   isGlobal: boolean | null
   authorId: string | null
-  categoryId: string | null
   createdAt: Date | null
   updatedAt: Date | null
+  imageUrl: string | null
+  published: boolean | null
+  categoryId: string | null
   deletedAt: Date | null
 }
 
@@ -42,13 +42,13 @@ export type NoteMaxAggregateOutputType = {
   id: string | null
   title: string | null
   content: string | null
-  imageUrl: string | null
-  published: boolean | null
   isGlobal: boolean | null
   authorId: string | null
-  categoryId: string | null
   createdAt: Date | null
   updatedAt: Date | null
+  imageUrl: string | null
+  published: boolean | null
+  categoryId: string | null
   deletedAt: Date | null
 }
 
@@ -56,15 +56,15 @@ export type NoteCountAggregateOutputType = {
   id: number
   title: number
   content: number
-  imageUrl: number
-  attachments: number
-  published: number
   isGlobal: number
   authorId: number
-  categoryId: number
   createdAt: number
   updatedAt: number
+  imageUrl: number
+  published: number
+  categoryId: number
   deletedAt: number
+  attachments: number
   _all: number
 }
 
@@ -73,13 +73,13 @@ export type NoteMinAggregateInputType = {
   id?: true
   title?: true
   content?: true
-  imageUrl?: true
-  published?: true
   isGlobal?: true
   authorId?: true
-  categoryId?: true
   createdAt?: true
   updatedAt?: true
+  imageUrl?: true
+  published?: true
+  categoryId?: true
   deletedAt?: true
 }
 
@@ -87,13 +87,13 @@ export type NoteMaxAggregateInputType = {
   id?: true
   title?: true
   content?: true
-  imageUrl?: true
-  published?: true
   isGlobal?: true
   authorId?: true
-  categoryId?: true
   createdAt?: true
   updatedAt?: true
+  imageUrl?: true
+  published?: true
+  categoryId?: true
   deletedAt?: true
 }
 
@@ -101,15 +101,15 @@ export type NoteCountAggregateInputType = {
   id?: true
   title?: true
   content?: true
-  imageUrl?: true
-  attachments?: true
-  published?: true
   isGlobal?: true
   authorId?: true
-  categoryId?: true
   createdAt?: true
   updatedAt?: true
+  imageUrl?: true
+  published?: true
+  categoryId?: true
   deletedAt?: true
+  attachments?: true
   _all?: true
 }
 
@@ -189,15 +189,15 @@ export type NoteGroupByOutputType = {
   id: string
   title: string
   content: string
-  imageUrl: string | null
-  attachments: runtime.JsonValue | null
-  published: boolean
   isGlobal: boolean
   authorId: string
-  categoryId: string | null
   createdAt: Date
   updatedAt: Date
+  imageUrl: string | null
+  published: boolean
+  categoryId: string | null
   deletedAt: Date | null
+  attachments: runtime.JsonValue | null
   _count: NoteCountAggregateOutputType | null
   _min: NoteMinAggregateOutputType | null
   _max: NoteMaxAggregateOutputType | null
@@ -225,36 +225,36 @@ export type NoteWhereInput = {
   id?: Prisma.StringFilter<"Note"> | string
   title?: Prisma.StringFilter<"Note"> | string
   content?: Prisma.StringFilter<"Note"> | string
-  imageUrl?: Prisma.StringNullableFilter<"Note"> | string | null
-  attachments?: Prisma.JsonNullableFilter<"Note">
-  published?: Prisma.BoolFilter<"Note"> | boolean
   isGlobal?: Prisma.BoolFilter<"Note"> | boolean
   authorId?: Prisma.StringFilter<"Note"> | string
-  categoryId?: Prisma.StringNullableFilter<"Note"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Note"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Note"> | Date | string
+  imageUrl?: Prisma.StringNullableFilter<"Note"> | string | null
+  published?: Prisma.BoolFilter<"Note"> | boolean
+  categoryId?: Prisma.StringNullableFilter<"Note"> | string | null
   deletedAt?: Prisma.DateTimeNullableFilter<"Note"> | Date | string | null
-  author?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
-  category?: Prisma.XOR<Prisma.CategoryNullableScalarRelationFilter, Prisma.CategoryWhereInput> | null
-  comments?: Prisma.CommentListRelationFilter
+  attachments?: Prisma.JsonNullableFilter<"Note">
+  Comment?: Prisma.CommentListRelationFilter
+  User?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
+  Category?: Prisma.XOR<Prisma.CategoryNullableScalarRelationFilter, Prisma.CategoryWhereInput> | null
 }
 
 export type NoteOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   title?: Prisma.SortOrder
   content?: Prisma.SortOrder
-  imageUrl?: Prisma.SortOrderInput | Prisma.SortOrder
-  attachments?: Prisma.SortOrderInput | Prisma.SortOrder
-  published?: Prisma.SortOrder
   isGlobal?: Prisma.SortOrder
   authorId?: Prisma.SortOrder
-  categoryId?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  imageUrl?: Prisma.SortOrderInput | Prisma.SortOrder
+  published?: Prisma.SortOrder
+  categoryId?: Prisma.SortOrderInput | Prisma.SortOrder
   deletedAt?: Prisma.SortOrderInput | Prisma.SortOrder
-  author?: Prisma.UserOrderByWithRelationInput
-  category?: Prisma.CategoryOrderByWithRelationInput
-  comments?: Prisma.CommentOrderByRelationAggregateInput
+  attachments?: Prisma.SortOrderInput | Prisma.SortOrder
+  Comment?: Prisma.CommentOrderByRelationAggregateInput
+  User?: Prisma.UserOrderByWithRelationInput
+  Category?: Prisma.CategoryOrderByWithRelationInput
 }
 
 export type NoteWhereUniqueInput = Prisma.AtLeast<{
@@ -264,33 +264,33 @@ export type NoteWhereUniqueInput = Prisma.AtLeast<{
   NOT?: Prisma.NoteWhereInput | Prisma.NoteWhereInput[]
   title?: Prisma.StringFilter<"Note"> | string
   content?: Prisma.StringFilter<"Note"> | string
-  imageUrl?: Prisma.StringNullableFilter<"Note"> | string | null
-  attachments?: Prisma.JsonNullableFilter<"Note">
-  published?: Prisma.BoolFilter<"Note"> | boolean
   isGlobal?: Prisma.BoolFilter<"Note"> | boolean
   authorId?: Prisma.StringFilter<"Note"> | string
-  categoryId?: Prisma.StringNullableFilter<"Note"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Note"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Note"> | Date | string
+  imageUrl?: Prisma.StringNullableFilter<"Note"> | string | null
+  published?: Prisma.BoolFilter<"Note"> | boolean
+  categoryId?: Prisma.StringNullableFilter<"Note"> | string | null
   deletedAt?: Prisma.DateTimeNullableFilter<"Note"> | Date | string | null
-  author?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
-  category?: Prisma.XOR<Prisma.CategoryNullableScalarRelationFilter, Prisma.CategoryWhereInput> | null
-  comments?: Prisma.CommentListRelationFilter
+  attachments?: Prisma.JsonNullableFilter<"Note">
+  Comment?: Prisma.CommentListRelationFilter
+  User?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
+  Category?: Prisma.XOR<Prisma.CategoryNullableScalarRelationFilter, Prisma.CategoryWhereInput> | null
 }, "id">
 
 export type NoteOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   title?: Prisma.SortOrder
   content?: Prisma.SortOrder
-  imageUrl?: Prisma.SortOrderInput | Prisma.SortOrder
-  attachments?: Prisma.SortOrderInput | Prisma.SortOrder
-  published?: Prisma.SortOrder
   isGlobal?: Prisma.SortOrder
   authorId?: Prisma.SortOrder
-  categoryId?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  imageUrl?: Prisma.SortOrderInput | Prisma.SortOrder
+  published?: Prisma.SortOrder
+  categoryId?: Prisma.SortOrderInput | Prisma.SortOrder
   deletedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  attachments?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.NoteCountOrderByAggregateInput
   _max?: Prisma.NoteMaxOrderByAggregateInput
   _min?: Prisma.NoteMinOrderByAggregateInput
@@ -303,122 +303,122 @@ export type NoteScalarWhereWithAggregatesInput = {
   id?: Prisma.StringWithAggregatesFilter<"Note"> | string
   title?: Prisma.StringWithAggregatesFilter<"Note"> | string
   content?: Prisma.StringWithAggregatesFilter<"Note"> | string
-  imageUrl?: Prisma.StringNullableWithAggregatesFilter<"Note"> | string | null
-  attachments?: Prisma.JsonNullableWithAggregatesFilter<"Note">
-  published?: Prisma.BoolWithAggregatesFilter<"Note"> | boolean
   isGlobal?: Prisma.BoolWithAggregatesFilter<"Note"> | boolean
   authorId?: Prisma.StringWithAggregatesFilter<"Note"> | string
-  categoryId?: Prisma.StringNullableWithAggregatesFilter<"Note"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Note"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Note"> | Date | string
+  imageUrl?: Prisma.StringNullableWithAggregatesFilter<"Note"> | string | null
+  published?: Prisma.BoolWithAggregatesFilter<"Note"> | boolean
+  categoryId?: Prisma.StringNullableWithAggregatesFilter<"Note"> | string | null
   deletedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Note"> | Date | string | null
+  attachments?: Prisma.JsonNullableWithAggregatesFilter<"Note">
 }
 
 export type NoteCreateInput = {
-  id?: string
+  id: string
   title: string
   content: string
-  imageUrl?: string | null
-  attachments?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  published?: boolean
   isGlobal?: boolean
   createdAt?: Date | string
-  updatedAt?: Date | string
+  updatedAt: Date | string
+  imageUrl?: string | null
+  published?: boolean
   deletedAt?: Date | string | null
-  author: Prisma.UserCreateNestedOneWithoutNotesInput
-  category?: Prisma.CategoryCreateNestedOneWithoutNotesInput
-  comments?: Prisma.CommentCreateNestedManyWithoutNoteInput
+  attachments?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  Comment?: Prisma.CommentCreateNestedManyWithoutNoteInput
+  User: Prisma.UserCreateNestedOneWithoutNoteInput
+  Category?: Prisma.CategoryCreateNestedOneWithoutNoteInput
 }
 
 export type NoteUncheckedCreateInput = {
-  id?: string
+  id: string
   title: string
   content: string
-  imageUrl?: string | null
-  attachments?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  published?: boolean
   isGlobal?: boolean
   authorId: string
-  categoryId?: string | null
   createdAt?: Date | string
-  updatedAt?: Date | string
+  updatedAt: Date | string
+  imageUrl?: string | null
+  published?: boolean
+  categoryId?: string | null
   deletedAt?: Date | string | null
-  comments?: Prisma.CommentUncheckedCreateNestedManyWithoutNoteInput
+  attachments?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  Comment?: Prisma.CommentUncheckedCreateNestedManyWithoutNoteInput
 }
 
 export type NoteUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
   content?: Prisma.StringFieldUpdateOperationsInput | string
-  imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  attachments?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  published?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isGlobal?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  published?: Prisma.BoolFieldUpdateOperationsInput | boolean
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  author?: Prisma.UserUpdateOneRequiredWithoutNotesNestedInput
-  category?: Prisma.CategoryUpdateOneWithoutNotesNestedInput
-  comments?: Prisma.CommentUpdateManyWithoutNoteNestedInput
+  attachments?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  Comment?: Prisma.CommentUpdateManyWithoutNoteNestedInput
+  User?: Prisma.UserUpdateOneRequiredWithoutNoteNestedInput
+  Category?: Prisma.CategoryUpdateOneWithoutNoteNestedInput
 }
 
 export type NoteUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
   content?: Prisma.StringFieldUpdateOperationsInput | string
-  imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  attachments?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  published?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isGlobal?: Prisma.BoolFieldUpdateOperationsInput | boolean
   authorId?: Prisma.StringFieldUpdateOperationsInput | string
-  categoryId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  published?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  categoryId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  comments?: Prisma.CommentUncheckedUpdateManyWithoutNoteNestedInput
+  attachments?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  Comment?: Prisma.CommentUncheckedUpdateManyWithoutNoteNestedInput
 }
 
 export type NoteCreateManyInput = {
-  id?: string
+  id: string
   title: string
   content: string
-  imageUrl?: string | null
-  attachments?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  published?: boolean
   isGlobal?: boolean
   authorId: string
-  categoryId?: string | null
   createdAt?: Date | string
-  updatedAt?: Date | string
+  updatedAt: Date | string
+  imageUrl?: string | null
+  published?: boolean
+  categoryId?: string | null
   deletedAt?: Date | string | null
+  attachments?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
 }
 
 export type NoteUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
   content?: Prisma.StringFieldUpdateOperationsInput | string
-  imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  attachments?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  published?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isGlobal?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  published?: Prisma.BoolFieldUpdateOperationsInput | boolean
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  attachments?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
 }
 
 export type NoteUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
   content?: Prisma.StringFieldUpdateOperationsInput | string
-  imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  attachments?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  published?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isGlobal?: Prisma.BoolFieldUpdateOperationsInput | boolean
   authorId?: Prisma.StringFieldUpdateOperationsInput | string
-  categoryId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  published?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  categoryId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  attachments?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
 }
 
 export type NoteListRelationFilter = {
@@ -431,32 +431,37 @@ export type NoteOrderByRelationAggregateInput = {
   _count?: Prisma.SortOrder
 }
 
+export type NoteScalarRelationFilter = {
+  is?: Prisma.NoteWhereInput
+  isNot?: Prisma.NoteWhereInput
+}
+
 export type NoteCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   title?: Prisma.SortOrder
   content?: Prisma.SortOrder
-  imageUrl?: Prisma.SortOrder
-  attachments?: Prisma.SortOrder
-  published?: Prisma.SortOrder
   isGlobal?: Prisma.SortOrder
   authorId?: Prisma.SortOrder
-  categoryId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  imageUrl?: Prisma.SortOrder
+  published?: Prisma.SortOrder
+  categoryId?: Prisma.SortOrder
   deletedAt?: Prisma.SortOrder
+  attachments?: Prisma.SortOrder
 }
 
 export type NoteMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   title?: Prisma.SortOrder
   content?: Prisma.SortOrder
-  imageUrl?: Prisma.SortOrder
-  published?: Prisma.SortOrder
   isGlobal?: Prisma.SortOrder
   authorId?: Prisma.SortOrder
-  categoryId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  imageUrl?: Prisma.SortOrder
+  published?: Prisma.SortOrder
+  categoryId?: Prisma.SortOrder
   deletedAt?: Prisma.SortOrder
 }
 
@@ -464,60 +469,55 @@ export type NoteMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   title?: Prisma.SortOrder
   content?: Prisma.SortOrder
-  imageUrl?: Prisma.SortOrder
-  published?: Prisma.SortOrder
   isGlobal?: Prisma.SortOrder
   authorId?: Prisma.SortOrder
-  categoryId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  imageUrl?: Prisma.SortOrder
+  published?: Prisma.SortOrder
+  categoryId?: Prisma.SortOrder
   deletedAt?: Prisma.SortOrder
 }
 
-export type NoteScalarRelationFilter = {
-  is?: Prisma.NoteWhereInput
-  isNot?: Prisma.NoteWhereInput
-}
-
-export type NoteCreateNestedManyWithoutAuthorInput = {
-  create?: Prisma.XOR<Prisma.NoteCreateWithoutAuthorInput, Prisma.NoteUncheckedCreateWithoutAuthorInput> | Prisma.NoteCreateWithoutAuthorInput[] | Prisma.NoteUncheckedCreateWithoutAuthorInput[]
-  connectOrCreate?: Prisma.NoteCreateOrConnectWithoutAuthorInput | Prisma.NoteCreateOrConnectWithoutAuthorInput[]
-  createMany?: Prisma.NoteCreateManyAuthorInputEnvelope
+export type NoteCreateNestedManyWithoutUserInput = {
+  create?: Prisma.XOR<Prisma.NoteCreateWithoutUserInput, Prisma.NoteUncheckedCreateWithoutUserInput> | Prisma.NoteCreateWithoutUserInput[] | Prisma.NoteUncheckedCreateWithoutUserInput[]
+  connectOrCreate?: Prisma.NoteCreateOrConnectWithoutUserInput | Prisma.NoteCreateOrConnectWithoutUserInput[]
+  createMany?: Prisma.NoteCreateManyUserInputEnvelope
   connect?: Prisma.NoteWhereUniqueInput | Prisma.NoteWhereUniqueInput[]
 }
 
-export type NoteUncheckedCreateNestedManyWithoutAuthorInput = {
-  create?: Prisma.XOR<Prisma.NoteCreateWithoutAuthorInput, Prisma.NoteUncheckedCreateWithoutAuthorInput> | Prisma.NoteCreateWithoutAuthorInput[] | Prisma.NoteUncheckedCreateWithoutAuthorInput[]
-  connectOrCreate?: Prisma.NoteCreateOrConnectWithoutAuthorInput | Prisma.NoteCreateOrConnectWithoutAuthorInput[]
-  createMany?: Prisma.NoteCreateManyAuthorInputEnvelope
+export type NoteUncheckedCreateNestedManyWithoutUserInput = {
+  create?: Prisma.XOR<Prisma.NoteCreateWithoutUserInput, Prisma.NoteUncheckedCreateWithoutUserInput> | Prisma.NoteCreateWithoutUserInput[] | Prisma.NoteUncheckedCreateWithoutUserInput[]
+  connectOrCreate?: Prisma.NoteCreateOrConnectWithoutUserInput | Prisma.NoteCreateOrConnectWithoutUserInput[]
+  createMany?: Prisma.NoteCreateManyUserInputEnvelope
   connect?: Prisma.NoteWhereUniqueInput | Prisma.NoteWhereUniqueInput[]
 }
 
-export type NoteUpdateManyWithoutAuthorNestedInput = {
-  create?: Prisma.XOR<Prisma.NoteCreateWithoutAuthorInput, Prisma.NoteUncheckedCreateWithoutAuthorInput> | Prisma.NoteCreateWithoutAuthorInput[] | Prisma.NoteUncheckedCreateWithoutAuthorInput[]
-  connectOrCreate?: Prisma.NoteCreateOrConnectWithoutAuthorInput | Prisma.NoteCreateOrConnectWithoutAuthorInput[]
-  upsert?: Prisma.NoteUpsertWithWhereUniqueWithoutAuthorInput | Prisma.NoteUpsertWithWhereUniqueWithoutAuthorInput[]
-  createMany?: Prisma.NoteCreateManyAuthorInputEnvelope
+export type NoteUpdateManyWithoutUserNestedInput = {
+  create?: Prisma.XOR<Prisma.NoteCreateWithoutUserInput, Prisma.NoteUncheckedCreateWithoutUserInput> | Prisma.NoteCreateWithoutUserInput[] | Prisma.NoteUncheckedCreateWithoutUserInput[]
+  connectOrCreate?: Prisma.NoteCreateOrConnectWithoutUserInput | Prisma.NoteCreateOrConnectWithoutUserInput[]
+  upsert?: Prisma.NoteUpsertWithWhereUniqueWithoutUserInput | Prisma.NoteUpsertWithWhereUniqueWithoutUserInput[]
+  createMany?: Prisma.NoteCreateManyUserInputEnvelope
   set?: Prisma.NoteWhereUniqueInput | Prisma.NoteWhereUniqueInput[]
   disconnect?: Prisma.NoteWhereUniqueInput | Prisma.NoteWhereUniqueInput[]
   delete?: Prisma.NoteWhereUniqueInput | Prisma.NoteWhereUniqueInput[]
   connect?: Prisma.NoteWhereUniqueInput | Prisma.NoteWhereUniqueInput[]
-  update?: Prisma.NoteUpdateWithWhereUniqueWithoutAuthorInput | Prisma.NoteUpdateWithWhereUniqueWithoutAuthorInput[]
-  updateMany?: Prisma.NoteUpdateManyWithWhereWithoutAuthorInput | Prisma.NoteUpdateManyWithWhereWithoutAuthorInput[]
+  update?: Prisma.NoteUpdateWithWhereUniqueWithoutUserInput | Prisma.NoteUpdateWithWhereUniqueWithoutUserInput[]
+  updateMany?: Prisma.NoteUpdateManyWithWhereWithoutUserInput | Prisma.NoteUpdateManyWithWhereWithoutUserInput[]
   deleteMany?: Prisma.NoteScalarWhereInput | Prisma.NoteScalarWhereInput[]
 }
 
-export type NoteUncheckedUpdateManyWithoutAuthorNestedInput = {
-  create?: Prisma.XOR<Prisma.NoteCreateWithoutAuthorInput, Prisma.NoteUncheckedCreateWithoutAuthorInput> | Prisma.NoteCreateWithoutAuthorInput[] | Prisma.NoteUncheckedCreateWithoutAuthorInput[]
-  connectOrCreate?: Prisma.NoteCreateOrConnectWithoutAuthorInput | Prisma.NoteCreateOrConnectWithoutAuthorInput[]
-  upsert?: Prisma.NoteUpsertWithWhereUniqueWithoutAuthorInput | Prisma.NoteUpsertWithWhereUniqueWithoutAuthorInput[]
-  createMany?: Prisma.NoteCreateManyAuthorInputEnvelope
+export type NoteUncheckedUpdateManyWithoutUserNestedInput = {
+  create?: Prisma.XOR<Prisma.NoteCreateWithoutUserInput, Prisma.NoteUncheckedCreateWithoutUserInput> | Prisma.NoteCreateWithoutUserInput[] | Prisma.NoteUncheckedCreateWithoutUserInput[]
+  connectOrCreate?: Prisma.NoteCreateOrConnectWithoutUserInput | Prisma.NoteCreateOrConnectWithoutUserInput[]
+  upsert?: Prisma.NoteUpsertWithWhereUniqueWithoutUserInput | Prisma.NoteUpsertWithWhereUniqueWithoutUserInput[]
+  createMany?: Prisma.NoteCreateManyUserInputEnvelope
   set?: Prisma.NoteWhereUniqueInput | Prisma.NoteWhereUniqueInput[]
   disconnect?: Prisma.NoteWhereUniqueInput | Prisma.NoteWhereUniqueInput[]
   delete?: Prisma.NoteWhereUniqueInput | Prisma.NoteWhereUniqueInput[]
   connect?: Prisma.NoteWhereUniqueInput | Prisma.NoteWhereUniqueInput[]
-  update?: Prisma.NoteUpdateWithWhereUniqueWithoutAuthorInput | Prisma.NoteUpdateWithWhereUniqueWithoutAuthorInput[]
-  updateMany?: Prisma.NoteUpdateManyWithWhereWithoutAuthorInput | Prisma.NoteUpdateManyWithWhereWithoutAuthorInput[]
+  update?: Prisma.NoteUpdateWithWhereUniqueWithoutUserInput | Prisma.NoteUpdateWithWhereUniqueWithoutUserInput[]
+  updateMany?: Prisma.NoteUpdateManyWithWhereWithoutUserInput | Prisma.NoteUpdateManyWithWhereWithoutUserInput[]
   deleteMany?: Prisma.NoteScalarWhereInput | Prisma.NoteScalarWhereInput[]
 }
 
@@ -563,78 +563,78 @@ export type NoteUncheckedUpdateManyWithoutCategoryNestedInput = {
   deleteMany?: Prisma.NoteScalarWhereInput | Prisma.NoteScalarWhereInput[]
 }
 
+export type NoteCreateNestedOneWithoutCommentInput = {
+  create?: Prisma.XOR<Prisma.NoteCreateWithoutCommentInput, Prisma.NoteUncheckedCreateWithoutCommentInput>
+  connectOrCreate?: Prisma.NoteCreateOrConnectWithoutCommentInput
+  connect?: Prisma.NoteWhereUniqueInput
+}
+
+export type NoteUpdateOneRequiredWithoutCommentNestedInput = {
+  create?: Prisma.XOR<Prisma.NoteCreateWithoutCommentInput, Prisma.NoteUncheckedCreateWithoutCommentInput>
+  connectOrCreate?: Prisma.NoteCreateOrConnectWithoutCommentInput
+  upsert?: Prisma.NoteUpsertWithoutCommentInput
+  connect?: Prisma.NoteWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.NoteUpdateToOneWithWhereWithoutCommentInput, Prisma.NoteUpdateWithoutCommentInput>, Prisma.NoteUncheckedUpdateWithoutCommentInput>
+}
+
 export type BoolFieldUpdateOperationsInput = {
   set?: boolean
 }
 
-export type NoteCreateNestedOneWithoutCommentsInput = {
-  create?: Prisma.XOR<Prisma.NoteCreateWithoutCommentsInput, Prisma.NoteUncheckedCreateWithoutCommentsInput>
-  connectOrCreate?: Prisma.NoteCreateOrConnectWithoutCommentsInput
-  connect?: Prisma.NoteWhereUniqueInput
-}
-
-export type NoteUpdateOneRequiredWithoutCommentsNestedInput = {
-  create?: Prisma.XOR<Prisma.NoteCreateWithoutCommentsInput, Prisma.NoteUncheckedCreateWithoutCommentsInput>
-  connectOrCreate?: Prisma.NoteCreateOrConnectWithoutCommentsInput
-  upsert?: Prisma.NoteUpsertWithoutCommentsInput
-  connect?: Prisma.NoteWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.NoteUpdateToOneWithWhereWithoutCommentsInput, Prisma.NoteUpdateWithoutCommentsInput>, Prisma.NoteUncheckedUpdateWithoutCommentsInput>
-}
-
-export type NoteCreateWithoutAuthorInput = {
-  id?: string
+export type NoteCreateWithoutUserInput = {
+  id: string
   title: string
   content: string
-  imageUrl?: string | null
-  attachments?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  published?: boolean
   isGlobal?: boolean
   createdAt?: Date | string
-  updatedAt?: Date | string
+  updatedAt: Date | string
+  imageUrl?: string | null
+  published?: boolean
   deletedAt?: Date | string | null
-  category?: Prisma.CategoryCreateNestedOneWithoutNotesInput
-  comments?: Prisma.CommentCreateNestedManyWithoutNoteInput
+  attachments?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  Comment?: Prisma.CommentCreateNestedManyWithoutNoteInput
+  Category?: Prisma.CategoryCreateNestedOneWithoutNoteInput
 }
 
-export type NoteUncheckedCreateWithoutAuthorInput = {
-  id?: string
+export type NoteUncheckedCreateWithoutUserInput = {
+  id: string
   title: string
   content: string
-  imageUrl?: string | null
-  attachments?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  published?: boolean
   isGlobal?: boolean
+  createdAt?: Date | string
+  updatedAt: Date | string
+  imageUrl?: string | null
+  published?: boolean
   categoryId?: string | null
-  createdAt?: Date | string
-  updatedAt?: Date | string
   deletedAt?: Date | string | null
-  comments?: Prisma.CommentUncheckedCreateNestedManyWithoutNoteInput
+  attachments?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  Comment?: Prisma.CommentUncheckedCreateNestedManyWithoutNoteInput
 }
 
-export type NoteCreateOrConnectWithoutAuthorInput = {
+export type NoteCreateOrConnectWithoutUserInput = {
   where: Prisma.NoteWhereUniqueInput
-  create: Prisma.XOR<Prisma.NoteCreateWithoutAuthorInput, Prisma.NoteUncheckedCreateWithoutAuthorInput>
+  create: Prisma.XOR<Prisma.NoteCreateWithoutUserInput, Prisma.NoteUncheckedCreateWithoutUserInput>
 }
 
-export type NoteCreateManyAuthorInputEnvelope = {
-  data: Prisma.NoteCreateManyAuthorInput | Prisma.NoteCreateManyAuthorInput[]
+export type NoteCreateManyUserInputEnvelope = {
+  data: Prisma.NoteCreateManyUserInput | Prisma.NoteCreateManyUserInput[]
   skipDuplicates?: boolean
 }
 
-export type NoteUpsertWithWhereUniqueWithoutAuthorInput = {
+export type NoteUpsertWithWhereUniqueWithoutUserInput = {
   where: Prisma.NoteWhereUniqueInput
-  update: Prisma.XOR<Prisma.NoteUpdateWithoutAuthorInput, Prisma.NoteUncheckedUpdateWithoutAuthorInput>
-  create: Prisma.XOR<Prisma.NoteCreateWithoutAuthorInput, Prisma.NoteUncheckedCreateWithoutAuthorInput>
+  update: Prisma.XOR<Prisma.NoteUpdateWithoutUserInput, Prisma.NoteUncheckedUpdateWithoutUserInput>
+  create: Prisma.XOR<Prisma.NoteCreateWithoutUserInput, Prisma.NoteUncheckedCreateWithoutUserInput>
 }
 
-export type NoteUpdateWithWhereUniqueWithoutAuthorInput = {
+export type NoteUpdateWithWhereUniqueWithoutUserInput = {
   where: Prisma.NoteWhereUniqueInput
-  data: Prisma.XOR<Prisma.NoteUpdateWithoutAuthorInput, Prisma.NoteUncheckedUpdateWithoutAuthorInput>
+  data: Prisma.XOR<Prisma.NoteUpdateWithoutUserInput, Prisma.NoteUncheckedUpdateWithoutUserInput>
 }
 
-export type NoteUpdateManyWithWhereWithoutAuthorInput = {
+export type NoteUpdateManyWithWhereWithoutUserInput = {
   where: Prisma.NoteScalarWhereInput
-  data: Prisma.XOR<Prisma.NoteUpdateManyMutationInput, Prisma.NoteUncheckedUpdateManyWithoutAuthorInput>
+  data: Prisma.XOR<Prisma.NoteUpdateManyMutationInput, Prisma.NoteUncheckedUpdateManyWithoutUserInput>
 }
 
 export type NoteScalarWhereInput = {
@@ -644,45 +644,45 @@ export type NoteScalarWhereInput = {
   id?: Prisma.StringFilter<"Note"> | string
   title?: Prisma.StringFilter<"Note"> | string
   content?: Prisma.StringFilter<"Note"> | string
-  imageUrl?: Prisma.StringNullableFilter<"Note"> | string | null
-  attachments?: Prisma.JsonNullableFilter<"Note">
-  published?: Prisma.BoolFilter<"Note"> | boolean
   isGlobal?: Prisma.BoolFilter<"Note"> | boolean
   authorId?: Prisma.StringFilter<"Note"> | string
-  categoryId?: Prisma.StringNullableFilter<"Note"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Note"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Note"> | Date | string
+  imageUrl?: Prisma.StringNullableFilter<"Note"> | string | null
+  published?: Prisma.BoolFilter<"Note"> | boolean
+  categoryId?: Prisma.StringNullableFilter<"Note"> | string | null
   deletedAt?: Prisma.DateTimeNullableFilter<"Note"> | Date | string | null
+  attachments?: Prisma.JsonNullableFilter<"Note">
 }
 
 export type NoteCreateWithoutCategoryInput = {
-  id?: string
+  id: string
   title: string
   content: string
-  imageUrl?: string | null
-  attachments?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  published?: boolean
   isGlobal?: boolean
   createdAt?: Date | string
-  updatedAt?: Date | string
+  updatedAt: Date | string
+  imageUrl?: string | null
+  published?: boolean
   deletedAt?: Date | string | null
-  author: Prisma.UserCreateNestedOneWithoutNotesInput
-  comments?: Prisma.CommentCreateNestedManyWithoutNoteInput
+  attachments?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  Comment?: Prisma.CommentCreateNestedManyWithoutNoteInput
+  User: Prisma.UserCreateNestedOneWithoutNoteInput
 }
 
 export type NoteUncheckedCreateWithoutCategoryInput = {
-  id?: string
+  id: string
   title: string
   content: string
-  imageUrl?: string | null
-  attachments?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  published?: boolean
   isGlobal?: boolean
   authorId: string
   createdAt?: Date | string
-  updatedAt?: Date | string
+  updatedAt: Date | string
+  imageUrl?: string | null
+  published?: boolean
   deletedAt?: Date | string | null
-  comments?: Prisma.CommentUncheckedCreateNestedManyWithoutNoteInput
+  attachments?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  Comment?: Prisma.CommentUncheckedCreateNestedManyWithoutNoteInput
 }
 
 export type NoteCreateOrConnectWithoutCategoryInput = {
@@ -711,196 +711,196 @@ export type NoteUpdateManyWithWhereWithoutCategoryInput = {
   data: Prisma.XOR<Prisma.NoteUpdateManyMutationInput, Prisma.NoteUncheckedUpdateManyWithoutCategoryInput>
 }
 
-export type NoteCreateWithoutCommentsInput = {
-  id?: string
+export type NoteCreateWithoutCommentInput = {
+  id: string
   title: string
   content: string
-  imageUrl?: string | null
-  attachments?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  published?: boolean
   isGlobal?: boolean
   createdAt?: Date | string
-  updatedAt?: Date | string
+  updatedAt: Date | string
+  imageUrl?: string | null
+  published?: boolean
   deletedAt?: Date | string | null
-  author: Prisma.UserCreateNestedOneWithoutNotesInput
-  category?: Prisma.CategoryCreateNestedOneWithoutNotesInput
+  attachments?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  User: Prisma.UserCreateNestedOneWithoutNoteInput
+  Category?: Prisma.CategoryCreateNestedOneWithoutNoteInput
 }
 
-export type NoteUncheckedCreateWithoutCommentsInput = {
-  id?: string
+export type NoteUncheckedCreateWithoutCommentInput = {
+  id: string
   title: string
   content: string
-  imageUrl?: string | null
-  attachments?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  published?: boolean
   isGlobal?: boolean
   authorId: string
-  categoryId?: string | null
   createdAt?: Date | string
-  updatedAt?: Date | string
+  updatedAt: Date | string
+  imageUrl?: string | null
+  published?: boolean
+  categoryId?: string | null
   deletedAt?: Date | string | null
+  attachments?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
 }
 
-export type NoteCreateOrConnectWithoutCommentsInput = {
+export type NoteCreateOrConnectWithoutCommentInput = {
   where: Prisma.NoteWhereUniqueInput
-  create: Prisma.XOR<Prisma.NoteCreateWithoutCommentsInput, Prisma.NoteUncheckedCreateWithoutCommentsInput>
+  create: Prisma.XOR<Prisma.NoteCreateWithoutCommentInput, Prisma.NoteUncheckedCreateWithoutCommentInput>
 }
 
-export type NoteUpsertWithoutCommentsInput = {
-  update: Prisma.XOR<Prisma.NoteUpdateWithoutCommentsInput, Prisma.NoteUncheckedUpdateWithoutCommentsInput>
-  create: Prisma.XOR<Prisma.NoteCreateWithoutCommentsInput, Prisma.NoteUncheckedCreateWithoutCommentsInput>
+export type NoteUpsertWithoutCommentInput = {
+  update: Prisma.XOR<Prisma.NoteUpdateWithoutCommentInput, Prisma.NoteUncheckedUpdateWithoutCommentInput>
+  create: Prisma.XOR<Prisma.NoteCreateWithoutCommentInput, Prisma.NoteUncheckedCreateWithoutCommentInput>
   where?: Prisma.NoteWhereInput
 }
 
-export type NoteUpdateToOneWithWhereWithoutCommentsInput = {
+export type NoteUpdateToOneWithWhereWithoutCommentInput = {
   where?: Prisma.NoteWhereInput
-  data: Prisma.XOR<Prisma.NoteUpdateWithoutCommentsInput, Prisma.NoteUncheckedUpdateWithoutCommentsInput>
+  data: Prisma.XOR<Prisma.NoteUpdateWithoutCommentInput, Prisma.NoteUncheckedUpdateWithoutCommentInput>
 }
 
-export type NoteUpdateWithoutCommentsInput = {
+export type NoteUpdateWithoutCommentInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
   content?: Prisma.StringFieldUpdateOperationsInput | string
-  imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  attachments?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  published?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isGlobal?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  published?: Prisma.BoolFieldUpdateOperationsInput | boolean
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  author?: Prisma.UserUpdateOneRequiredWithoutNotesNestedInput
-  category?: Prisma.CategoryUpdateOneWithoutNotesNestedInput
+  attachments?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  User?: Prisma.UserUpdateOneRequiredWithoutNoteNestedInput
+  Category?: Prisma.CategoryUpdateOneWithoutNoteNestedInput
 }
 
-export type NoteUncheckedUpdateWithoutCommentsInput = {
+export type NoteUncheckedUpdateWithoutCommentInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
   content?: Prisma.StringFieldUpdateOperationsInput | string
-  imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  attachments?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  published?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isGlobal?: Prisma.BoolFieldUpdateOperationsInput | boolean
   authorId?: Prisma.StringFieldUpdateOperationsInput | string
-  categoryId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  published?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  categoryId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  attachments?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
 }
 
-export type NoteCreateManyAuthorInput = {
-  id?: string
+export type NoteCreateManyUserInput = {
+  id: string
   title: string
   content: string
-  imageUrl?: string | null
-  attachments?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  published?: boolean
   isGlobal?: boolean
-  categoryId?: string | null
   createdAt?: Date | string
-  updatedAt?: Date | string
+  updatedAt: Date | string
+  imageUrl?: string | null
+  published?: boolean
+  categoryId?: string | null
   deletedAt?: Date | string | null
+  attachments?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
 }
 
-export type NoteUpdateWithoutAuthorInput = {
+export type NoteUpdateWithoutUserInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
   content?: Prisma.StringFieldUpdateOperationsInput | string
-  imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  attachments?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  published?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isGlobal?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  published?: Prisma.BoolFieldUpdateOperationsInput | boolean
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  category?: Prisma.CategoryUpdateOneWithoutNotesNestedInput
-  comments?: Prisma.CommentUpdateManyWithoutNoteNestedInput
+  attachments?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  Comment?: Prisma.CommentUpdateManyWithoutNoteNestedInput
+  Category?: Prisma.CategoryUpdateOneWithoutNoteNestedInput
 }
 
-export type NoteUncheckedUpdateWithoutAuthorInput = {
+export type NoteUncheckedUpdateWithoutUserInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
   content?: Prisma.StringFieldUpdateOperationsInput | string
-  imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  attachments?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  published?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isGlobal?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  published?: Prisma.BoolFieldUpdateOperationsInput | boolean
   categoryId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  comments?: Prisma.CommentUncheckedUpdateManyWithoutNoteNestedInput
+  attachments?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  Comment?: Prisma.CommentUncheckedUpdateManyWithoutNoteNestedInput
 }
 
-export type NoteUncheckedUpdateManyWithoutAuthorInput = {
+export type NoteUncheckedUpdateManyWithoutUserInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
   content?: Prisma.StringFieldUpdateOperationsInput | string
-  imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  attachments?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  published?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isGlobal?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  categoryId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  published?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  categoryId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  attachments?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
 }
 
 export type NoteCreateManyCategoryInput = {
-  id?: string
+  id: string
   title: string
   content: string
-  imageUrl?: string | null
-  attachments?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  published?: boolean
   isGlobal?: boolean
   authorId: string
   createdAt?: Date | string
-  updatedAt?: Date | string
+  updatedAt: Date | string
+  imageUrl?: string | null
+  published?: boolean
   deletedAt?: Date | string | null
+  attachments?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
 }
 
 export type NoteUpdateWithoutCategoryInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
   content?: Prisma.StringFieldUpdateOperationsInput | string
-  imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  attachments?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  published?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isGlobal?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  published?: Prisma.BoolFieldUpdateOperationsInput | boolean
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  author?: Prisma.UserUpdateOneRequiredWithoutNotesNestedInput
-  comments?: Prisma.CommentUpdateManyWithoutNoteNestedInput
+  attachments?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  Comment?: Prisma.CommentUpdateManyWithoutNoteNestedInput
+  User?: Prisma.UserUpdateOneRequiredWithoutNoteNestedInput
 }
 
 export type NoteUncheckedUpdateWithoutCategoryInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
   content?: Prisma.StringFieldUpdateOperationsInput | string
-  imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  attachments?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  published?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isGlobal?: Prisma.BoolFieldUpdateOperationsInput | boolean
   authorId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  published?: Prisma.BoolFieldUpdateOperationsInput | boolean
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  comments?: Prisma.CommentUncheckedUpdateManyWithoutNoteNestedInput
+  attachments?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  Comment?: Prisma.CommentUncheckedUpdateManyWithoutNoteNestedInput
 }
 
 export type NoteUncheckedUpdateManyWithoutCategoryInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
   content?: Prisma.StringFieldUpdateOperationsInput | string
-  imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  attachments?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  published?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isGlobal?: Prisma.BoolFieldUpdateOperationsInput | boolean
   authorId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  published?: Prisma.BoolFieldUpdateOperationsInput | boolean
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  attachments?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
 }
 
 
@@ -909,11 +909,11 @@ export type NoteUncheckedUpdateManyWithoutCategoryInput = {
  */
 
 export type NoteCountOutputType = {
-  comments: number
+  Comment: number
 }
 
 export type NoteCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  comments?: boolean | NoteCountOutputTypeCountCommentsArgs
+  Comment?: boolean | NoteCountOutputTypeCountCommentArgs
 }
 
 /**
@@ -929,7 +929,7 @@ export type NoteCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Extensi
 /**
  * NoteCountOutputType without action
  */
-export type NoteCountOutputTypeCountCommentsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+export type NoteCountOutputTypeCountCommentArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.CommentWhereInput
 }
 
@@ -938,18 +938,18 @@ export type NoteSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   id?: boolean
   title?: boolean
   content?: boolean
-  imageUrl?: boolean
-  attachments?: boolean
-  published?: boolean
   isGlobal?: boolean
   authorId?: boolean
-  categoryId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  imageUrl?: boolean
+  published?: boolean
+  categoryId?: boolean
   deletedAt?: boolean
-  author?: boolean | Prisma.UserDefaultArgs<ExtArgs>
-  category?: boolean | Prisma.Note$categoryArgs<ExtArgs>
-  comments?: boolean | Prisma.Note$commentsArgs<ExtArgs>
+  attachments?: boolean
+  Comment?: boolean | Prisma.Note$CommentArgs<ExtArgs>
+  User?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  Category?: boolean | Prisma.Note$CategoryArgs<ExtArgs>
   _count?: boolean | Prisma.NoteCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["note"]>
 
@@ -957,87 +957,87 @@ export type NoteSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   id?: boolean
   title?: boolean
   content?: boolean
-  imageUrl?: boolean
-  attachments?: boolean
-  published?: boolean
   isGlobal?: boolean
   authorId?: boolean
-  categoryId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  imageUrl?: boolean
+  published?: boolean
+  categoryId?: boolean
   deletedAt?: boolean
-  author?: boolean | Prisma.UserDefaultArgs<ExtArgs>
-  category?: boolean | Prisma.Note$categoryArgs<ExtArgs>
+  attachments?: boolean
+  User?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  Category?: boolean | Prisma.Note$CategoryArgs<ExtArgs>
 }, ExtArgs["result"]["note"]>
 
 export type NoteSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   title?: boolean
   content?: boolean
-  imageUrl?: boolean
-  attachments?: boolean
-  published?: boolean
   isGlobal?: boolean
   authorId?: boolean
-  categoryId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  imageUrl?: boolean
+  published?: boolean
+  categoryId?: boolean
   deletedAt?: boolean
-  author?: boolean | Prisma.UserDefaultArgs<ExtArgs>
-  category?: boolean | Prisma.Note$categoryArgs<ExtArgs>
+  attachments?: boolean
+  User?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  Category?: boolean | Prisma.Note$CategoryArgs<ExtArgs>
 }, ExtArgs["result"]["note"]>
 
 export type NoteSelectScalar = {
   id?: boolean
   title?: boolean
   content?: boolean
-  imageUrl?: boolean
-  attachments?: boolean
-  published?: boolean
   isGlobal?: boolean
   authorId?: boolean
-  categoryId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  imageUrl?: boolean
+  published?: boolean
+  categoryId?: boolean
   deletedAt?: boolean
+  attachments?: boolean
 }
 
-export type NoteOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "title" | "content" | "imageUrl" | "attachments" | "published" | "isGlobal" | "authorId" | "categoryId" | "createdAt" | "updatedAt" | "deletedAt", ExtArgs["result"]["note"]>
+export type NoteOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "title" | "content" | "isGlobal" | "authorId" | "createdAt" | "updatedAt" | "imageUrl" | "published" | "categoryId" | "deletedAt" | "attachments", ExtArgs["result"]["note"]>
 export type NoteInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  author?: boolean | Prisma.UserDefaultArgs<ExtArgs>
-  category?: boolean | Prisma.Note$categoryArgs<ExtArgs>
-  comments?: boolean | Prisma.Note$commentsArgs<ExtArgs>
+  Comment?: boolean | Prisma.Note$CommentArgs<ExtArgs>
+  User?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  Category?: boolean | Prisma.Note$CategoryArgs<ExtArgs>
   _count?: boolean | Prisma.NoteCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type NoteIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  author?: boolean | Prisma.UserDefaultArgs<ExtArgs>
-  category?: boolean | Prisma.Note$categoryArgs<ExtArgs>
+  User?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  Category?: boolean | Prisma.Note$CategoryArgs<ExtArgs>
 }
 export type NoteIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  author?: boolean | Prisma.UserDefaultArgs<ExtArgs>
-  category?: boolean | Prisma.Note$categoryArgs<ExtArgs>
+  User?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  Category?: boolean | Prisma.Note$CategoryArgs<ExtArgs>
 }
 
 export type $NotePayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Note"
   objects: {
-    author: Prisma.$UserPayload<ExtArgs>
-    category: Prisma.$CategoryPayload<ExtArgs> | null
-    comments: Prisma.$CommentPayload<ExtArgs>[]
+    Comment: Prisma.$CommentPayload<ExtArgs>[]
+    User: Prisma.$UserPayload<ExtArgs>
+    Category: Prisma.$CategoryPayload<ExtArgs> | null
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
     title: string
     content: string
-    imageUrl: string | null
-    attachments: runtime.JsonValue | null
-    published: boolean
     isGlobal: boolean
     authorId: string
-    categoryId: string | null
     createdAt: Date
     updatedAt: Date
+    imageUrl: string | null
+    published: boolean
+    categoryId: string | null
     deletedAt: Date | null
+    attachments: runtime.JsonValue | null
   }, ExtArgs["result"]["note"]>
   composites: {}
 }
@@ -1432,9 +1432,9 @@ readonly fields: NoteFieldRefs;
  */
 export interface Prisma__NoteClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
-  author<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
-  category<T extends Prisma.Note$categoryArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Note$categoryArgs<ExtArgs>>): Prisma.Prisma__CategoryClient<runtime.Types.Result.GetResult<Prisma.$CategoryPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
-  comments<T extends Prisma.Note$commentsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Note$commentsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CommentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  Comment<T extends Prisma.Note$CommentArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Note$CommentArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CommentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  User<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  Category<T extends Prisma.Note$CategoryArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Note$CategoryArgs<ExtArgs>>): Prisma.Prisma__CategoryClient<runtime.Types.Result.GetResult<Prisma.$CategoryPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1467,15 +1467,15 @@ export interface NoteFieldRefs {
   readonly id: Prisma.FieldRef<"Note", 'String'>
   readonly title: Prisma.FieldRef<"Note", 'String'>
   readonly content: Prisma.FieldRef<"Note", 'String'>
-  readonly imageUrl: Prisma.FieldRef<"Note", 'String'>
-  readonly attachments: Prisma.FieldRef<"Note", 'Json'>
-  readonly published: Prisma.FieldRef<"Note", 'Boolean'>
   readonly isGlobal: Prisma.FieldRef<"Note", 'Boolean'>
   readonly authorId: Prisma.FieldRef<"Note", 'String'>
-  readonly categoryId: Prisma.FieldRef<"Note", 'String'>
   readonly createdAt: Prisma.FieldRef<"Note", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Note", 'DateTime'>
+  readonly imageUrl: Prisma.FieldRef<"Note", 'String'>
+  readonly published: Prisma.FieldRef<"Note", 'Boolean'>
+  readonly categoryId: Prisma.FieldRef<"Note", 'String'>
   readonly deletedAt: Prisma.FieldRef<"Note", 'DateTime'>
+  readonly attachments: Prisma.FieldRef<"Note", 'Json'>
 }
     
 
@@ -1877,28 +1877,9 @@ export type NoteDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.Internal
 }
 
 /**
- * Note.category
+ * Note.Comment
  */
-export type Note$categoryArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the Category
-   */
-  select?: Prisma.CategorySelect<ExtArgs> | null
-  /**
-   * Omit specific fields from the Category
-   */
-  omit?: Prisma.CategoryOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.CategoryInclude<ExtArgs> | null
-  where?: Prisma.CategoryWhereInput
-}
-
-/**
- * Note.comments
- */
-export type Note$commentsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+export type Note$CommentArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   /**
    * Select specific fields to fetch from the Comment
    */
@@ -1917,6 +1898,25 @@ export type Note$commentsArgs<ExtArgs extends runtime.Types.Extensions.InternalA
   take?: number
   skip?: number
   distinct?: Prisma.CommentScalarFieldEnum | Prisma.CommentScalarFieldEnum[]
+}
+
+/**
+ * Note.Category
+ */
+export type Note$CategoryArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Category
+   */
+  select?: Prisma.CategorySelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Category
+   */
+  omit?: Prisma.CategoryOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.CategoryInclude<ExtArgs> | null
+  where?: Prisma.CategoryWhereInput
 }
 
 /**

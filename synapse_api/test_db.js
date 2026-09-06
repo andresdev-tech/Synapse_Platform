@@ -1,1 +1,6 @@
-import { PrismaClient } from '@prisma/client'; const prisma = new PrismaClient(); async function main() { const notes = await prisma.note.findMany({ orderBy: { createdAt: 'desc' }, take: 2 }); console.log(JSON.stringify(notes, null, 2)); } main();  
+import pkg from './generated/prisma/index.js';
+const { PrismaClient } = pkg;
+const prisma = new PrismaClient();
+prisma.$queryRawUnsafe("SELECT data_type FROM information_schema.columns WHERE table_name = 'Category' AND column_name = 'id'")
+  .then(console.log)
+  .finally(() => prisma.$disconnect());

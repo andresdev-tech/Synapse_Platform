@@ -158,13 +158,13 @@ export type CategoryWhereInput = {
   NOT?: Prisma.CategoryWhereInput | Prisma.CategoryWhereInput[]
   id?: Prisma.StringFilter<"Category"> | string
   name?: Prisma.StringFilter<"Category"> | string
-  notes?: Prisma.NoteListRelationFilter
+  Note?: Prisma.NoteListRelationFilter
 }
 
 export type CategoryOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
-  notes?: Prisma.NoteOrderByRelationAggregateInput
+  Note?: Prisma.NoteOrderByRelationAggregateInput
 }
 
 export type CategoryWhereUniqueInput = Prisma.AtLeast<{
@@ -173,7 +173,7 @@ export type CategoryWhereUniqueInput = Prisma.AtLeast<{
   AND?: Prisma.CategoryWhereInput | Prisma.CategoryWhereInput[]
   OR?: Prisma.CategoryWhereInput[]
   NOT?: Prisma.CategoryWhereInput | Prisma.CategoryWhereInput[]
-  notes?: Prisma.NoteListRelationFilter
+  Note?: Prisma.NoteListRelationFilter
 }, "id" | "name">
 
 export type CategoryOrderByWithAggregationInput = {
@@ -195,25 +195,25 @@ export type CategoryScalarWhereWithAggregatesInput = {
 export type CategoryCreateInput = {
   id?: string
   name: string
-  notes?: Prisma.NoteCreateNestedManyWithoutCategoryInput
+  Note?: Prisma.NoteCreateNestedManyWithoutCategoryInput
 }
 
 export type CategoryUncheckedCreateInput = {
   id?: string
   name: string
-  notes?: Prisma.NoteUncheckedCreateNestedManyWithoutCategoryInput
+  Note?: Prisma.NoteUncheckedCreateNestedManyWithoutCategoryInput
 }
 
 export type CategoryUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
-  notes?: Prisma.NoteUpdateManyWithoutCategoryNestedInput
+  Note?: Prisma.NoteUpdateManyWithoutCategoryNestedInput
 }
 
 export type CategoryUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
-  notes?: Prisma.NoteUncheckedUpdateManyWithoutCategoryNestedInput
+  Note?: Prisma.NoteUncheckedUpdateManyWithoutCategoryNestedInput
 }
 
 export type CategoryCreateManyInput = {
@@ -251,54 +251,54 @@ export type CategoryNullableScalarRelationFilter = {
   isNot?: Prisma.CategoryWhereInput | null
 }
 
-export type CategoryCreateNestedOneWithoutNotesInput = {
-  create?: Prisma.XOR<Prisma.CategoryCreateWithoutNotesInput, Prisma.CategoryUncheckedCreateWithoutNotesInput>
-  connectOrCreate?: Prisma.CategoryCreateOrConnectWithoutNotesInput
+export type CategoryCreateNestedOneWithoutNoteInput = {
+  create?: Prisma.XOR<Prisma.CategoryCreateWithoutNoteInput, Prisma.CategoryUncheckedCreateWithoutNoteInput>
+  connectOrCreate?: Prisma.CategoryCreateOrConnectWithoutNoteInput
   connect?: Prisma.CategoryWhereUniqueInput
 }
 
-export type CategoryUpdateOneWithoutNotesNestedInput = {
-  create?: Prisma.XOR<Prisma.CategoryCreateWithoutNotesInput, Prisma.CategoryUncheckedCreateWithoutNotesInput>
-  connectOrCreate?: Prisma.CategoryCreateOrConnectWithoutNotesInput
-  upsert?: Prisma.CategoryUpsertWithoutNotesInput
+export type CategoryUpdateOneWithoutNoteNestedInput = {
+  create?: Prisma.XOR<Prisma.CategoryCreateWithoutNoteInput, Prisma.CategoryUncheckedCreateWithoutNoteInput>
+  connectOrCreate?: Prisma.CategoryCreateOrConnectWithoutNoteInput
+  upsert?: Prisma.CategoryUpsertWithoutNoteInput
   disconnect?: Prisma.CategoryWhereInput | boolean
   delete?: Prisma.CategoryWhereInput | boolean
   connect?: Prisma.CategoryWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.CategoryUpdateToOneWithWhereWithoutNotesInput, Prisma.CategoryUpdateWithoutNotesInput>, Prisma.CategoryUncheckedUpdateWithoutNotesInput>
+  update?: Prisma.XOR<Prisma.XOR<Prisma.CategoryUpdateToOneWithWhereWithoutNoteInput, Prisma.CategoryUpdateWithoutNoteInput>, Prisma.CategoryUncheckedUpdateWithoutNoteInput>
 }
 
-export type CategoryCreateWithoutNotesInput = {
+export type CategoryCreateWithoutNoteInput = {
   id?: string
   name: string
 }
 
-export type CategoryUncheckedCreateWithoutNotesInput = {
+export type CategoryUncheckedCreateWithoutNoteInput = {
   id?: string
   name: string
 }
 
-export type CategoryCreateOrConnectWithoutNotesInput = {
+export type CategoryCreateOrConnectWithoutNoteInput = {
   where: Prisma.CategoryWhereUniqueInput
-  create: Prisma.XOR<Prisma.CategoryCreateWithoutNotesInput, Prisma.CategoryUncheckedCreateWithoutNotesInput>
+  create: Prisma.XOR<Prisma.CategoryCreateWithoutNoteInput, Prisma.CategoryUncheckedCreateWithoutNoteInput>
 }
 
-export type CategoryUpsertWithoutNotesInput = {
-  update: Prisma.XOR<Prisma.CategoryUpdateWithoutNotesInput, Prisma.CategoryUncheckedUpdateWithoutNotesInput>
-  create: Prisma.XOR<Prisma.CategoryCreateWithoutNotesInput, Prisma.CategoryUncheckedCreateWithoutNotesInput>
+export type CategoryUpsertWithoutNoteInput = {
+  update: Prisma.XOR<Prisma.CategoryUpdateWithoutNoteInput, Prisma.CategoryUncheckedUpdateWithoutNoteInput>
+  create: Prisma.XOR<Prisma.CategoryCreateWithoutNoteInput, Prisma.CategoryUncheckedCreateWithoutNoteInput>
   where?: Prisma.CategoryWhereInput
 }
 
-export type CategoryUpdateToOneWithWhereWithoutNotesInput = {
+export type CategoryUpdateToOneWithWhereWithoutNoteInput = {
   where?: Prisma.CategoryWhereInput
-  data: Prisma.XOR<Prisma.CategoryUpdateWithoutNotesInput, Prisma.CategoryUncheckedUpdateWithoutNotesInput>
+  data: Prisma.XOR<Prisma.CategoryUpdateWithoutNoteInput, Prisma.CategoryUncheckedUpdateWithoutNoteInput>
 }
 
-export type CategoryUpdateWithoutNotesInput = {
+export type CategoryUpdateWithoutNoteInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
 }
 
-export type CategoryUncheckedUpdateWithoutNotesInput = {
+export type CategoryUncheckedUpdateWithoutNoteInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
 }
@@ -309,11 +309,11 @@ export type CategoryUncheckedUpdateWithoutNotesInput = {
  */
 
 export type CategoryCountOutputType = {
-  notes: number
+  Note: number
 }
 
 export type CategoryCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  notes?: boolean | CategoryCountOutputTypeCountNotesArgs
+  Note?: boolean | CategoryCountOutputTypeCountNoteArgs
 }
 
 /**
@@ -329,7 +329,7 @@ export type CategoryCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Ext
 /**
  * CategoryCountOutputType without action
  */
-export type CategoryCountOutputTypeCountNotesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+export type CategoryCountOutputTypeCountNoteArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.NoteWhereInput
 }
 
@@ -337,7 +337,7 @@ export type CategoryCountOutputTypeCountNotesArgs<ExtArgs extends runtime.Types.
 export type CategorySelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   name?: boolean
-  notes?: boolean | Prisma.Category$notesArgs<ExtArgs>
+  Note?: boolean | Prisma.Category$NoteArgs<ExtArgs>
   _count?: boolean | Prisma.CategoryCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["category"]>
 
@@ -358,7 +358,7 @@ export type CategorySelectScalar = {
 
 export type CategoryOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name", ExtArgs["result"]["category"]>
 export type CategoryInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  notes?: boolean | Prisma.Category$notesArgs<ExtArgs>
+  Note?: boolean | Prisma.Category$NoteArgs<ExtArgs>
   _count?: boolean | Prisma.CategoryCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type CategoryIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -367,7 +367,7 @@ export type CategoryIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Ext
 export type $CategoryPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Category"
   objects: {
-    notes: Prisma.$NotePayload<ExtArgs>[]
+    Note: Prisma.$NotePayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -766,7 +766,7 @@ readonly fields: CategoryFieldRefs;
  */
 export interface Prisma__CategoryClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
-  notes<T extends Prisma.Category$notesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Category$notesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$NotePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  Note<T extends Prisma.Category$NoteArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Category$NoteArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$NotePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1191,9 +1191,9 @@ export type CategoryDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.Inte
 }
 
 /**
- * Category.notes
+ * Category.Note
  */
-export type Category$notesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+export type Category$NoteArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   /**
    * Select specific fields to fetch from the Note
    */

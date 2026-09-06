@@ -1,5 +1,5 @@
 import "dotenv/config"
-import { PrismaClient, RoleName } from '../../generated/prisma/client'
+import { PrismaClient, RoleName } from '../../generated/prisma/client.ts'
 import { PrismaNeon } from "@prisma/adapter-neon"
 
 

@@ -52,16 +52,6 @@ export type Account = Prisma.AccountModel
  */
 export type Session = Prisma.SessionModel
 /**
- * Model User
- * 
- */
-export type User = Prisma.UserModel
-/**
- * Model Role
- * 
- */
-export type Role = Prisma.RoleModel
-/**
  * Model VerificationCode
  * 
  */
@@ -72,17 +62,27 @@ export type VerificationCode = Prisma.VerificationCodeModel
  */
 export type PasswordReset = Prisma.PasswordResetModel
 /**
+ * Model User
+ * 
+ */
+export type User = Prisma.UserModel
+/**
+ * Model Role
+ * 
+ */
+export type Role = Prisma.RoleModel
+/**
  * Model Category
  * 
  */
 export type Category = Prisma.CategoryModel
 /**
- * Model Note
- * 
- */
-export type Note = Prisma.NoteModel
-/**
  * Model Comment
  * 
  */
 export type Comment = Prisma.CommentModel
+/**
+ * Model Note
+ * 
+ */
+export type Note = Prisma.NoteModel
