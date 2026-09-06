@@ -9,7 +9,111 @@
 * 🟢 You can import this file directly.
 */
 
+export const AuditAction = {
+  CREATE: 'CREATE',
+  UPDATE: 'UPDATE',
+  DELETE: 'DELETE',
+  LOGIN: 'LOGIN',
+  LOGOUT: 'LOGOUT'
+} as const
+
+export type AuditAction = (typeof AuditAction)[keyof typeof AuditAction]
 
 
-// This file is empty because there are no enums in the schema.
-export {}
+export const ContentStatus = {
+  DRAFT: 'DRAFT',
+  PUBLISHED: 'PUBLISHED',
+  SCHEDULED: 'SCHEDULED',
+  ARCHIVED: 'ARCHIVED'
+} as const
+
+export type ContentStatus = (typeof ContentStatus)[keyof typeof ContentStatus]
+
+
+export const ContentType = {
+  ARTICLE: 'ARTICLE',
+  NEWS: 'NEWS',
+  PAGE: 'PAGE',
+  EVENT: 'EVENT'
+} as const
+
+export type ContentType = (typeof ContentType)[keyof typeof ContentType]
+
+
+export const EventStatus = {
+  DRAFT: 'DRAFT',
+  SCHEDULED: 'SCHEDULED',
+  ACTIVE: 'ACTIVE',
+  COMPLETED: 'COMPLETED',
+  CANCELLED: 'CANCELLED'
+} as const
+
+export type EventStatus = (typeof EventStatus)[keyof typeof EventStatus]
+
+
+export const NotificationChannel = {
+  IN_APP: 'IN_APP',
+  EMAIL: 'EMAIL',
+  PUSH: 'PUSH'
+} as const
+
+export type NotificationChannel = (typeof NotificationChannel)[keyof typeof NotificationChannel]
+
+
+export const NotificationType = {
+  SYSTEM: 'SYSTEM',
+  CONTENT: 'CONTENT',
+  EVENT: 'EVENT',
+  COMMENT: 'COMMENT'
+} as const
+
+export type NotificationType = (typeof NotificationType)[keyof typeof NotificationType]
+
+
+export const ReactionType = {
+  LIKE: 'LIKE',
+  LOVE: 'LOVE',
+  CELEBRATE: 'CELEBRATE'
+} as const
+
+export type ReactionType = (typeof ReactionType)[keyof typeof ReactionType]
+
+
+export const ResourceType = {
+  IMAGE: 'IMAGE',
+  VIDEO: 'VIDEO',
+  AUDIO: 'AUDIO',
+  DOCUMENT: 'DOCUMENT',
+  OTHER: 'OTHER'
+} as const
+
+export type ResourceType = (typeof ResourceType)[keyof typeof ResourceType]
+
+
+export const RoleName = {
+  SUPER_ADMIN: 'SUPER_ADMIN',
+  ADMIN: 'ADMIN',
+  EDITOR: 'EDITOR',
+  AUTHOR: 'AUTHOR',
+  USER: 'USER'
+} as const
+
+export type RoleName = (typeof RoleName)[keyof typeof RoleName]
+
+
+export const UserStatus = {
+  ACTIVE: 'ACTIVE',
+  INACTIVE: 'INACTIVE',
+  SUSPENDED: 'SUSPENDED'
+} as const
+
+export type UserStatus = (typeof UserStatus)[keyof typeof UserStatus]
+
+
+export const Visibility = {
+  PUBLIC: 'PUBLIC',
+  PRIVATE: 'PRIVATE',
+  INTERNAL: 'INTERNAL'
+} as const
+
+export type Visibility = (typeof Visibility)[keyof typeof Visibility]
