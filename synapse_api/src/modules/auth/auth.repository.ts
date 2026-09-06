@@ -6,11 +6,11 @@ export class AuthRepository {
   }
 
   static async findRoleByName(name: string) {
-    return await prisma.role.findUnique({ where: { name } })
+    return await prisma.role.findUnique({ where: { name: name as any } })
   }
 
   static async createRole(name: string) {
-    return await prisma.role.create({ data: { name } })
+    return await prisma.role.create({ data: { name: name as any } })
   }
 
   static async createUser(data: any) {

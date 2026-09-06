@@ -44,10 +44,10 @@ async function proxyHandler(req: NextRequest, context: { params: Promise<{ path:
       statusText: response.statusText,
       headers: responseHeaders,
     });
-  } catch (error: any) {
-    console.error("[Next.js Proxy Handler Error]", error.message);
+  } catch (error: unknown) {
+    console.error("[Next.js Proxy Handler Error]", (error as Error).message);
     return NextResponse.json(
-      { error: "No se pudo comunicar con el Backend", details: error.message },
+      { error: "No se pudo comunicar con el Backend", details: (error as Error).message },
       { status: 502 }
     );
   }
