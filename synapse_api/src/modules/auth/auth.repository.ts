@@ -10,11 +10,11 @@ export class AuthRepository {
   }
 
   static async createRole(name: string) {
-    return await prisma.role.create({ data: { name: name as any } })
+    return await prisma.role.create({ data: { name: name as any, updatedAt: new Date() } })
   }
 
   static async createUser(data: any) {
-    return await prisma.user.create({ data })
+    return await prisma.user.create({ data: { ...data, updatedAt: new Date() } })
   }
 
   static async createVerificationCode(email: string, code: string, expiresAt: Date) {

@@ -1,15 +1,15 @@
 import { Request, Response } from "express";
 import { prisma } from "../../config/prisma";
 import { any } from "zod";
-
+import { randomUUID } from "crypto";
 
 export const getGlobalNotes = async (req: Request, res: Response): Promise<void> => {
   try {
     const notes = await prisma.content.findMany({
       where: { isGlobal: true },
       include: { 
-        author: { select: { name: true, role: true } },
-        category: { select: { name: true } }
+        User: { select: { name: true, role: true } },
+        Category: { select: { name: true } }
       },
       orderBy: { createdAt: "desc" },
     });
@@ -39,6 +39,7 @@ export const createNote = async (req: Request, res: Response): Promise<void> => 
     const slug = title.toLowerCase().replace(/ /g, "-").replace(/[^\w-]/g, "");
     const note = await prisma.content.create({
       data: { 
+        id: randomUUID(),
         title, 
         slug, 
         body, 
@@ -53,7 +54,8 @@ export const createNote = async (req: Request, res: Response): Promise<void> => 
         categoryId, 
         type: 'ARTICLE', 
         status: 'PUBLISHED', 
-        visibility: isGlobal ? 'PUBLIC' : 'PRIVATE' 
+        visibility: isGlobal ? 'PUBLIC' : 'PRIVATE',
+        updatedAt: new Date(),
       },
     });
     res.status(201).json(note);
@@ -112,8 +114,8 @@ export const getSuggestions = async (req: Request, res: Response): Promise<void>
     const suggestions = await prisma.content.findMany({
       where: { isGlobal: false },
       include: { 
-        author: { select: { name: true, email: true } }, 
-        category: { select: { name: true } } 
+        User: { select: { name: true, email: true } }, 
+        Category: { select: { name: true } } 
       },
       orderBy: { createdAt: "desc" }
     });
@@ -130,8 +132,8 @@ export const getNoteById = async (req: Request, res: Response): Promise<void> =>
     const note = await prisma.content.findUnique({
       where: { id: String(id) },
       include: { 
-        author: { select: { name: true, email: true } }, 
-        category: { select: { name: true } } 
+        User: { select: { name: true, email: true } }, 
+        Category: { select: { name: true } } 
       }
     });
     

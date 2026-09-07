@@ -15,7 +15,8 @@ export const createCategory = async (req: Request, res: Response) => {
         description,
         imageUrl,
         color,
-        parentId
+        parentId,
+        updatedAt: new Date()
       }
     });
     res.status(201).json(category);
@@ -29,11 +30,11 @@ export const getCategories = async (req: Request, res: Response) => {
   try {
     const categories = await prisma.category.findMany({
       include: {
-        parent: {
+        Category: {
           select: { name: true }
         },
         _count: {
-          select: { contents: true }
+          select: { Content: true }
         }
       }
     });
@@ -50,7 +51,7 @@ export const getCategoryById = async (req: Request, res: Response) => {
     const category = await prisma.category.findUnique({
       where: { id: String(id) },
       include: {
-        parent: {
+        Category: {
           select: { name: true }
         },
         children: {
