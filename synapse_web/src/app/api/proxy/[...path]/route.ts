@@ -37,9 +37,7 @@ async function proxyHandler(req: NextRequest, context: { params: Promise<{ path:
       responseHeaders.set(key, value);
     });
 
-    const responseData = await response.arrayBuffer();
-
-    return new NextResponse(responseData, {
+    return new NextResponse(response.body, {
       status: response.status,
       statusText: response.statusText,
       headers: responseHeaders,
