@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react'
 import { Send, Bot, User, X } from 'lucide-react'
+import { fetchApi } from '@/lib/fetchApi'
 
 interface Message {
   id: string
@@ -33,30 +34,82 @@ export default function ChatbotPage() {
 
   const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!inputValue.trim()) return
+    const content = inputValue.trim()
+    if (!content || isTyping) return
 
     const userMessage: Message = {
       id: Date.now().toString(),
-      content: inputValue,
+      content,
       sender: 'user',
       timestamp: new Date()
     }
 
-    setMessages(prev => [...prev, userMessage])
+    const botMessageId = (Date.now() + 1).toString()
+    setMessages(prev => [...prev, userMessage, {
+      id: botMessageId,
+      content: '',
+      sender: 'bot',
+      timestamp: new Date()
+    }])
     setInputValue('')
     setIsTyping(true)
 
-    // Simulate bot response
-    setTimeout(() => {
-      const botMessage: Message = {
-        id: (Date.now() + 1).toString(),
-        content: 'Gracias por tu mensaje. Estoy procesando tu solicitud y te responderé pronto.',
-        sender: 'bot',
-        timestamp: new Date()
+    try {
+      const response = await fetchApi('/api/chatbot', {
+        method: 'POST',
+        body: JSON.stringify({ message: content })
+      })
+
+      if (!response.ok || !response.body) {
+        const result = await response.json().catch(() => null)
+        throw new Error(result?.error || 'No se pudo obtener una respuesta')
       }
-      setMessages(prev => [...prev, botMessage])
+
+      const reader = response.body.getReader()
+      const decoder = new TextDecoder()
+      let buffer = ''
+
+      while (true) {
+        const { value, done } = await reader.read()
+        buffer += decoder.decode(value || new Uint8Array(), { stream: !done })
+        const events = buffer.split('\n\n')
+        buffer = events.pop() || ''
+
+        for (const eventText of events) {
+          const dataLine = eventText.split('\n').find(line => line.startsWith('data:'))
+          if (!dataLine) continue
+
+          const event = JSON.parse(dataLine.slice(5).trim()) as {
+            type?: string
+            content?: string
+            error?: string
+          }
+
+          if (event.type === 'error') {
+            throw new Error(event.error || 'Error del chatbot')
+          }
+
+          if (event.type === 'chunk' && event.content) {
+            setMessages(prev => prev.map(message =>
+              message.id === botMessageId
+                ? { ...message, content: message.content + event.content }
+                : message
+            ))
+          }
+        }
+
+        if (done) break
+      }
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Error de conexión'
+      setMessages(prev => prev.map(message =>
+        message.id === botMessageId
+          ? { ...message, content: errorMessage }
+          : message
+      ))
+    } finally {
       setIsTyping(false)
-    }, 1500)
+    }
   }
 
   return (

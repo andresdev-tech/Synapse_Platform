@@ -7,6 +7,7 @@ import categoryRoutes from "./routes/category.routes";
 import commentRoutes from "./routes/comment.routes";
 import authRoutes from "./modules/auth/auth.routes";
 import extractRoutes from "./routes/extract.routes";
+import chatbotRoutes from "./modules/chatbot/chatbot.routes";
 import swaggerUi from "swagger-ui-express";
 import { swaggerSpec } from "./swagger/swagger.config";
 
@@ -25,8 +26,10 @@ app.use("/api/users", userRoutes);
 app.use("/api/categories", categoryRoutes);
 app.use("/api/comments", commentRoutes);
 app.use("/api/extract-image", extractRoutes);
+app.use("/api/chatbot", chatbotRoutes);
 
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+
 
 // Basic error handling middleware
 app.use(errorHandler);
