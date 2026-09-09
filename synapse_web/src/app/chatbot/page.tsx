@@ -113,17 +113,17 @@ export default function ChatbotPage() {
   }
 
   return (
-    <div className="flex flex-col h-screen bg-sena-50">
+    <div className="flex min-h-[100dvh] flex-col bg-sena-50">
       {/* Header */}
       <header className="bg-sena-600 text-white shadow-lg">
-        <div className="max-w-4xl mx-auto px-4 py-4 flex items-center justify-between">
+        <div className="mx-auto flex w-full max-w-4xl items-center justify-between gap-3 px-3 py-3 sm:px-4 sm:py-4">
           <div className="flex items-center gap-3">
-            <div className="bg-white/20 p-2 rounded-lg">
+            <div className="rounded-lg bg-white/20 p-2">
               <Bot className="w-6 h-6" />
             </div>
             <div>
-              <h1 className="text-xl font-bold">SYNAPSE Chat</h1>
-              <p className="text-sm text-sena-100">Asistente virtual</p>
+              <h1 className="text-lg font-bold sm:text-xl">SYNAPSE Chat</h1>
+              <p className="text-xs text-sena-100 sm:text-sm">Asistente virtual</p>
             </div>
           </div>
           <button className="p-2 hover:bg-sena-700 rounded-lg transition-colors">
@@ -134,7 +134,7 @@ export default function ChatbotPage() {
 
       {/* Messages Area */}
       <main className="flex-1 overflow-y-auto p-4">
-        <div className="max-w-4xl mx-auto space-y-4">
+        <div className="mx-auto w-full max-w-4xl space-y-4">
           {messages.map((message) => (
             <div
               key={message.id}
@@ -146,7 +146,7 @@ export default function ChatbotPage() {
                 </div>
               )}
               <div
-                className={`max-w-[70%] rounded-2xl px-4 py-3 shadow-sm ${
+                className={`max-w-[86%] rounded-2xl px-3 py-3 shadow-sm sm:max-w-[70%] sm:px-4 ${
                   message.sender === 'user'
                     ? 'bg-sena-600 text-white rounded-br-sm'
                     : 'bg-white text-gray-800 rounded-bl-sm border border-sena-200'
@@ -183,9 +183,9 @@ export default function ChatbotPage() {
       </main>
 
       {/* Input Area */}
-      <footer className="bg-white border-t border-sena-200 p-4">
+      <footer className="border-t border-sena-200 bg-white p-3 sm:p-4">
         <div className="max-w-4xl mx-auto">
-          <form onSubmit={handleSendMessage} className="flex gap-3">
+          <form onSubmit={handleSendMessage} className="flex gap-2 sm:gap-3">
             <input
               type="text"
               value={inputValue}

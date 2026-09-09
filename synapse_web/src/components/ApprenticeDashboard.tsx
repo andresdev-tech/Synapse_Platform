@@ -114,7 +114,7 @@ function SortableNoteItem({ note }: { note: Note }) {
             className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-in-out" 
             onError={(e) => { e.currentTarget.style.display = 'none'; }}
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-zinc-900/60 dark:from-zinc-900/90 via-transparent to-transparent opacity-60 group-hover:opacity-80 transition-opacity"></div>
+          <div className="absolute inset-0 bg-linear-to-t from-zinc-900/60 via-transparent to-transparent opacity-60 transition-opacity group-hover:opacity-80 dark:from-zinc-900/90"></div>
           {note.category && (
             <div className="absolute top-4 left-4 z-10">
               <span className="px-3 py-1 bg-white/90 dark:bg-zinc-800/90 backdrop-blur-sm text-sena-800 dark:text-sena-300 text-xs font-black rounded-lg uppercase tracking-wider shadow-sm">
@@ -125,7 +125,7 @@ function SortableNoteItem({ note }: { note: Note }) {
         </div>
       )}
       
-      <div className="p-8 flex flex-col flex-grow">
+      <div className="flex grow flex-col p-8">
         {!note.seoImage && note.category && (
           <span className="inline-block px-3 py-1 mb-4 bg-sena-50 dark:bg-sena-900/30 text-sena-600 dark:text-sena-300 text-xs font-bold rounded-lg uppercase tracking-wider w-fit border border-sena-100 dark:border-sena-800/50">
             {note.category.name}
@@ -134,7 +134,7 @@ function SortableNoteItem({ note }: { note: Note }) {
         <h3 className="font-extrabold text-zinc-800 dark:text-slate-100 text-2xl leading-tight mb-4 group-hover:text-sena-500 dark:group-hover:text-sena-400 transition-colors line-clamp-2 pr-8">
           {note.title}
         </h3>
-        <p className="text-slate-600 dark:text-slate-400 text-base leading-relaxed flex-grow whitespace-pre-wrap line-clamp-4">
+        <p className="grow whitespace-pre-wrap text-base leading-relaxed text-slate-600 line-clamp-4 dark:text-slate-400">
           {note.content}
         </p>
 
@@ -410,14 +410,14 @@ export function ApprenticeDashboard() {
       <div className="w-full mx-auto space-y-8 px-4 md:px-8 py-8">
         
         {/* HEADER TIPO BLOG */}
-        <div className="bg-gradient-to-br from-sena-500 via-sena-400 to-sena-600 dark:from-zinc-800 dark:via-zinc-900 dark:to-zinc-900 dark:border-sena-500/50 dark:shadow-[0_0_30px_rgba(57,169,0,0.1)] rounded-[2rem] p-10 text-white shadow-2xl relative overflow-hidden flex flex-col md:flex-row items-center justify-between border border-transparent dark:border-sena-500/20">
+        <div className="relative flex flex-col items-center justify-between overflow-hidden rounded-4xl border border-transparent bg-linear-to-br from-sena-500 via-sena-400 to-sena-600 p-5 text-white shadow-2xl dark:border-sena-500/50 dark:from-zinc-800 dark:via-zinc-900 dark:to-zinc-900 dark:shadow-[0_0_30px_rgba(57,169,0,0.1)] sm:p-8 md:flex-row lg:p-10">
           <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10 mix-blend-overlay"></div>
 
           <div className="relative z-10 md:w-2/3 mb-6 md:mb-0 mt-4 md:mt-0">
             <span className="inline-block py-1 px-3 rounded-full bg-white/20 text-white text-xs font-bold tracking-widest uppercase mb-4 border border-white/30">
               PORTAL OFICIAL
             </span>
-            <h1 className="text-4xl md:text-5xl font-black mb-4 leading-tight tracking-tight">Novedades CTMA</h1>
+            <h1 className="mb-4 text-3xl font-black leading-tight tracking-tight sm:text-4xl md:text-5xl">Novedades CTMA</h1>
             <p className="text-white/90 text-lg md:text-xl font-medium leading-relaxed max-w-xl">
               Entérate de las últimas convocatorias, noticias y eventos del Centro Tecnológico de la Manufactura Avanzada.
             </p>
@@ -520,7 +520,7 @@ export function ApprenticeDashboard() {
                   </div>
                   <div>
                     <h4 className="font-bold text-zinc-700 dark:text-slate-200 text-sm group-hover:text-red-600 dark:group-hover:text-red-400">Correo Electrónico</h4>
-                    <span className="text-[10px] text-slate-500 font-bold mt-0.5 block truncate max-w-[120px]">dagarzonh@sena.edu.co</span>
+                    <span className="mt-0.5 block max-w-30 truncate text-[10px] font-bold text-slate-500">dagarzonh@sena.edu.co</span>
                   </div>
                 </a>
 
@@ -627,7 +627,7 @@ export function ApprenticeDashboard() {
 
             {/* WIDGET AGENDA / EVENTOS */}
             {upcomingEvents.length > 0 && (
-              <div className="bg-gradient-to-b from-sena-50 to-white dark:from-zinc-800 dark:to-zinc-800/50 rounded-3xl p-6 shadow-sm border border-sena-100 dark:border-zinc-700">
+              <div className="rounded-3xl border border-sena-100 bg-linear-to-b from-sena-50 to-white p-6 shadow-sm dark:border-zinc-700 dark:from-zinc-800 dark:to-zinc-800/50">
                 <h3 className="font-black text-sena-900 dark:text-sena-400 mb-5 flex items-center text-lg">
                   <Calendar className="w-5 h-5 mr-2 text-sena-500" />
                   Próximas Fechas
@@ -635,11 +635,11 @@ export function ApprenticeDashboard() {
                 <div className="space-y-4">
                   {upcomingEvents.map(event => (
                     <div key={event.id} className="flex gap-3 items-start p-3 bg-white dark:bg-zinc-800 rounded-xl shadow-sm border border-slate-100 dark:border-zinc-700">
-                      <div className="flex flex-col items-center justify-center min-w-[3.5rem] bg-sena-50 dark:bg-zinc-700 rounded-lg py-2">
+                      <div className="flex min-w-14 flex-col items-center justify-center rounded-lg bg-sena-50 py-2 dark:bg-zinc-700">
                         <span className="text-[10px] font-bold text-sena-400 dark:text-sena-300 uppercase">{new Date(event.createdAt).toLocaleString('es', { month: 'short' })}</span>
                         <span className="text-xl font-black text-sena-600 dark:text-white leading-none">{new Date(event.createdAt).getDate()}</span>
                       </div>
-                      <div className="flex-grow">
+                      <div className="grow">
                         <h4 className="font-bold text-zinc-800 dark:text-slate-200 text-sm line-clamp-2">{event.title}</h4>
                         <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase mt-1 block">{event.category?.name}</span>
                       </div>
@@ -715,7 +715,7 @@ export function ApprenticeDashboard() {
               </div>
 
               {/* VISITAS */}
-              <div className="mt-8 p-5 bg-gradient-to-r from-zinc-800 to-zinc-900 rounded-2xl text-white shadow-lg relative overflow-hidden">
+              <div className="relative mt-8 overflow-hidden rounded-2xl bg-linear-to-r from-zinc-800 to-zinc-900 p-5 text-white shadow-lg">
                 <div className="absolute top-0 right-0 -mt-4 -mr-4 w-24 h-24 bg-white opacity-5 rounded-full blur-2xl"></div>
                 <div className="relative z-10 flex items-center justify-between">
                   <div>
@@ -767,7 +767,7 @@ export function ApprenticeDashboard() {
         {isResourcesOpen && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-zinc-900/60 backdrop-blur-sm">
             <div className="bg-white dark:bg-zinc-900 rounded-3xl shadow-2xl w-full max-w-2xl overflow-hidden flex flex-col max-h-[90vh] border border-slate-100 dark:border-zinc-700">
-              <div className="bg-gradient-to-r from-sena-600 to-sena-500 p-6 flex justify-between items-center text-white shrink-0">
+              <div className="flex shrink-0 flex-col items-start justify-between gap-3 bg-linear-to-r from-sena-600 to-sena-500 p-5 text-white sm:flex-row sm:items-center sm:p-6">
                 <div className="flex items-center space-x-3">
                   <BookOpen className="w-6 h-6 text-sena-100" />
                   <h3 className="text-xl font-black">Biblioteca de Recursos Oficiales</h3>

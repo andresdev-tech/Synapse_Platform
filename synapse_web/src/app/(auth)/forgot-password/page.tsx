@@ -66,7 +66,7 @@ export default function ForgotPassword() {
   }
 
   return (
-    <div className="min-h-[calc(100vh-64px)] flex bg-slate-50">
+    <div className="flex min-h-[calc(100vh-64px)] bg-slate-50">
       <div className="hidden lg:flex w-1/2 bg-slate-900 bg-[url('https://images.unsplash.com/photo-1555421689-491a97ff2040?ixlib=rb-4.0.3&auto=format&fit=crop&w=1470&q=80')] bg-cover bg-center relative items-center justify-center">
         <div className="absolute inset-0 bg-slate-900/80 backdrop-blur-sm"></div>
         <div className="relative z-10 p-12 text-white max-w-lg text-center">
@@ -77,8 +77,8 @@ export default function ForgotPassword() {
         </div>
       </div>
 
-      <div className="w-full lg:w-1/2 flex items-center justify-center p-8">
-        <div className="w-full max-w-md bg-white p-10 rounded-2xl shadow-xl border border-slate-100">
+      <div className="flex w-full items-center justify-center px-4 py-8 sm:p-8 lg:w-1/2">
+        <div className="w-full max-w-md rounded-2xl border border-slate-100 bg-white p-5 shadow-xl sm:p-10">
           
           {step === 1 && (
             <form onSubmit={handleRequestCode}>

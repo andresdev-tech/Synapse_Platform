@@ -41,6 +41,11 @@ export function AdminDashboard() {
   const [newTitle, setNewTitle] = useState("")
   const [newContent, setNewContent] = useState("")
   const [newImageUrl, setNewImageUrl] = useState("")
+  const [ragName, setRagName] = useState("")
+  const [ragUrl, setRagUrl] = useState("")
+  const [ragMimeType, setRagMimeType] = useState("application/pdf")
+  const [ragSize, setRagSize] = useState("")
+  const [ragContent, setRagContent] = useState("")
   const [newCategoryId, setNewCategoryId] = useState(""); const [newAttachments, setNewAttachments] = useState<{type: string, url: string}[]>([]);
   const [editingId, setEditingId] = useState<string | null>(null)
   const [isFormOpen, setIsFormOpen] = useState(false)
@@ -150,7 +155,16 @@ export function AdminDashboard() {
       published: true,
       authorId: session?.user?.id,
       seoTitle: newTitle.trim(),
-      seoDescription: newContent.trim().substring(0, 150)
+      seoDescription: newContent.trim().substring(0, 150),
+      ...(ragName.trim() && ragUrl.trim() && ragContent.trim() ? {
+        ragDocument: {
+          name: ragName.trim(),
+          url: ragUrl.trim(),
+          mimeType: ragMimeType,
+          size: ragSize ? Number(ragSize) : null,
+          content: ragContent.trim(),
+        }
+      } : {})
     }
 
     try {
@@ -171,6 +185,7 @@ export function AdminDashboard() {
       setNewTitle("")
       setNewContent("")
       setNewImageUrl("")
+      setRagName(""); setRagUrl(""); setRagMimeType("application/pdf"); setRagSize(""); setRagContent("")
       setNewCategoryId(""); setNewAttachments([]);
       setEditingId(null)
       setIsFormOpen(false)
@@ -184,6 +199,7 @@ export function AdminDashboard() {
     setNewTitle(note.title)
     setNewContent(note.body)
     setNewImageUrl(note.seoImage || "")
+    setRagName(""); setRagUrl(""); setRagMimeType("application/pdf"); setRagSize(""); setRagContent("")
     setNewCategoryId(note.categoryId || ""); setNewAttachments(note.attachments || []);
     setEditingId(note.id)
     setIsFormOpen(true)
@@ -200,15 +216,15 @@ export function AdminDashboard() {
   }
 
   return (
-    <div className="w-full mx-auto space-y-8 px-4 md:px-8 py-8">
+    <div className="mx-auto w-full min-w-0 space-y-6 overflow-hidden px-3 py-5 sm:space-y-8 sm:px-4 sm:py-8 md:px-8">
       {/* BANNER DE BIENVENIDA */}
-      <div className="bg-gradient-to-r from-sena-600 via-sena-500 to-sena-400 rounded-3xl p-8 text-white shadow-xl relative overflow-hidden">
+      <div className="relative overflow-hidden rounded-3xl bg-linear-to-r from-sena-600 via-sena-500 to-sena-400 p-5 text-white shadow-xl sm:p-8">
         <div className="absolute top-0 right-0 opacity-10">
           <svg width="400" height="400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>
         </div>
         <div className="relative z-10">
-          <h1 className="text-3xl font-extrabold mb-2">Panel de Control General</h1>
-          <p className="text-sena-100 text-lg">Administra los anuncios, notas y recursos de Synapse CTMA.</p>
+          <h1 className="mb-2 text-2xl font-extrabold sm:text-3xl">Panel de Control General</h1>
+          <p className="text-base text-sena-100 sm:text-lg">Administra los anuncios, notas y recursos de Synapse CTMA.</p>
         </div>
       </div>
 
@@ -250,22 +266,22 @@ export function AdminDashboard() {
       </div>
 
       {/* TABS DE NAVEGACION */}
-      <div className="flex space-x-2 border-b border-slate-200 mb-6 px-4">
+      <div className="mb-6 flex flex-wrap gap-1 border-b border-slate-200 px-1 sm:gap-2 sm:px-4">
         <button 
           onClick={() => setActiveTab("anuncios")}
-          className={`pb-4 px-4 font-bold text-sm tracking-wide transition-colors border-b-2 ${activeTab === "anuncios" ? "text-sena-500 border-sena-500" : "text-slate-500 border-transparent hover:text-zinc-700"}`}
+          className={`min-h-12 flex-1 px-2 py-3 text-center text-[11px] font-bold tracking-wide transition-colors border-b-2 sm:flex-none sm:px-4 sm:text-sm ${activeTab === "anuncios" ? "text-sena-500 border-sena-500" : "text-slate-500 border-transparent hover:text-zinc-700"}`}
         >
           ANUNCIOS OFICIALES
         </button>
         <button 
           onClick={() => setActiveTab("categorias")}
-          className={`pb-4 px-4 font-bold text-sm tracking-wide transition-colors border-b-2 ${activeTab === "categorias" ? "text-sena-500 border-sena-500" : "text-slate-500 border-transparent hover:text-zinc-700"}`}
+          className={`min-h-12 flex-1 px-2 py-3 text-center text-[11px] font-bold tracking-wide transition-colors border-b-2 sm:flex-none sm:px-4 sm:text-sm ${activeTab === "categorias" ? "text-sena-500 border-sena-500" : "text-slate-500 border-transparent hover:text-zinc-700"}`}
         >
           ADMINISTRAR CATEGORÍAS
         </button>
         <button 
           onClick={() => setActiveTab("sugerencias")}
-          className={`pb-4 px-4 font-bold text-sm tracking-wide transition-colors border-b-2 flex items-center space-x-2 ${activeTab === "sugerencias" ? "text-sena-500 border-sena-500" : "text-slate-500 border-transparent hover:text-zinc-700"}`}
+          className={`min-h-12 flex-1 items-center justify-center gap-2 px-2 py-3 text-center text-[11px] font-bold tracking-wide transition-colors border-b-2 sm:flex-none sm:px-4 sm:text-sm ${activeTab === "sugerencias" ? "text-sena-500 border-sena-500" : "text-slate-500 border-transparent hover:text-zinc-700"}`}
         >
           <span>BUZÓN DE SUGERENCIAS</span>
           {suggestions.length > 0 && (
@@ -298,7 +314,7 @@ export function AdminDashboard() {
           </div>
           
           {/* FORMULARIO DE CATEGORÍA */}
-          <div className={`overflow-hidden transition-all duration-300 ease-in-out ${isCategoryFormOpen ? "max-h-[800px] opacity-100 mb-8" : "max-h-0 opacity-0"}`}>
+          <div className={`overflow-hidden transition-all duration-300 ease-in-out ${isCategoryFormOpen ? "max-h-200 opacity-100 mb-8" : "max-h-0 opacity-0"}`}>
             <div className="bg-slate-50/80 p-8 rounded-3xl border border-slate-200 space-y-5">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
@@ -330,7 +346,7 @@ export function AdminDashboard() {
                 <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">Descripción (Opcional)</label>
                 <textarea 
                   placeholder="Describe brevemente esta categoría..." 
-                  className="w-full p-4 bg-white border border-slate-200 rounded-xl focus:ring-4 focus:ring-sena-500/20 focus:border-sena-500 outline-none min-h-[100px] resize-y text-zinc-800 transition-all font-medium"
+                  className="w-full min-h-25 resize-y rounded-xl border border-slate-200 bg-white p-4 font-medium text-zinc-800 outline-none transition-all focus:border-sena-500 focus:ring-4 focus:ring-sena-500/20"
                   value={newCategoryDescription}
                   onChange={(e) => setNewCategoryDescription(e.target.value)}
                 />
@@ -537,7 +553,7 @@ export function AdminDashboard() {
       ) : (
       /* SECCIÓN PRINCIPAL */
       <div className="bg-white p-8 rounded-3xl shadow-lg shadow-sena-100/50 border border-slate-100">
-        <div className="flex justify-between items-center mb-8 border-b border-slate-100 pb-5">
+        <div className="mb-8 flex flex-col gap-4 border-b border-slate-100 pb-5 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <h2 className="text-2xl font-extrabold text-zinc-900 flex items-center">
               <Megaphone className="w-6 h-6 mr-3 text-sena-500" />
@@ -551,6 +567,7 @@ export function AdminDashboard() {
               setNewTitle("")
               setNewContent("")
               setNewImageUrl("")
+              setRagName(""); setRagUrl(""); setRagMimeType("application/pdf"); setRagSize(""); setRagContent("")
               setNewCategoryId(""); setNewAttachments([]);
               setIsFormOpen(!isFormOpen)
             }}
@@ -561,7 +578,7 @@ export function AdminDashboard() {
         </div>
 
         {/* FORMULARIO */}
-        <div className={`overflow-hidden transition-all duration-300 ease-in-out ${isFormOpen ? "max-h-[800px] opacity-100 mb-8" : "max-h-0 opacity-0"}`}>
+        <div className={`overflow-hidden transition-all duration-300 ease-in-out ${isFormOpen ? "max-h-200 opacity-100 mb-8" : "max-h-0 opacity-0"}`}>
           <div className="bg-slate-50/80 p-8 rounded-3xl border border-slate-200 space-y-5">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
@@ -641,7 +658,7 @@ export function AdminDashboard() {
                 <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">Contenido Detallado</label>
                 <textarea 
                   placeholder="Escribe toda la informaciÃ³n relevante aquÃ­..." 
-                  className="w-full p-5 bg-white border border-slate-200 rounded-xl focus:ring-4 focus:ring-sena-500/20 focus:border-sena-500 outline-none min-h-[160px] h-full resize-y text-zinc-800 transition-all font-medium"
+                  className="h-full min-h-40 w-full resize-y rounded-xl border border-slate-200 bg-white p-5 font-medium text-zinc-800 outline-none transition-all focus:border-sena-500 focus:ring-4 focus:ring-sena-500/20"
                   value={newContent}
                   onChange={(e) => setNewContent(e.target.value)}
                 />
@@ -730,6 +747,20 @@ export function AdminDashboard() {
                 {editingId ? "Actualizar Anuncio" : "Publicar Anuncio Ahora"}
               </button>
             </div>
+
+            <div className="space-y-5 rounded-2xl border border-sena-200 bg-sena-50/60 p-5">
+              <div>
+                <h3 className="font-extrabold text-sena-900">Indexar esta publicación en el RAG</h3>
+                <p className="mt-1 text-xs leading-5 text-sena-700">Opcional. Completa los tres campos principales para crear el Resource y sus DocumentChunk enlazados a esta publicación.</p>
+              </div>
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                <input value={ragName} onChange={(e) => setRagName(e.target.value)} placeholder="Nombre del documento" className="w-full rounded-xl border border-sena-200 bg-white p-3 text-sm outline-none focus:border-sena-500" />
+                <input type="url" value={ragUrl} onChange={(e) => setRagUrl(e.target.value)} placeholder="URL del documento" className="w-full rounded-xl border border-sena-200 bg-white p-3 text-sm outline-none focus:border-sena-500" />
+                <select value={ragMimeType} onChange={(e) => setRagMimeType(e.target.value)} className="w-full rounded-xl border border-sena-200 bg-white p-3 text-sm outline-none focus:border-sena-500"><option value="application/pdf">PDF</option><option value="text/plain">Texto</option><option value="text/html">HTML</option><option value="application/msword">Documento Word</option></select>
+                <input type="number" min="0" value={ragSize} onChange={(e) => setRagSize(e.target.value)} placeholder="Tamaño en bytes (opcional)" className="w-full rounded-xl border border-sena-200 bg-white p-3 text-sm outline-none focus:border-sena-500" />
+              </div>
+              <textarea rows={5} value={ragContent} onChange={(e) => setRagContent(e.target.value)} placeholder="Pega aquí el contenido que quieres convertir en chunks para el chatbot..." className="w-full resize-y rounded-xl border border-sena-200 bg-white p-3 text-sm leading-6 outline-none focus:border-sena-500" />
+            </div>
           </div>
         </div>
 
@@ -764,7 +795,7 @@ export function AdminDashboard() {
                         e.currentTarget.parentElement!.style.display = 'none';
                       }}
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-zinc-900/40 to-transparent"></div>
+                    <div className="absolute inset-0 bg-linear-to-t from-zinc-900/40 to-transparent"></div>
                   </div>
                 )}
                 

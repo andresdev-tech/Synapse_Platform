@@ -13,7 +13,7 @@ export function ChatbotPlaceholder() {
   }
 
   return (
-    <div className="fixed bottom-6 right-6 z-50">
+    <div className="fixed bottom-4 right-4 z-50 sm:bottom-6 sm:right-6">
       <button 
         className="bg-sena-500 hover:bg-sena-600 text-white p-4 rounded-full shadow-lg flex items-center gap-2 group transition-all"
         title="Abrir Chatbot"

@@ -15,9 +15,9 @@ function HeaderActions() {
 
   return (
     <>
-      <div className="flex items-center space-x-6">
+      <div className="flex min-w-0 items-center gap-3 sm:gap-6">
         <Link href="/" className="flex items-center group">
-          <h1 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-sena-400 to-sena-600 group-hover:from-sena-500 group-hover:to-sena-700 transition-all">
+          <h1 className="bg-clip-text text-transparent bg-linear-to-r from-sena-400 to-sena-600 text-xl font-bold transition-all group-hover:from-sena-500 group-hover:to-sena-700 sm:text-2xl">
             Synapse
           </h1>
         </Link>
@@ -33,10 +33,10 @@ function HeaderActions() {
         )}
       </div>
 
-      <div className="flex items-center space-x-4">
+      <div className="flex min-w-0 items-center space-x-2 sm:space-x-4">
         {session && (
-          <div className="flex items-center space-x-4">
-            <span className="text-sm font-medium text-zinc-300">
+          <div className="flex min-w-0 items-center space-x-2 sm:space-x-4">
+            <span className="max-w-[10rem] truncate text-right text-xs font-medium text-zinc-300 sm:max-w-none sm:text-sm">
               {session.user?.name} ({session.user?.role})
             </span>
             <button
@@ -57,11 +57,11 @@ function HeaderActions() {
 export const Header = () => {
   return (
     <header className="bg-zinc-900 text-white shadow-md sticky top-0 z-50">
-      <div className="w-full mx-auto px-4 md:px-8">
-        <div className="flex justify-between items-center h-16">
+      <div className="mx-auto w-full px-3 sm:px-4 md:px-8">
+        <div className="flex min-h-16 items-center justify-between gap-3 py-2 sm:py-0">
           <Suspense fallback={
             <div className="flex items-center">
-              <h1 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-sena-400 to-sena-600">
+              <h1 className="text-2xl font-bold bg-clip-text text-transparent bg-linear-to-r from-sena-400 to-sena-600">
                 Synapse
               </h1>
             </div>

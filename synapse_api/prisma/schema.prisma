@@ -226,7 +226,7 @@ model ContentTag {
 model DocumentChunk {
   id         String                @id @db.Uuid
   content    String
-  embedding  Unsupported("vector")
+  embedding  Unsupported("vector(1024)") // Adjust the dimension based on your embedding model
   chunkIndex Int
   resourceId String                @db.Uuid
   contentId  String?               @db.Uuid

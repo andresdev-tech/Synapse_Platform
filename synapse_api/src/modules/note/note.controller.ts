@@ -2,6 +2,22 @@ import { Request, Response } from "express";
 import { prisma } from "../../config/prisma";
 import { any } from "zod";
 import { randomUUID } from "crypto";
+import { EmbeddingService } from "../chatbot/embedding.service";
+
+const embeddingService = new EmbeddingService();
+const CHUNK_SIZE = 1200;
+
+const splitIntoChunks = (text: string) => {
+  const normalizedText = text.trim().replace(/\s+/g, " ");
+  const chunks: string[] = [];
+
+  for (let index = 0; index < normalizedText.length; index += CHUNK_SIZE) {
+    const chunk = normalizedText.slice(index, index + CHUNK_SIZE).trim();
+    if (chunk) chunks.push(chunk);
+  }
+
+  return chunks;
+};
 
 export const getGlobalNotes = async (req: Request, res: Response): Promise<void> => {
   try {
@@ -34,34 +50,78 @@ export const getPersonalNotes = async (req: Request, res: Response): Promise<voi
 };
 
 export const createNote = async (req: Request, res: Response): Promise<void> => {
-  const { title, body, isGlobal, authorId, imageUrl, published, categoryId, excerpt, seoTitle, seoDescription } = req.body;
+  const { title, body, isGlobal, authorId, imageUrl, published, categoryId, excerpt, seoTitle, seoDescription, ragDocument } = req.body;
   try {
     const slug = title.toLowerCase().replace(/ /g, "-").replace(/[^\w-]/g, "");
-    const note = await prisma.content.create({
-      data: { 
-        id: randomUUID(),
-        title, 
-        slug, 
-        body, 
-        excerpt, 
-        isGlobal, 
-        authorId, 
-        seoImage: imageUrl, 
-        seoTitle, 
-        seoDescription,
-        featured: false, 
-        publishedAt: published ? new Date() : null, 
-        categoryId, 
-        type: 'ARTICLE', 
-        status: 'PUBLISHED', 
-        visibility: isGlobal ? 'PUBLIC' : 'PRIVATE',
-        updatedAt: new Date(),
-      },
+    const hasRagDocument = ragDocument?.name?.trim() && ragDocument?.url?.trim() && ragDocument?.content?.trim();
+    const chunks = hasRagDocument ? splitIntoChunks(ragDocument.content) : [];
+    const embeddings = hasRagDocument
+      ? await Promise.all(chunks.map((chunk) => embeddingService.generateEmbedding(chunk)))
+      : [];
+
+    if (embeddings.some((embedding) => embedding.length !== 1024)) {
+      throw new Error("El modelo de embeddings no devolvió vectores de 1024 dimensiones.");
+    }
+
+    const contentId = randomUUID();
+    const note = await prisma.$transaction(async (transaction) => {
+      const createdNote = await transaction.content.create({
+        data: {
+          id: contentId,
+          title,
+          slug,
+          body,
+          excerpt,
+          isGlobal,
+          authorId,
+          seoImage: imageUrl,
+          seoTitle,
+          seoDescription,
+          featured: false,
+          publishedAt: published ? new Date() : null,
+          categoryId,
+          type: 'ARTICLE',
+          status: 'PUBLISHED',
+          visibility: isGlobal ? 'PUBLIC' : 'PRIVATE',
+          updatedAt: new Date(),
+        },
+      });
+
+      if (hasRagDocument) {
+        const resourceId = randomUUID();
+        await transaction.resource.create({
+          data: {
+            id: resourceId,
+            name: ragDocument.name.trim().slice(0, 255),
+            url: ragDocument.url.trim(),
+            type: "DOCUMENT",
+            mimeType: typeof ragDocument.mimeType === "string" ? ragDocument.mimeType.slice(0, 255) : null,
+            size: Number.isFinite(Number(ragDocument.size)) && Number(ragDocument.size) > 0 ? BigInt(Math.round(Number(ragDocument.size))) : null,
+            altText: typeof ragDocument.altText === "string" ? ragDocument.altText.trim().slice(0, 255) : null,
+            uploadedById: authorId,
+            updatedAt: new Date(),
+          },
+        });
+
+        await transaction.contentResource.create({
+          data: { contentId, resourceId, position: 0, caption: ragDocument.name.trim().slice(0, 255) },
+        });
+
+        for (let index = 0; index < chunks.length; index += 1) {
+          const vector = `[${embeddings[index].join(",")}]`;
+          await transaction.$executeRaw`
+            INSERT INTO "DocumentChunk" ("id", "content", "embedding", "chunkIndex", "resourceId", "contentId")
+            VALUES (${randomUUID()}::uuid, ${chunks[index]}, ${vector}::vector, ${index}, ${resourceId}::uuid, ${contentId}::uuid)
+          `;
+        }
+      }
+
+      return createdNote;
     });
     res.status(201).json(note);
   } catch (error) {
     console.error("Error creating note:", error);
-    res.status(500).json({ error: "Error al crear la nota" });
+    res.status(500).json({ error: error instanceof Error ? error.message : "Error al crear la nota" });
   }
 };
 

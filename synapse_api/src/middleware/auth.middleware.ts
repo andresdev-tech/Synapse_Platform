@@ -28,9 +28,17 @@ export const verifyToken = (req: AuthRequest, res: Response, next: NextFunction)
 };
 
 export const requireAdmin = (req: AuthRequest, res: Response, next: NextFunction) => {
-  if (req.user && req.user.role === "ADMIN") {
+  if (req.user && (req.user.role === "ADMIN" || req.user.role === "SUPER_ADMIN")) {
     next();
   } else {
     return res.status(403).json({ error: "Acceso denegado. Requiere privilegios de administrador." });
+  }
+};
+
+export const requireSuperAdmin = (req: AuthRequest, res: Response, next: NextFunction) => {
+  if (req.user?.role === "SUPER_ADMIN") {
+    next();
+  } else {
+    return res.status(403).json({ error: "Acceso denegado. Requiere privilegios de SUPER_ADMIN." });
   }
 };

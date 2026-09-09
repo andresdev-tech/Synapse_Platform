@@ -44,7 +44,7 @@ function LoginForm() {
   }
 
   return (
-    <div className="min-h-[calc(100vh-64px)] flex bg-slate-50">
+    <div className="flex min-h-[calc(100vh-64px)] bg-slate-50">
       <div className="hidden lg:flex w-1/2 bg-slate-900 bg-[url('https://images.unsplash.com/photo-1497215728101-856f4ea42174?ixlib=rb-4.0.3&auto=format&fit=crop&w=1470&q=80')] bg-cover bg-center relative items-center justify-center">
         <div className="absolute inset-0 bg-slate-900/80 backdrop-blur-sm"></div>
         <div className="relative z-10 p-12 text-white max-w-lg text-center">
@@ -55,14 +55,14 @@ function LoginForm() {
         </div>
       </div>
 
-      <div className="w-full lg:w-1/2 flex flex-col items-center justify-center p-8 relative">
-        <a href="/?guest=true" className="absolute top-8 left-8 flex items-center text-slate-500 hover:text-indigo-600 transition-colors font-bold text-sm bg-white p-2 pr-4 rounded-full shadow-sm border border-slate-100 group">
+      <div className="relative flex w-full flex-col items-center justify-center px-4 py-16 sm:p-8 lg:w-1/2">
+        <a href="/?guest=true" className="absolute left-4 top-4 flex items-center text-xs font-bold text-slate-500 transition-colors hover:text-indigo-600 sm:left-8 sm:top-8 sm:text-sm">
           <div className="w-8 h-8 rounded-full bg-slate-100 group-hover:bg-indigo-50 flex items-center justify-center mr-2 transition-colors">
             <svg className="w-4 h-4 text-slate-600 group-hover:text-indigo-600 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
           </div>
           Volver al inicio
         </a>
-        <form onSubmit={handleSubmit} className="w-full max-w-md bg-white p-10 rounded-2xl shadow-xl border border-slate-100 mt-12 md:mt-0">
+        <form onSubmit={handleSubmit} className="mt-8 w-full max-w-md rounded-2xl border border-slate-100 bg-white p-5 shadow-xl sm:mt-0 sm:p-10">
           <div className="text-center mb-8">
             <h2 className="text-3xl font-bold text-slate-800">Iniciar Sesión</h2>
             <p className="text-slate-500 mt-2">Ingresa tus credenciales para continuar</p>

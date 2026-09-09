@@ -22,7 +22,7 @@ export class EmbeddingService {
    * Genera el vector semántico de un texto.
    *
    * Dimensiones:
-   * 1536
+  * 1024
    */
   async generateEmbedding(
     text: string

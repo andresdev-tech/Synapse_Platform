@@ -3,6 +3,7 @@
 import { useSession } from "next-auth/react"
 import { useSearchParams } from "next/navigation"
 import { AdminDashboard } from "./AdminDashboard"
+import SuperAdminDashboard from "./SuperAdminDashboard"
 import { ApprenticeDashboard } from "./ApprenticeDashboard"
 import { LandingPage } from "./LandingPage"
 import { Suspense } from "react"
@@ -18,6 +19,10 @@ function DashboardContent() {
 
   if (session?.user?.role === "ADMIN") {
     return <AdminDashboard />
+  }
+
+  if (session?.user?.role === "SUPER_ADMIN") {
+    return <SuperAdminDashboard />
   }
 
   if (!session && !isGuest) {
