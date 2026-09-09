@@ -7,20 +7,20 @@ export const authOptions: NextAuthOptions = {
       name: "Credentials",
       credentials: {
         email: { label: "Email", type: "text" },
-        password: { label: "Password", type: "password" }
+        otpCode: { label: "OTP", type: "text" },
       },
       async authorize(credentials) {
-        if (!credentials?.email || !credentials?.password) {
+        if (!credentials?.email || !credentials.otpCode) {
           return null
         }
         
         try {
-          const res = await fetch("http://127.0.0.1:4000/api/auth/login", {
+          const res = await fetch("http://127.0.0.1:4000/api/auth/otp/verify", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ 
-              email: credentials.email, 
-              password: credentials.password 
+              email: credentials.email,
+              code: credentials.otpCode,
             })
           })
           

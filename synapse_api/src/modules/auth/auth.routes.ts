@@ -68,6 +68,9 @@ router.post("/register", AuthController.register);
  */
 router.post("/login", AuthController.login);
 
+router.post("/otp/request", AuthController.requestOtp);
+router.post("/otp/verify", AuthController.verifyOtp);
+
 /**
  * @swagger
  * /api/auth/forgot-password:

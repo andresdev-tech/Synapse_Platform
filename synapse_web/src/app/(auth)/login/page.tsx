@@ -1,16 +1,20 @@
 "use client"
+import { fetchApi } from "@/lib/fetchApi"
 import { signIn, useSession } from "next-auth/react"
 import { useState, useEffect, Suspense } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
-import { Eye } from "lucide-react"
+import { KeyRound } from "lucide-react"
+import ReCAPTCHA from "react-google-recaptcha"
 
 function LoginForm() {
   const { data: session, status } = useSession()
   const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
+  const [otp, setOtp] = useState("")
+  const [otpSent, setOtpSent] = useState(false)
+  const [loading, setLoading] = useState(false)
   const [error, setError] = useState("")
   const [successMsg, setSuccessMsg] = useState("")
-  const [showPassword, setShowPassword] = useState(false)
+  const [captchaToken, setCaptchaToken] = useState<string | null>(null)
   const router = useRouter()
   const searchParams = useSearchParams()
 
@@ -23,20 +27,48 @@ function LoginForm() {
     }
   }, [status, router, searchParams])
 
+  const handleRequestOtp = async () => {
+    setLoading(true)
+    setError("")
+    setSuccessMsg("")
+    try {
+      const response = await fetchApi("/api/auth/otp/request", {
+        method: "POST",
+        body: JSON.stringify({ email: email.trim(), captchaToken }),
+      })
+      const data = await response.json()
+      if (!response.ok) throw new Error(data.error || "No se pudo enviar el código")
+      setOtpSent(true)
+      setSuccessMsg(`Te enviamos un código de 6 dígitos a ${email.trim()}.`)
+    } catch (requestError) {
+      setError(requestError instanceof Error ? requestError.message : "No se pudo enviar el código")
+      setCaptchaToken(null)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const captchaConfigured = Boolean(process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY && process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY !== "dummy")
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError("")
     setSuccessMsg("")
     try {
-      const res = await signIn("credentials", { email: email.trim(), password, redirect: false })
+      if (!otpSent) {
+        await handleRequestOtp()
+        return
+      }
+
+      const res = await signIn("credentials", {
+        email: email.trim(),
+        otpCode: otp,
+        redirect: false,
+      })
       if (res?.error) {
-        if (res.error === "unverified_email") {
-          router.push(`/verify-email?email=${encodeURIComponent(email.trim())}`)
-        } else {
-          setError(res.error)
-        }
+        setError(res.error)
       } else {
-        window.location.href = "/"
+        router.push("/")
       }
     } catch (err) {
       setError("Error al iniciar sesión")
@@ -64,8 +96,8 @@ function LoginForm() {
         </a>
         <form onSubmit={handleSubmit} className="mt-8 w-full max-w-md rounded-2xl border border-slate-100 bg-white p-5 shadow-xl sm:mt-0 sm:p-10">
           <div className="text-center mb-8">
-            <h2 className="text-3xl font-bold text-slate-800">Iniciar Sesión</h2>
-            <p className="text-slate-500 mt-2">Ingresa tus credenciales para continuar</p>
+            <h2 className="text-3xl font-bold text-slate-800">Acceder a Synapse</h2>
+            <p className="text-slate-500 mt-2">Ingresa tu correo y recibe un código de acceso.</p>
           </div>
           
           {error && <div className="bg-red-50 text-red-600 p-3 rounded-lg text-sm mb-6 border border-red-100">{error}</div>}
@@ -75,33 +107,15 @@ function LoginForm() {
               <label className="block text-sm font-medium text-slate-700 mb-1">Correo Electrónico</label>
               <input type="email" placeholder="ej. tucorreo@gmail.com" className="w-full p-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition text-slate-900 placeholder-slate-400" required onChange={e => setEmail(e.target.value)} />
             </div>
-            <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">Contraseña</label>
-              <div className="relative">
-                <input 
-                  type={showPassword ? "text" : "password"} 
-                  placeholder="••••••••" 
-                  className="w-full p-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition text-slate-900 placeholder-slate-400 pr-12" 
-                  required 
-                  onChange={e => setPassword(e.target.value)} 
-                />
-                <button 
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-indigo-600 transition-colors p-1"
-                  title={showPassword ? "Ocultar contraseña" : "Ver contraseña"}
-                >
-                  <Eye className="w-5 h-5" />
-                </button>
-              </div>
-            </div>
-            
-            <div className="flex items-center justify-end text-sm">
-              <a href="/forgot-password" className="text-indigo-600 font-semibold hover:underline">¿Olvidaste tu contraseña?</a>
-            </div>
+            {otpSent && <div>
+              <label className="block text-sm font-medium text-slate-700 mb-1">Código de 6 dígitos</label>
+              <div className="relative"><KeyRound className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400" /><input inputMode="numeric" autoComplete="one-time-code" maxLength={6} value={otp} onChange={e => setOtp(e.target.value.replace(/\D/g, ""))} placeholder="123456" className="w-full rounded-xl border border-slate-300 p-3 pl-11 text-center text-xl font-bold tracking-[0.35em] text-slate-900 outline-none focus:border-sena-500 focus:ring-2 focus:ring-sena-500" required /></div>
+            </div>}
 
-            <button className="w-full bg-slate-900 text-white p-3 rounded-xl font-semibold hover:bg-slate-800 hover:shadow-lg transition-all mt-4">
-              Entrar
+            {captchaConfigured && !otpSent && <div className="flex justify-center overflow-hidden"><ReCAPTCHA sitekey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY as string} onChange={setCaptchaToken} onExpired={() => setCaptchaToken(null)} onErrored={() => setCaptchaToken(null)} /></div>}
+            
+            <button disabled={loading || (!otpSent && captchaConfigured && !captchaToken)} className="w-full bg-slate-900 text-white p-3 rounded-xl font-semibold hover:bg-slate-800 hover:shadow-lg transition-all mt-4 disabled:cursor-not-allowed disabled:opacity-50">
+              {loading ? "Procesando..." : otpSent ? "Verificar código" : "Enviar código"}
             </button>
           </div>
           
@@ -123,9 +137,6 @@ function LoginForm() {
           </div>
           */}
           
-          <div className="mt-8 text-center text-sm text-slate-600">
-            ¿No tienes cuenta? <a href="/register" className="text-indigo-600 font-semibold hover:underline">Regístrate ahora</a>
-          </div>
         </form>
       </div>
     </div>

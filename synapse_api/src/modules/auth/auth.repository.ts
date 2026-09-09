@@ -72,4 +72,17 @@ export class AuthRepository {
       where: { email }
     })
   }
+
+  static async deleteVerificationCodesExceptLatest(email: string) {
+    const latest = await prisma.verificationCode.findFirst({
+      where: { email },
+      orderBy: { createdAt: "desc" },
+    });
+
+    if (!latest) return;
+
+    await prisma.verificationCode.deleteMany({
+      where: { email, id: { not: latest.id } },
+    });
+  }
 }
