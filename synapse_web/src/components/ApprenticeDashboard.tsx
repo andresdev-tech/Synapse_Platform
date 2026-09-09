@@ -1,6 +1,7 @@
 "use client"
 import { fetchApi } from "@/lib/fetchApi";
 
+import { useRouter } from "next/navigation"
 import { useState, useEffect } from "react"
 import { useSession, signOut } from "next-auth/react"
 import { Megaphone, Link as LinkIcon, Send, User, MessageSquarePlus, X, GripHorizontal, Search, BookOpen, Calendar, Moon, Sun, Download, FileText, ArrowLeft } from "lucide-react"
@@ -11,21 +12,21 @@ import { CSS } from "@dnd-kit/utilities"
 
 const InlineVideoPlayer = ({ videoId, videoUrl }: { videoId: string, videoUrl: string }) => {
   const [playing, setPlaying] = useState(false);
-  
+
   if (!playing) {
     return (
-      <div 
+      <div
         onClick={() => setPlaying(true)}
         className="mt-3 group relative rounded-xl overflow-hidden border border-slate-200 dark:border-zinc-700 shadow-sm aspect-video bg-black cursor-pointer hover:shadow-xl transition-all duration-300"
       >
-        <img 
-          src={`https://img.youtube.com/vi/${videoId}/hqdefault.jpg`} 
-          alt="Miniatura de Video YouTube" 
-          className="w-full h-full object-cover opacity-70 group-hover:opacity-100 transition-all duration-300" 
+        <img
+          src={`https://img.youtube.com/vi/${videoId}/hqdefault.jpg`}
+          alt="Miniatura de Video YouTube"
+          className="w-full h-full object-cover opacity-70 group-hover:opacity-100 transition-all duration-300"
         />
         <div className="absolute inset-0 flex flex-col items-center justify-center">
           <div className="w-16 h-16 bg-red-600/90 group-hover:bg-red-600 rounded-full flex items-center justify-center shadow-[0_0_20px_rgba(220,38,38,0.5)] group-hover:scale-110 transition-all duration-300">
-            <svg className="w-8 h-8 text-white translate-x-0.5" fill="currentColor" viewBox="0 0 24 24"><path d="M7 6v12l10-6z"/></svg>
+            <svg className="w-8 h-8 text-white translate-x-0.5" fill="currentColor" viewBox="0 0 24 24"><path d="M7 6v12l10-6z" /></svg>
           </div>
           <span className="mt-4 text-white font-bold text-sm bg-black/70 px-4 py-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300 backdrop-blur-sm">
             Haz clic para reproducir inline
@@ -38,17 +39,17 @@ const InlineVideoPlayer = ({ videoId, videoUrl }: { videoId: string, videoUrl: s
   return (
     <div className="mt-3 flex flex-col gap-2">
       <div className="rounded-xl overflow-hidden border border-slate-200 dark:border-zinc-700 shadow-sm aspect-video relative bg-black">
-        <iframe 
-          src={`https://www.youtube-nocookie.com/embed/${videoId}?autoplay=1`} 
+        <iframe
+          src={`https://www.youtube-nocookie.com/embed/${videoId}?autoplay=1`}
           className="absolute inset-0 w-full h-full"
           title="YouTube video player"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
           referrerPolicy="strict-origin-when-cross-origin"
           allowFullScreen
         ></iframe>
       </div>
       <a href={`https://www.youtube.com/watch?v=${videoId}`} target="_blank" rel="noopener noreferrer" className="text-xs text-slate-500 dark:text-slate-400 hover:text-sena-500 transition-colors flex items-center gap-1 w-fit">
-        <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/></svg>
+        <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z" /></svg>
         ¿El video no carga por tu navegador? Ábrelo en YouTube aquí
       </a>
     </div>
@@ -59,7 +60,7 @@ interface Note {
   id: string
   title: string
   content: string
-  seoImage?: string; attachments?: {type: string, url: string}[];
+  seoImage?: string; attachments?: { type: string, url: string }[];
   isGlobal: boolean
   authorId: string
   author?: { name: string; role: string }
@@ -82,6 +83,8 @@ const officialResources = [
   { title: "Preguntas Frecuentes", url: "/ctma/preguntas-frecuentes" },
 ]
 
+import NextLink from "next/link"
+
 function SortableNoteItem({ note }: { note: Note }) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: note.id })
 
@@ -92,15 +95,17 @@ function SortableNoteItem({ note }: { note: Note }) {
   }
 
   return (
-    <article 
-      ref={setNodeRef} 
-      style={style} 
+    <article
+      ref={setNodeRef}
+      style={style}
       className={`group bg-white dark:bg-zinc-800 rounded-3xl shadow-sm hover:shadow-xl border border-slate-100 dark:border-zinc-700 hover:border-sena-100 dark:hover:border-sena-500/50 transition-all duration-300 flex flex-col overflow-hidden relative h-max break-inside-avoid mb-8 ${isDragging ? 'opacity-50 ring-2 ring-sena-500 scale-105' : ''}`}
     >
-      <div 
-        {...attributes} 
+      <NextLink href={`/blogs/${note.id}`} className="absolute inset-0 z-10" aria-label={`Ver ${note.title}`}></NextLink>
+
+      <div
+        {...attributes}
         {...listeners}
-        className="absolute top-4 right-4 z-20 w-8 h-8 bg-white/80 dark:bg-zinc-700/80 backdrop-blur text-slate-400 dark:text-slate-300 hover:text-sena-500 dark:hover:text-sena-400 rounded-full flex items-center justify-center cursor-grab active:cursor-grabbing shadow-sm opacity-0 group-hover:opacity-100 transition-opacity"
+        className="absolute top-4 right-4 z-30 w-8 h-8 bg-white/80 dark:bg-zinc-700/80 backdrop-blur text-slate-400 dark:text-slate-300 hover:text-sena-500 dark:hover:text-sena-400 rounded-full flex items-center justify-center cursor-grab active:cursor-grabbing shadow-sm opacity-0 group-hover:opacity-100 transition-opacity"
         title="Arrastrar para reordenar"
       >
         <GripHorizontal className="w-5 h-5" />
@@ -108,10 +113,10 @@ function SortableNoteItem({ note }: { note: Note }) {
 
       {note.seoImage && (
         <div className="h-56 bg-slate-100 dark:bg-zinc-900 overflow-hidden relative">
-          <img loading="lazy" 
-            src={note.seoImage} 
-            alt={note.title} 
-            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-in-out" 
+          <img loading="lazy"
+            src={note.seoImage}
+            alt={note.title}
+            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-in-out"
             onError={(e) => { e.currentTarget.style.display = 'none'; }}
           />
           <div className="absolute inset-0 bg-linear-to-t from-zinc-900/60 via-transparent to-transparent opacity-60 transition-opacity group-hover:opacity-80 dark:from-zinc-900/90"></div>
@@ -124,7 +129,7 @@ function SortableNoteItem({ note }: { note: Note }) {
           )}
         </div>
       )}
-      
+
       <div className="flex grow flex-col p-8">
         {!note.seoImage && note.category && (
           <span className="inline-block px-3 py-1 mb-4 bg-sena-50 dark:bg-sena-900/30 text-sena-600 dark:text-sena-300 text-xs font-bold rounded-lg uppercase tracking-wider w-fit border border-sena-100 dark:border-sena-800/50">
@@ -139,7 +144,7 @@ function SortableNoteItem({ note }: { note: Note }) {
         </p>
 
         {note.attachments && note.attachments.length > 0 && (
-          <div className="mt-4 space-y-2">
+          <div className="mt-4 space-y-2 relative z-20">
             {note.attachments.map((att, idx) => {
               if (att.type === 'image') {
                 return (
@@ -150,7 +155,7 @@ function SortableNoteItem({ note }: { note: Note }) {
               } else if (att.type === 'video') {
                 let videoUrl = att.url;
                 let videoId = "";
-                
+
                 const ytMatch = att.url.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))([^&?"']+)/);
                 if (ytMatch) {
                   videoId = ytMatch[1];
@@ -178,7 +183,7 @@ function SortableNoteItem({ note }: { note: Note }) {
               } else {
                 return (
                   <a key={idx} href={att.url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 mt-2 p-3 bg-slate-50 dark:bg-zinc-800 text-slate-700 dark:text-slate-300 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-700 transition-colors font-bold text-sm border border-slate-200 dark:border-zinc-700">
-                    <svg className="w-5 h-5 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
+                    <svg className="w-5 h-5 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" /></svg>
                     Descargar PDF / Documento
                   </a>
                 );
@@ -186,7 +191,7 @@ function SortableNoteItem({ note }: { note: Note }) {
             })}
           </div>
         )}
-        
+
         <div className="mt-8 pt-5 border-t border-slate-100 dark:border-zinc-700 flex items-center justify-between text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">
           <div className="flex items-center">
             <User className="w-4 h-4 mr-2 text-slate-300 dark:text-slate-500" />
@@ -203,7 +208,7 @@ export function ApprenticeDashboard() {
   const { data: session } = useSession()
   const [globalNotes, setGlobalNotes] = useState<Note[]>([])
   const [categories, setCategories] = useState<Category[]>([])
-  
+
   // Customization & Filters
   const [isDarkMode, setIsDarkMode] = useState(false)
   const [searchQuery, setSearchQuery] = useState("")
@@ -245,7 +250,7 @@ export function ApprenticeDashboard() {
       let data = await res.json()
       if (Array.isArray(data)) {
         data = data.filter((n: any) => !n.deletedAt)
-        
+
         if (session) {
           try {
             const prefRes = await fetchApi("/api/user/layout")
@@ -253,7 +258,7 @@ export function ApprenticeDashboard() {
               const { layoutPrefs } = await prefRes.json()
               if (layoutPrefs) {
                 const prefs = JSON.parse(layoutPrefs)
-                
+
                 if (Array.isArray(prefs)) {
                   // Retrocompatibility (old array format)
                   data.sort((a: Note, b: Note) => {
@@ -359,9 +364,9 @@ export function ApprenticeDashboard() {
           published: true
         })
       })
-      
+
       if (!res.ok) throw new Error("Error")
-      
+
       setSuccessMessage("¡Sugerencia enviada con éxito!")
       setTimeout(() => {
         setNewTitle("")
@@ -383,7 +388,7 @@ export function ApprenticeDashboard() {
     if (over && active.id !== over.id) {
       const oldIndex = globalNotes.findIndex((n) => n.id === active.id)
       const newIndex = globalNotes.findIndex((n) => n.id === over.id)
-      
+
       const newNotes = arrayMove(globalNotes, oldIndex, newIndex)
       setGlobalNotes(newNotes)
       saveLayoutPrefs(newNotes.map(n => n.id), isDarkMode)
@@ -398,8 +403,8 @@ export function ApprenticeDashboard() {
   })
 
   // Eventos para el Widget Lateral
-  const upcomingEvents = globalNotes.filter(n => 
-    n.category?.name?.toLowerCase().includes("evento") || 
+  const upcomingEvents = globalNotes.filter(n =>
+    n.category?.name?.toLowerCase().includes("evento") ||
     n.category?.name?.toLowerCase().includes("acad") ||
     n.title.toLowerCase().includes("inscrip") ||
     n.title.toLowerCase().includes("fecha")
@@ -408,7 +413,7 @@ export function ApprenticeDashboard() {
   return (
     <div className="bg-slate-50 dark:bg-zinc-900 text-zinc-900 dark:text-slate-100 min-h-screen transition-colors duration-300">
       <div className="w-full mx-auto space-y-8 px-4 md:px-8 py-8">
-        
+
         {/* HEADER TIPO BLOG */}
         <div className="relative flex flex-col items-center justify-between overflow-hidden rounded-4xl border border-transparent bg-linear-to-br from-sena-500 via-sena-400 to-sena-600 p-5 text-white shadow-2xl dark:border-sena-500/50 dark:from-zinc-800 dark:via-zinc-900 dark:to-zinc-900 dark:shadow-[0_0_30px_rgba(57,169,0,0.1)] sm:p-8 md:flex-row lg:p-10">
           <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10 mix-blend-overlay"></div>
@@ -423,7 +428,7 @@ export function ApprenticeDashboard() {
             </p>
           </div>
           <div className="relative z-10 w-full md:w-auto flex flex-col gap-3 mt-4 md:mt-0">
-            <button 
+            <button
               onClick={() => {
                 if (!session) {
                   window.location.href = "/login";
@@ -436,7 +441,7 @@ export function ApprenticeDashboard() {
               <MessageSquarePlus className="w-5 h-5 text-sena-500 dark:text-sena-200 group-hover:rotate-12 transition-transform" />
               <span>Enviar Sugerencia</span>
             </button>
-            <button 
+            <button
               onClick={() => setIsResourcesOpen(true)}
               className="w-full px-6 py-4 bg-sena-800/50 dark:bg-zinc-800 backdrop-blur-sm border border-sena-500/30 dark:border-zinc-700 text-sena-50 dark:text-slate-200 font-extrabold rounded-2xl hover:bg-sena-600/50 dark:hover:bg-zinc-700 hover:scale-105 transition-all duration-300 flex items-center justify-center space-x-3"
             >
@@ -447,10 +452,10 @@ export function ApprenticeDashboard() {
         </div>
 
         <div className="flex flex-col lg:flex-row gap-8">
-          
+
           {/* MAIN FEED (IZQUIERDA) */}
           <div className="w-full lg:w-3/4">
-            
+
 
 
             <div className="flex items-center justify-between mb-8 pb-4 border-b-2 border-slate-100 dark:border-zinc-800">
@@ -500,12 +505,12 @@ export function ApprenticeDashboard() {
                 </div>
                 <h2 className="text-2xl font-black text-zinc-800 dark:text-slate-100 tracking-tight">Atención al Aprendiz</h2>
               </div>
-              
+
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {/* WhatsApp */}
                 <a href="https://wa.me/573052427400" target="_blank" rel="noopener noreferrer" className="flex items-center p-4 bg-white dark:bg-zinc-800 rounded-2xl border border-slate-100 dark:border-zinc-700 hover:border-green-400 dark:hover:border-green-500 hover:shadow-md transition-all group">
                   <div className="w-12 h-12 bg-green-50 dark:bg-green-900/20 rounded-xl flex items-center justify-center mr-4 group-hover:scale-110 transition-transform">
-                    <svg className="w-6 h-6 text-green-500" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51a12.8 12.8 0 0 0-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/></svg>
+                    <svg className="w-6 h-6 text-green-500" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51a12.8 12.8 0 0 0-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z" /></svg>
                   </div>
                   <div>
                     <h4 className="font-bold text-zinc-700 dark:text-slate-200 text-sm group-hover:text-green-600 dark:group-hover:text-green-400">WhatsApp CTMA</h4>
@@ -516,7 +521,7 @@ export function ApprenticeDashboard() {
                 {/* Email */}
                 <a href="mailto:dagarzonh@sena.edu.co" className="flex items-center p-4 bg-white dark:bg-zinc-800 rounded-2xl border border-slate-100 dark:border-zinc-700 hover:border-red-400 dark:hover:border-red-500 hover:shadow-md transition-all group">
                   <div className="w-12 h-12 bg-red-50 dark:bg-red-900/20 rounded-xl flex items-center justify-center mr-4 group-hover:scale-110 transition-transform">
-                    <svg className="w-6 h-6 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+                    <svg className="w-6 h-6 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
                   </div>
                   <div>
                     <h4 className="font-bold text-zinc-700 dark:text-slate-200 text-sm group-hover:text-red-600 dark:group-hover:text-red-400">Correo Electrónico</h4>
@@ -527,7 +532,7 @@ export function ApprenticeDashboard() {
                 {/* Oficina Bienestar */}
                 <a href="https://teams.microsoft.com/l/meetup-join/19%3ameeting_MWFmNDllYmQtMDY0OS00YmJlLWFjNTgtNjUxM2NlMzgwMzRm%40thread.v2/0?context=%7b%22Tid%22%3a%22cbc2c381-2f2e-4d93-91d1-506c9316ace7%22%2c%22Oid%22%3a%22fa1a60b6-f78d-4dd8-b766-fade5cf00b7e%22%7d" target="_blank" rel="noopener noreferrer" className="flex items-center p-4 bg-white dark:bg-zinc-800 rounded-2xl border border-slate-100 dark:border-zinc-700 hover:border-sena-400 dark:hover:border-sena-500 hover:shadow-md transition-all group">
                   <div className="w-12 h-12 bg-sena-50 dark:bg-sena-900/20 rounded-xl flex items-center justify-center mr-4 group-hover:scale-110 transition-transform">
-                    <svg className="w-6 h-6 text-sena-500" fill="currentColor" viewBox="0 0 24 24"><path d="M22.5 13.928v-3.856c0-.986-.799-1.785-1.785-1.785H17.5v-3.75c0-.986-.799-1.785-1.785-1.785H4.285C3.299 2.752 2.5 3.551 2.5 4.537v11.428c0 .986.799 1.785 1.785 1.785h11.43c.986 0 1.785-.799 1.785-1.785v-3.75h3.215c.986 0 1.785-.799 1.785-1.785zm-6.785 2.037H4.285V4.537h11.43v11.428zm5 1.821h-3.215v-7.5h3.215v7.5z"/></svg>
+                    <svg className="w-6 h-6 text-sena-500" fill="currentColor" viewBox="0 0 24 24"><path d="M22.5 13.928v-3.856c0-.986-.799-1.785-1.785-1.785H17.5v-3.75c0-.986-.799-1.785-1.785-1.785H4.285C3.299 2.752 2.5 3.551 2.5 4.537v11.428c0 .986.799 1.785 1.785 1.785h11.43c.986 0 1.785-.799 1.785-1.785v-3.75h3.215c.986 0 1.785-.799 1.785-1.785zm-6.785 2.037H4.285V4.537h11.43v11.428zm5 1.821h-3.215v-7.5h3.215v7.5z" /></svg>
                   </div>
                   <div>
                     <h4 className="font-bold text-zinc-700 dark:text-slate-200 text-sm group-hover:text-sena-500 dark:group-hover:text-sena-400">Oficina Digital Bienestar</h4>
@@ -549,7 +554,7 @@ export function ApprenticeDashboard() {
                 {/* Ejecucion presupuestal */}
                 <a href="https://app.powerbi.com/view?r=eyJrIjoiODQ2MGJjYzQtZTRhMC00YjM3LTljNWMtMjRmMDI5YzQzNTJmIiwidCI6ImNiYzJjMzgxLTJmMmUtNGQ5My05MWQxLTUwNmM5MzE2YWNlNyIsImMiOjR9" target="_blank" rel="noopener noreferrer" className="flex items-center p-4 bg-white dark:bg-zinc-800 rounded-2xl border border-slate-100 dark:border-zinc-700 hover:border-sky-400 dark:hover:border-sky-500 hover:shadow-md transition-all group md:col-span-2 lg:col-span-2">
                   <div className="w-12 h-12 bg-sky-50 dark:bg-sky-900/20 rounded-xl flex items-center justify-center mr-4 group-hover:scale-110 transition-transform">
-                    <svg className="w-6 h-6 text-sky-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+                    <svg className="w-6 h-6 text-sky-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" /></svg>
                   </div>
                   <div>
                     <h4 className="font-bold text-zinc-700 dark:text-slate-200 text-sm group-hover:text-sky-600 dark:group-hover:text-sky-400">Portal de Indicadores y Presupuesto CTMA</h4>
@@ -563,7 +568,7 @@ export function ApprenticeDashboard() {
             <div className="mt-12 pt-8 border-t-2 border-slate-100 dark:border-zinc-800">
               <div className="flex items-center mb-6">
                 <div className="w-10 h-10 rounded-full bg-sena-100 dark:bg-sena-900/50 flex items-center justify-center mr-4">
-                  <svg className="w-5 h-5 text-sena-500 dark:text-sena-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.243-4.243a8 8 0 1111.314 0z"/><path strokeLinecap="round" strokeLinejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                  <svg className="w-5 h-5 text-sena-500 dark:text-sena-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.243-4.243a8 8 0 1111.314 0z" /><path strokeLinecap="round" strokeLinejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
                 </div>
                 <h2 className="text-2xl font-black text-zinc-800 dark:text-slate-100 tracking-tight">Nuestra Sede CTMA</h2>
               </div>
@@ -577,11 +582,11 @@ export function ApprenticeDashboard() {
                   </p>
                   <ul className="space-y-3 text-sm font-medium text-zinc-700 dark:text-slate-300">
                     <li className="flex items-start">
-                      <svg className="w-5 h-5 text-sena-500 mr-2 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.243-4.243a8 8 0 1111.314 0z"/></svg>
-                      <span>Calle 104 #69-120, Pedregal<br/><span className="text-xs text-slate-500">Medellín, Antioquia</span></span>
+                      <svg className="w-5 h-5 text-sena-500 mr-2 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.243-4.243a8 8 0 1111.314 0z" /></svg>
+                      <span>Calle 104 #69-120, Pedregal<br /><span className="text-xs text-slate-500">Medellín, Antioquia</span></span>
                     </li>
                     <li className="flex items-center">
-                      <svg className="w-5 h-5 text-sena-500 mr-2 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                      <svg className="w-5 h-5 text-sena-500 mr-2 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
                       <span>Lunes a Viernes: 6:00 AM - 10:00 PM</span>
                     </li>
                   </ul>
@@ -590,11 +595,11 @@ export function ApprenticeDashboard() {
                   </a>
                 </div>
                 <div className="md:w-1/2 h-64 md:h-auto relative bg-slate-200 dark:bg-zinc-900">
-                  <iframe 
-                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3965.748375640243!2d-75.57620308470559!3d6.296765795442539!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8e442f2ed7f694ad%3A0x6e9f9076cf9e9e1c!2sSENA%20Centro%20de%20Tecnolog%C3%ADa%20de%20la%20Manufactura%20Avanzada!5e0!3m2!1ses!2sco!4v1699999999999!5m2!1ses!2sco" 
-                    className="absolute inset-0 w-full h-full border-0 grayscale hover:grayscale-0 transition-all duration-500" 
-                    allowFullScreen={false} 
-                    loading="lazy" 
+                  <iframe
+                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3965.748375640243!2d-75.57620308470559!3d6.296765795442539!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8e442f2ed7f694ad%3A0x6e9f9076cf9e9e1c!2sSENA%20Centro%20de%20Tecnolog%C3%ADa%20de%20la%20Manufactura%20Avanzada!5e0!3m2!1ses!2sco!4v1699999999999!5m2!1ses!2sco"
+                    className="absolute inset-0 w-full h-full border-0 grayscale hover:grayscale-0 transition-all duration-500"
+                    allowFullScreen={false}
+                    loading="lazy"
                     referrerPolicy="no-referrer-when-downgrade">
                   </iframe>
                 </div>
@@ -605,7 +610,7 @@ export function ApprenticeDashboard() {
 
           {/* SIDEBAR (DERECHA) */}
           <div className="w-full lg:w-1/4 space-y-6">
-            
+
             {/* WIDGET APARIENCIA */}
             <div className="bg-white dark:bg-zinc-800 rounded-3xl p-6 shadow-sm border border-slate-100 dark:border-zinc-700 flex items-center justify-between">
               <div className="flex items-center space-x-3">
@@ -614,8 +619,8 @@ export function ApprenticeDashboard() {
                 </div>
                 <span className="font-bold text-zinc-700 dark:text-slate-200">Apariencia</span>
               </div>
-              <button 
-                onClick={toggleDarkMode} 
+              <button
+                onClick={toggleDarkMode}
                 className="w-14 h-8 bg-slate-200 dark:bg-sena-500 rounded-full relative transition-colors duration-300"
                 title="Cambiar Modo"
                 aria-label="Cambiar Modo Oscuro"
@@ -696,21 +701,21 @@ export function ApprenticeDashboard() {
 
               {/* REDES SOCIALES CTMA */}
               <h3 className="font-black text-zinc-800 dark:text-slate-200 mt-8 mb-5 flex items-center text-lg">
-                <svg className="w-5 h-5 mr-2 text-sena-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/></svg>
+                <svg className="w-5 h-5 mr-2 text-sena-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" /></svg>
                 Redes Oficiales
               </h3>
               <div className="grid grid-cols-4 gap-2">
                 <a href="https://www.facebook.com/SENAColombiaOficial/" target="_blank" rel="noopener noreferrer" className="flex items-center justify-center p-3 bg-slate-50 dark:bg-zinc-900 rounded-xl hover:bg-blue-100 dark:hover:bg-blue-900/40 text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
-                  <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z"/></svg>
+                  <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z" /></svg>
                 </a>
                 <a href="https://twitter.com/senacomunica" target="_blank" rel="noopener noreferrer" className="flex items-center justify-center p-3 bg-slate-50 dark:bg-zinc-900 rounded-xl hover:bg-sky-100 dark:hover:bg-sky-900/40 text-slate-400 hover:text-sky-500 dark:hover:text-sky-400 transition-colors">
-                  <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M8.29 20.251c7.547 0 11.675-6.253 11.675-11.675 0-.178 0-.355-.012-.53A8.348 8.348 0 0022 5.92a8.19 8.19 0 01-2.357.646 4.118 4.118 0 001.804-2.27 8.224 8.224 0 01-2.605.996 4.107 4.107 0 00-6.993 3.743 11.65 11.65 0 01-8.457-4.287 4.106 4.106 0 001.27 5.477A4.072 4.072 0 012.8 9.713v.052a4.105 4.105 0 003.292 4.022 4.095 4.095 0 01-1.853.07 4.108 4.108 0 003.834 2.85A8.233 8.233 0 012 18.407a11.616 11.616 0 006.29 1.84"/></svg>
+                  <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M8.29 20.251c7.547 0 11.675-6.253 11.675-11.675 0-.178 0-.355-.012-.53A8.348 8.348 0 0022 5.92a8.19 8.19 0 01-2.357.646 4.118 4.118 0 001.804-2.27 8.224 8.224 0 01-2.605.996 4.107 4.107 0 00-6.993 3.743 11.65 11.65 0 01-8.457-4.287 4.106 4.106 0 001.27 5.477A4.072 4.072 0 012.8 9.713v.052a4.105 4.105 0 003.292 4.022 4.095 4.095 0 01-1.853.07 4.108 4.108 0 003.834 2.85A8.233 8.233 0 012 18.407a11.616 11.616 0 006.29 1.84" /></svg>
                 </a>
                 <a href="https://www.youtube.com/user/SENATV" target="_blank" rel="noopener noreferrer" className="flex items-center justify-center p-3 bg-slate-50 dark:bg-zinc-900 rounded-xl hover:bg-red-100 dark:hover:bg-red-900/40 text-slate-400 hover:text-red-600 dark:hover:text-red-500 transition-colors">
-                  <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+                  <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" /></svg>
                 </a>
                 <a href="https://www.instagram.com/senacomunica" target="_blank" rel="noopener noreferrer" className="flex items-center justify-center p-3 bg-slate-50 dark:bg-zinc-900 rounded-xl hover:bg-pink-100 dark:hover:bg-pink-900/40 text-slate-400 hover:text-pink-600 dark:hover:text-pink-500 transition-colors">
-                  <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
+                  <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z" /></svg>
                 </a>
               </div>
 
@@ -723,7 +728,7 @@ export function ApprenticeDashboard() {
                     <p className="text-2xl font-black tabular-nums tracking-tight">284,592</p>
                   </div>
                   <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center">
-                    <svg className="w-5 h-5 text-sena-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path strokeLinecap="round" strokeLinejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                    <svg className="w-5 h-5 text-sena-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path strokeLinecap="round" strokeLinejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
                   </div>
                 </div>
 
@@ -748,7 +753,7 @@ export function ApprenticeDashboard() {
               <p className="font-medium">Centro de Tecnología de la Manufactura Avanzada (CTMA)</p>
               <p className="mt-2 text-xs">Transformando vidas y construyendo el futuro a través de la educación técnica y tecnológica de alta calidad.</p>
             </div>
-            
+
             <div className="flex gap-4">
               <a href="https://www.facebook.com/SENA/" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-slate-100 dark:bg-zinc-800 flex items-center justify-center hover:bg-sena-100 dark:hover:bg-sena-900 hover:text-sena-500 dark:hover:text-sena-400 transition-colors border border-transparent dark:border-zinc-700">
                 <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path fillRule="evenodd" d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z" clipRule="evenodd" /></svg>
@@ -776,17 +781,17 @@ export function ApprenticeDashboard() {
                   <X className="w-6 h-6" />
                 </button>
               </div>
-              
+
               <div className="p-6 overflow-y-auto">
                 <p className="text-sm text-slate-500 dark:text-slate-400 mb-6">
                   Descarga o consulta los reglamentos, guías y formatos oficiales del CTMA directamente desde aquí sin tener que navegar por múltiples páginas.
                 </p>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   {officialResources.map((res, i) => (
-                    <a 
-                      key={i} 
-                      href={res.url} 
-                      target="_blank" 
+                    <a
+                      key={i}
+                      href={res.url}
+                      target="_blank"
                       rel="noopener noreferrer"
                       className="flex items-start p-4 rounded-xl border border-slate-200 dark:border-zinc-700 bg-slate-50 dark:bg-zinc-800 hover:bg-sena-50 dark:hover:bg-zinc-700 hover:border-sena-200 dark:hover:border-sena-500/50 transition-all group"
                     >
@@ -820,7 +825,7 @@ export function ApprenticeDashboard() {
                   <X className="w-6 h-6" />
                 </button>
               </div>
-              
+
               {successMessage ? (
                 <div className="p-12 text-center flex flex-col items-center">
                   <div className="w-16 h-16 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mb-4">
@@ -836,12 +841,12 @@ export function ApprenticeDashboard() {
                   <p className="text-sm text-slate-500 dark:text-slate-400 font-medium leading-relaxed">
                     Usa este espacio para enviar sugerencias, preguntas o comentarios directamente a la administración del CTMA.
                   </p>
-                  
+
                   <div>
                     <label className="block text-xs font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider mb-2">Asunto</label>
-                    <input 
-                      type="text" 
-                      placeholder="Ej. Solicitud de información..." 
+                    <input
+                      type="text"
+                      placeholder="Ej. Solicitud de información..."
                       className="w-full p-4 bg-slate-50 dark:bg-zinc-800 border border-slate-200 dark:border-zinc-700 rounded-xl focus:ring-4 focus:ring-sena-500/20 focus:border-sena-500 outline-none text-zinc-800 dark:text-slate-200 font-medium transition-all placeholder:text-slate-400 dark:placeholder:text-slate-500"
                       value={newTitle}
                       onChange={e => setNewTitle(e.target.value)}
@@ -852,7 +857,7 @@ export function ApprenticeDashboard() {
 
                   <div>
                     <label className="block text-xs font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider mb-2">Categoría (Opcional)</label>
-                    <select 
+                    <select
                       className="w-full p-4 bg-slate-50 dark:bg-zinc-800 border border-slate-200 dark:border-zinc-700 rounded-xl focus:ring-4 focus:ring-sena-500/20 focus:border-sena-500 outline-none text-zinc-800 dark:text-slate-200 font-medium appearance-none transition-all"
                       value={newCategoryId}
                       onChange={e => setNewCategoryId(e.target.value)}
@@ -865,8 +870,8 @@ export function ApprenticeDashboard() {
 
                   <div>
                     <label className="block text-xs font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider mb-2">Mensaje</label>
-                    <textarea 
-                      placeholder="Escribe tu sugerencia aquí..." 
+                    <textarea
+                      placeholder="Escribe tu sugerencia aquí..."
                       className="w-full p-4 bg-slate-50 dark:bg-zinc-800 border border-slate-200 dark:border-zinc-700 rounded-xl h-32 resize-none focus:ring-4 focus:ring-sena-500/20 focus:border-sena-500 outline-none text-zinc-800 dark:text-slate-200 font-medium transition-all placeholder:text-slate-400 dark:placeholder:text-slate-500"
                       value={newContent}
                       onChange={e => setNewContent(e.target.value)}
