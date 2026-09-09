@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { AuthService } from "./auth.service";
 import { AuthRepository } from "./auth.repository";
-import { registerSchema, loginSchema, forgotPasswordSchema, resetPasswordSchema, otpEmailSchema, otpVerifySchema } from "./auth.schema";
+import { registerSchema, loginSchema, forgotPasswordSchema, resetPasswordSchema, otpEmailSchema, otpVerifySchema, LoginAdmin } from "./auth.schema";
 import { ZodError } from "zod";
 
 
@@ -9,7 +9,6 @@ export class AuthController {
   static async register(req: Request, res: Response): Promise<void> {
     try {
       const parsedData = registerSchema.parse(req.body);
-      
       // ReCaptcha validation
       if (process.env.RECAPTCHA_SECRET_KEY && process.env.RECAPTCHA_SECRET_KEY !== "dummy") {
         if (!parsedData.captchaToken) {
@@ -178,6 +177,44 @@ export class AuthController {
       res.status(200).json({ success: true });
     } catch (error) {
       res.status(500).json({ error: "Error interno del servidor" });
+    }
+  }
+
+  static async loginAdmin(req: Request, res: Response): Promise<void> {
+    try {
+      const parsedData = LoginAdmin.parse(req.body);
+
+      if (process.env.RECAPTCHA_SECRET_KEY && process.env.RECAPTCHA_SECRET_KEY !== "dummy") {
+        if (!parsedData.captchaToken) {
+          res.status(400).json({ error: "Por favor, completa el reCAPTCHA" });
+          return;
+        }
+
+        const captchaRes = await fetch("https://www.google.com/recaptcha/api/siteverify", {
+          method: "POST",
+          headers: { "Content-Type": "application/x-www-form-urlencoded" },
+          body: `secret=${encodeURIComponent(process.env.RECAPTCHA_SECRET_KEY)}&response=${encodeURIComponent(parsedData.captchaToken)}`,
+        });
+        const captchaData = await captchaRes.json() as { success?: boolean };
+        if (!captchaData.success) {
+          res.status(400).json({ error: "Error al validar el reCAPTCHA" });
+          return;
+        }
+      }
+
+      const result = await AuthService.loginAdmin(parsedData);
+      if (!result.success) {
+        res.status(401).json({ error: result.error });
+        return;
+      }
+
+      res.status(200).json({ success: true, data: result.data });
+    } catch (error) {
+      if (error instanceof ZodError) {
+        res.status(400).json({ error: error.issues[0].message });
+        return;
+      }
+      console.error('[Login Error]', error); res.status(500).json({ error: "Error en el servidor" });
     }
   }
 }

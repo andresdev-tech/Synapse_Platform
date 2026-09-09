@@ -2,7 +2,7 @@ import { prisma } from "../../config/prisma";
 
 export class AuthRepository {
   static async findUserByEmail(email: string) {
-    return await prisma.user.findUnique({ where: { email }, include: { role: true } })
+    return await prisma.user.findUnique({ where: { email }, include: { role: { select: { name: true } } } })
   }
 
   static async findRoleByName(name: string) {
@@ -84,5 +84,18 @@ export class AuthRepository {
     await prisma.verificationCode.deleteMany({
       where: { email, id: { not: latest.id } },
     });
+  }
+
+  static async findAdminByEmail(email: string) {
+    return await prisma.user.findUnique({
+      where: {
+        email,
+        role: {
+          name: {
+            in: ["ADMIN", "SUPER_ADMIN"]
+          }
+        }
+      }
+    })
   }
 }

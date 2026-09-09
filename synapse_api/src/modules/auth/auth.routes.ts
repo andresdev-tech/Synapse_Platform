@@ -152,4 +152,31 @@ router.post("/reset-password", AuthController.resetPassword);
  */
 router.post("/verify", AuthController.verifyEmail);
 
+/**
+ * @swagger
+ * /api/auth/loginadmin:
+ *   post:
+ *     summary: Iniciar sesión de administrador o super-administrador
+ *     tags: [Auth]
+ *     security: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [email, code]
+ *             properties:
+ *               email:
+ *                 type: string
+ *               code:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Login exitoso, devuelve usuario y token
+ *       401:
+ *         description: Credenciales inválidas
+ */
+router.post("/loginadmin", AuthController.loginAdmin);
+
 export default router;

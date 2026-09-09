@@ -1,5 +1,5 @@
 import { AuthRepository } from "./auth.repository";
-import { RegisterDTO, LoginDTO, ForgotPasswordDTO, ResetPasswordDTO, AuthResponse, OtpEmailDTO, OtpVerifyDTO } from "./auth.types";
+import { RegisterDTO, LoginDTO, ForgotPasswordDTO, ResetPasswordDTO, AuthResponse, OtpEmailDTO, OtpVerifyDTO, LoginAdminDTO } from "./auth.types";
 import bcrypt from "bcryptjs";
 import nodemailer from "nodemailer";
 import jwt from "jsonwebtoken";
@@ -96,6 +96,15 @@ export class AuthService {
     const email = data.email.trim().toLowerCase();
     let user = await AuthRepository.findUserByEmail(email);
 
+    if (data.adminOnly) {
+      if (!user || (user.role?.name !== RoleNames.ADMIN && user.role?.name !== RoleNames.SUPER_ADMIN)) {
+        return {
+          success: false,
+          error: "Acceso denegado: Este correo no cuenta con permisos de Administrador o Super Administrador.",
+        };
+      }
+    }
+
     if (!user) {
       const userRole = await AuthRepository.findRoleByName(RoleNames.USER) || await AuthRepository.createRole(RoleNames.USER);
       await AuthRepository.createUser({
@@ -183,5 +192,29 @@ export class AuthService {
     await AuthRepository.deletePasswordResetCodes(data.email);
 
     return { success: true };
+  }
+
+  static async loginAdmin(credentials: LoginAdminDTO): Promise<AuthResponse> {
+    const user = await AuthRepository.findUserByEmail(credentials.email);
+    if (!user) {
+      return { success: false, error: "Credenciales incorrectas" };
+    }
+
+    if (!user.emailVerified) {
+      return { success: false, error: "unverified_email" };
+    }
+
+    const validAdminRoles = [RoleNames.ADMIN, RoleNames.SUPER_ADMIN];
+    const userRole = (user.role?.name || "") as any;
+
+    const isAdmin = validAdminRoles.includes(userRole);
+    if (!isAdmin) {
+      return { success: false, error: "unauthorized" };
+    }
+
+    const role = user.role.name;
+    const jwtData = this.createJwt(user, role);
+
+    return { success: true, data: jwtData };
   }
 }

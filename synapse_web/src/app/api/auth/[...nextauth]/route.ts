@@ -8,6 +8,7 @@ export const authOptions: NextAuthOptions = {
       credentials: {
         email: { label: "Email", type: "text" },
         otpCode: { label: "OTP", type: "text" },
+        adminOnly: { label: "AdminOnly", type: "text" },
       },
       async authorize(credentials) {
         if (!credentials?.email || !credentials.otpCode) {
@@ -31,12 +32,20 @@ export const authOptions: NextAuthOptions = {
           }
           
           if (data.success && data.data?.user) {
+            const user = data.data.user
+            if (credentials.adminOnly === "true") {
+              const role = user.role
+              if (role !== "ADMIN" && role !== "SUPER_ADMIN") {
+                throw new Error("Acceso denegado: Esta sección es exclusiva para Administradores y Super Administradores.")
+              }
+            }
+
             return {
-              id: data.data.user.id,
-              name: data.data.user.name,
-              email: data.data.user.email,
-              role: data.data.user.role,
-              layoutPrefs: data.data.user.layoutPrefs,
+              id: user.id,
+              name: user.name,
+              email: user.email,
+              role: user.role,
+              layoutPrefs: user.layoutPrefs,
               apiToken: data.data.token
             }
           }
