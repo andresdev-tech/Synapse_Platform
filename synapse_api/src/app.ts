@@ -1,14 +1,14 @@
 import express from "express";
 import cors from "cors";
 
-import noteRoutes from "./routes/note.routes";
-import userRoutes from "./routes/user.routes";
-import categoryRoutes from "./routes/category.routes";
-import commentRoutes from "./routes/comment.routes";
+import noteRoutes from "./modules/note/note.routes";
+import userRoutes from "./modules/user/user.routes";
+import categoryRoutes from "./modules/category/category.routes";
+import commentRoutes from "./modules/comment/comment.routes";
 import authRoutes from "./modules/auth/auth.routes";
-import extractRoutes from "./routes/extract.routes";
+import extractRoutes from "./modules/extract/extract.routes";
 import chatbotRoutes from "./modules/chatbot/chatbot.routes";
-import ragRoutes from "./routes/rag.routes";
+import ragRoutes from "./modules/rag/rag.routes";
 import swaggerUi from "swagger-ui-express";
 import { swaggerSpec } from "./swagger/swagger.config";
 

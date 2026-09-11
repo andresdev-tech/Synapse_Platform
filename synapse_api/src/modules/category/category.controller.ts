@@ -1,118 +1,80 @@
 import { Request, Response } from "express";
-import { prisma } from "../../config/prisma";
+import { ZodError } from "zod";
+import { CategoryService } from "./category.service";
+import { createCategorySchema, updateCategorySchema } from "./category.schema";
 
-export const createCategory = async (req: Request, res: Response) => {
-  try {
-    const { name, description, imageUrl, color, parentId } = req.body;
-    
-    // Generar slug automáticamente desde el nombre
-    const slug = name.toLowerCase().replace(/ /g, "-").replace(/[^\w-]/g, "");
-    
-    const category = await prisma.category.create({
-      data: {
-        name,
-        slug,
-        description,
-        imageUrl,
-        color,
-        parentId,
-        updatedAt: new Date()
+export class CategoryController {
+  static async create(req: Request, res: Response): Promise<void> {
+    try {
+      const parsedData = createCategorySchema.parse(req.body);
+      const category = await CategoryService.createCategory(parsedData);
+      res.status(201).json(category);
+    } catch (error) {
+      if (error instanceof ZodError) {
+        res.status(400).json({ error: error.issues[0]?.message ?? "Datos inválidos" });
+        return;
       }
-    });
-    res.status(201).json(category);
-  } catch (e) {
-    console.error("Error creating category:", e);
-    res.status(500).json({ error: "Error al crear categoría" });
-  }
-};
-
-export const getCategories = async (req: Request, res: Response) => {
-  try {
-    const categories = await prisma.category.findMany({
-      include: {
-        Category: {
-          select: { name: true }
-        },
-        _count: {
-          select: { Content: true }
-        }
-      }
-    });
-    res.json(categories);
-  } catch (e) {
-    console.error("Error getting categories:", e);
-    res.status(500).json({ error: "Error al obtener categorías" });
-  }
-};
-
-export const getCategoryById = async (req: Request, res: Response) => {
-  const { id } = req.params;
-  try {
-    const category = await prisma.category.findUnique({
-      where: { id: String(id) },
-      include: {
-        Category: {
-          select: { name: true }
-        },
-        children: {
-          select: { name: true, id: true }
-        },
-        contents: {
-          select: { title: true, id: true }
-        }
-      }
-    });
-    
-    if (!category) {
-      res.status(404).json({ error: "Categoría no encontrada" });
-      return;
+      console.error("Error creating category:", error);
+      res.status(500).json({ error: "Error al crear categoría" });
     }
-    
-    res.json(category);
-  } catch (e) {
-    console.error("Error getting category by id:", e);
-    res.status(500).json({ error: "Error al obtener categoría" });
   }
-};
 
-export const updateCategory = async (req: Request, res: Response) => {
-  const { id } = req.params;
-  try {
-    const { name, description, imageUrl, color, parentId } = req.body;
-    
-    let slug;
-    if (name) {
-      slug = name.toLowerCase().replace(/ /g, "-").replace(/[^\w-]/g, "");
+  static async getAll(_req: Request, res: Response): Promise<void> {
+    try {
+      const categories = await CategoryService.getAllCategories();
+      res.json(categories);
+    } catch (error) {
+      console.error("Error getting categories:", error);
+      res.status(500).json({ error: "Error al obtener categorías" });
     }
-    
-    const updateData: any = {};
-    if (name) updateData.name = name;
-    if (slug) updateData.slug = slug;
-    if (description !== undefined) updateData.description = description;
-    if (imageUrl !== undefined) updateData.imageUrl = imageUrl;
-    if (color !== undefined) updateData.color = color;
-    if (parentId !== undefined) updateData.parentId = parentId;
-    
-    const category = await prisma.category.update({
-      where: { id: String(id) },
-      data: updateData
-    });
-    res.json(category);
-  } catch (e) {
-    console.error("Error updating category:", e);
-    res.status(500).json({ error: "Error al actualizar categoría" });
   }
-};
 
-export const deleteCategory = async (req: Request, res: Response) => {
-  const { id } = req.params;
-  try {
-    await prisma.category.delete({
-      where: { id: String(id) }
-    });
-    res.status(204).send();
-  } catch (e) {
-    console.error("Error deleting category:", e);
-    res.status(500).json({ error: "Error al eliminar categoría" });
+  static async getById(req: Request, res: Response): Promise<void> {
+    const { id } = req.params;
+    try {
+      const category = await CategoryService.getCategoryById(id as string);
+      if (!category) {
+        res.status(404).json({ error: "Categoría no encontrada" });
+        return;
+      }
+      res.json(category);
+    } catch (error) {
+      console.error("Error getting category by id:", error);
+      res.status(500).json({ error: "Error al obtener categoría" });
+    }
   }
-};
+
+  static async update(req: Request, res: Response): Promise<void> {
+    const { id } = req.params;
+    try {
+      const parsedData = updateCategorySchema.parse(req.body);
+      const category = await CategoryService.updateCategory(id as string, parsedData);
+      res.json(category);
+    } catch (error) {
+      if (error instanceof ZodError) {
+        res.status(400).json({ error: error.issues[0]?.message ?? "Datos inválidos" });
+        return;
+      }
+      console.error("Error updating category:", error);
+      res.status(500).json({ error: "Error al actualizar categoría" });
+    }
+  }
+
+  static async delete(req: Request, res: Response): Promise<void> {
+    const { id } = req.params;
+    try {
+      await CategoryService.deleteCategory(id as string);
+      res.status(204).send();
+    } catch (error) {
+      console.error("Error deleting category:", error);
+      res.status(500).json({ error: "Error al eliminar categoría" });
+    }
+  }
+}
+
+// Backward compatibility exports
+export const createCategory = CategoryController.create;
+export const getCategories = CategoryController.getAll;
+export const getCategoryById = CategoryController.getById;
+export const updateCategory = CategoryController.update;
+export const deleteCategory = CategoryController.delete;

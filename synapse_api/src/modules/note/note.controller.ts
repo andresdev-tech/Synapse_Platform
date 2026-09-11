@@ -1,210 +1,104 @@
 import { Request, Response } from "express";
-import { prisma } from "../../config/prisma";
-import { any } from "zod";
-import { randomUUID } from "crypto";
-import { EmbeddingService } from "../chatbot/embedding.service";
+import { ZodError } from "zod";
+import { NoteService } from "./note.service";
+import { createNoteSchema, updateNoteSchema } from "./note.schema";
+import { AuthRequest } from "../../middleware/auth.middleware";
 
-const embeddingService = new EmbeddingService();
-const CHUNK_SIZE = 1200;
-
-const splitIntoChunks = (text: string) => {
-  const normalizedText = text.trim().replace(/\s+/g, " ");
-  const chunks: string[] = [];
-
-  for (let index = 0; index < normalizedText.length; index += CHUNK_SIZE) {
-    const chunk = normalizedText.slice(index, index + CHUNK_SIZE).trim();
-    if (chunk) chunks.push(chunk);
-  }
-
-  return chunks;
-};
-
-export const getGlobalNotes = async (req: Request, res: Response): Promise<void> => {
-  try {
-    const notes = await prisma.content.findMany({
-      where: { isGlobal: true },
-      include: { 
-        User: { select: { name: true, role: true } },
-        Category: { select: { name: true } }
-      },
-      orderBy: { createdAt: "desc" },
-    });
-    res.json(notes);
-  } catch (error) {
-    res.status(500).json({ error: "Error al obtener las notas globales" });
-  }
-};
-
-export const getPersonalNotes = async (req: Request, res: Response): Promise<void> => {
-  const { userId } = req.params;
-  try {
-    const notes = await prisma.content.findMany({
-      // Se fuerza a string para evitar errores de tipo 'string | string[]'
-      where: { authorId: String(userId), isGlobal: false },
-      orderBy: { createdAt: "desc" },
-    });
-    res.json(notes);
-  } catch (error) {
-    res.status(500).json({ error: "Error al obtener notas personales" });
-  }
-};
-
-export const createNote = async (req: Request, res: Response): Promise<void> => {
-  const { title, body, isGlobal, authorId, imageUrl, published, categoryId, excerpt, seoTitle, seoDescription, ragDocument } = req.body;
-  try {
-    const slug = title.toLowerCase().replace(/ /g, "-").replace(/[^\w-]/g, "");
-    const hasRagDocument = ragDocument?.name?.trim() && ragDocument?.url?.trim() && ragDocument?.content?.trim();
-    const chunks = hasRagDocument ? splitIntoChunks(ragDocument.content) : [];
-    const embeddings = hasRagDocument
-      ? await Promise.all(chunks.map((chunk) => embeddingService.generateEmbedding(chunk)))
-      : [];
-
-    if (embeddings.some((embedding) => embedding.length !== 1024)) {
-      throw new Error("El modelo de embeddings no devolvió vectores de 1024 dimensiones.");
+export class NoteController {
+  static async getGlobal(_req: Request, res: Response): Promise<void> {
+    try {
+      const notes = await NoteService.getGlobalNotes();
+      res.json(notes);
+    } catch (error) {
+      console.error("Error al obtener notas globales:", error);
+      res.status(500).json({ error: "Error al obtener las notas globales" });
     }
+  }
 
-    const contentId = randomUUID();
-    const note = await prisma.$transaction(async (transaction) => {
-      const createdNote = await transaction.content.create({
-        data: {
-          id: contentId,
-          title,
-          slug,
-          body,
-          excerpt,
-          isGlobal,
-          authorId,
-          seoImage: imageUrl,
-          seoTitle,
-          seoDescription,
-          featured: false,
-          publishedAt: published ? new Date() : null,
-          categoryId,
-          type: 'ARTICLE',
-          status: 'PUBLISHED',
-          visibility: isGlobal ? 'PUBLIC' : 'PRIVATE',
-          updatedAt: new Date(),
-        },
-      });
+  static async getPersonal(req: Request, res: Response): Promise<void> {
+    const { userId } = req.params;
+    try {
+      const notes = await NoteService.getPersonalNotes(userId as string);
+      res.json(notes);
+    } catch (error) {
+      console.error("Error al obtener notas personales:", error);
+      res.status(500).json({ error: "Error al obtener notas personales" });
+    }
+  }
 
-      if (hasRagDocument) {
-        const resourceId = randomUUID();
-        await transaction.resource.create({
-          data: {
-            id: resourceId,
-            name: ragDocument.name.trim().slice(0, 255),
-            url: ragDocument.url.trim(),
-            type: "DOCUMENT",
-            mimeType: typeof ragDocument.mimeType === "string" ? ragDocument.mimeType.slice(0, 255) : null,
-            size: Number.isFinite(Number(ragDocument.size)) && Number(ragDocument.size) > 0 ? BigInt(Math.round(Number(ragDocument.size))) : null,
-            altText: typeof ragDocument.altText === "string" ? ragDocument.altText.trim().slice(0, 255) : null,
-            uploadedById: authorId,
-            updatedAt: new Date(),
-          },
-        });
+  static async getSuggestions(_req: Request, res: Response): Promise<void> {
+    try {
+      const suggestions = await NoteService.getSuggestions();
+      res.json(suggestions);
+    } catch (error) {
+      console.error("Error al obtener sugerencias:", error);
+      res.status(500).json({ error: "Error al obtener sugerencias" });
+    }
+  }
 
-        await transaction.contentResource.create({
-          data: { contentId, resourceId, position: 0, caption: ragDocument.name.trim().slice(0, 255) },
-        });
-
-        for (let index = 0; index < chunks.length; index += 1) {
-          const vector = `[${embeddings[index].join(",")}]`;
-          await transaction.$executeRaw`
-            INSERT INTO "DocumentChunk" ("id", "content", "embedding", "chunkIndex", "resourceId", "contentId")
-            VALUES (${randomUUID()}::uuid, ${chunks[index]}, ${vector}::vector, ${index}, ${resourceId}::uuid, ${contentId}::uuid)
-          `;
-        }
+  static async getById(req: Request, res: Response): Promise<void> {
+    const { id } = req.params;
+    try {
+      const note = await NoteService.getNoteById(id as string);
+      if (!note) {
+        res.status(404).json({ error: "Nota no encontrada" });
+        return;
       }
-
-      return createdNote;
-    });
-    res.status(201).json(note);
-  } catch (error) {
-    console.error("Error creating note:", error);
-    res.status(500).json({ error: error instanceof Error ? error.message : "Error al crear la nota" });
-  }
-};
-
-export const updateNote = async (req: Request, res: Response): Promise<void> => {
-  const { id } = req.params;
-  const { title, body, isGlobal, imageUrl, published, categoryId, excerpt, seoTitle, seoDescription } = req.body;
-  try {
-    const updateData: any = {
-      title,
-      body,
-      excerpt,
-      isGlobal,
-      seoImage: imageUrl,
-      seoTitle,
-      seoDescription,
-      categoryId,
-    };
-    
-    if (published !== undefined) {
-      updateData.publishedAt = published ? new Date() : null;
+      res.json(note);
+    } catch (error) {
+      console.error("Error al obtener nota por id:", error);
+      res.status(500).json({ error: "Error al obtener la nota" });
     }
-    
-    const note = await prisma.content.update({
-      where: { id: String(id) },
-      data: updateData,
-    });
-    res.json(note);
-  } catch (error) {
-    console.error("Error updating note:", error);
-    res.status(500).json({ error: "Error al actualizar la nota" });
   }
-};
 
-export const deleteNote = async (req: Request, res: Response): Promise<void> => {
-  const { id } = req.params;
-  try {
-    // Eliminación física (Hard Delete) en lugar de Soft Delete,
-    // ya que 'deletedAt' no existe en el esquema de Prisma para 'Note'.
-    await prisma.content.delete({ 
-      where: { id: String(id) }
-    });
-    res.status(204).send();
-  } catch (error) {
-    res.status(500).json({ error: "Error al eliminar la nota" });
-  }
-};
-
-export const getSuggestions = async (req: Request, res: Response): Promise<void> => {
-  try {
-    const suggestions = await prisma.content.findMany({
-      where: { isGlobal: false },
-      include: { 
-        User: { select: { name: true, email: true } }, 
-        Category: { select: { name: true } } 
-      },
-      orderBy: { createdAt: "desc" }
-    });
-    res.json(suggestions);
-  } catch (error) {
-    console.error("Error getting suggestions:", error);
-    res.status(500).json({ error: "Error al obtener sugerencias" });
-  }
-};
-
-export const getNoteById = async (req: Request, res: Response): Promise<void> => {
-  const { id } = req.params;
-  try {
-    const note = await prisma.content.findUnique({
-      where: { id: String(id) },
-      include: { 
-        User: { select: { name: true, email: true } }, 
-        Category: { select: { name: true } } 
+  static async create(req: AuthRequest, res: Response): Promise<void> {
+    try {
+      const parsedData = createNoteSchema.parse(req.body);
+      const note = await NoteService.createNote(parsedData, req.user?.id);
+      res.status(201).json(note);
+    } catch (error) {
+      if (error instanceof ZodError) {
+        res.status(400).json({ error: error.issues[0]?.message ?? "Datos inválidos" });
+        return;
       }
-    });
-    
-    if (!note) {
-      res.status(404).json({ error: "Nota no encontrada" });
-      return;
+      console.error("Error al crear nota:", error);
+      res.status(500).json({ error: error instanceof Error ? error.message : "Error al crear la nota" });
     }
-    
-    res.json(note);
-  } catch (error) {
-    console.error("Error getting note by id:", error);
-    res.status(500).json({ error: "Error al obtener la nota" });
   }
-};
+
+  static async update(req: Request, res: Response): Promise<void> {
+    const { id } = req.params;
+    try {
+      const parsedData = updateNoteSchema.parse(req.body);
+      const note = await NoteService.updateNote(id as string, parsedData);
+      res.json(note);
+    } catch (error) {
+      if (error instanceof ZodError) {
+        res.status(400).json({ error: error.issues[0]?.message ?? "Datos inválidos" });
+        return;
+      }
+      console.error("Error al actualizar nota:", error);
+      res.status(500).json({ error: "Error al actualizar la nota" });
+    }
+  }
+
+  static async delete(req: Request, res: Response): Promise<void> {
+    const { id } = req.params;
+    try {
+      await NoteService.deleteNote(id as string);
+      res.status(204).send();
+    } catch (error) {
+      console.error("Error al eliminar nota:", error);
+      res.status(500).json({ error: "Error al eliminar la nota" });
+    }
+  }
+}
+
+// Backward compatibility exports
+export const getGlobalNotes = NoteController.getGlobal;
+export const getPersonalNotes = NoteController.getPersonal;
+export const getSuggestions = NoteController.getSuggestions;
+export const getNoteById = NoteController.getById;
+export const createNote = NoteController.create;
+export const updateNote = NoteController.update;
+export const deleteNote = NoteController.delete;
