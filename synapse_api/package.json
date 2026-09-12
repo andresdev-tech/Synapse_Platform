@@ -12,6 +12,7 @@
   "license": "ISC",
   "type": "module",
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.1131.0",
     "@prisma/adapter-neon": "^7.10.0",
     "@prisma/client": "^7.10.0",
     "@types/node": "^22.18.10",
@@ -21,6 +22,7 @@
     "express": "^5.2.1",
     "helmet": "^8.1.0",
     "jsonwebtoken": "^9.0.3",
+    "multer": "^2.3.0",
     "nodemailer": "^9.0.6",
     "openai": "^7.10.0",
     "swagger-jsdoc": "^6.3.0",
@@ -32,6 +34,7 @@
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.6",
     "@types/jsonwebtoken": "^9.0.10",
+    "@types/multer": "^2.2.0",
     "@types/node": "^22.18.10",
     "@types/nodemailer": "^8.0.1",
     "@types/swagger-jsdoc": "^6.0.4",

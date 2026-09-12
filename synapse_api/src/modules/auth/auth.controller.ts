@@ -217,4 +217,14 @@ export class AuthController {
       console.error('[Login Error]', error); res.status(500).json({ error: "Error en el servidor" });
     }
   }
+
+  static async CreateAdmin (req: Request, res: Response): Promise<void>{
+    const data = req.body;
+    const result = await AuthService.createadmin(data);
+    if (!result) {
+      res.status(401).json({ error: "Error al crear el admin" });
+      return;
+    }
+    res.status(200).json({ success: true, data: result.data });
+  }
 }

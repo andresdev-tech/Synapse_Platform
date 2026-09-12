@@ -1,156 +1,552 @@
 "use client"
 
-import { FormEvent, useEffect, useMemo, useState } from "react"
-import { Database, FileText, FolderOpen, Link2, Loader2, Plus, Search, ShieldCheck, Trash2, X } from "lucide-react"
+import { useState, useEffect } from "react"
+import {
+  Activity,
+  Users,
+  Database,
+  FileText,
+  ArrowUpRight,
+  BarChart3,
+  Settings,
+  UserPlus,
+  Mail,
+  Shield,
+  ShieldCheck,
+  CheckCircle2,
+  AlertCircle,
+  Building,
+  Search,
+  Plus,
+  ChevronUp,
+  RotateCcw,
+  Sparkles,
+  UserCheck,
+  IdCard,
+} from "lucide-react"
+
 import { fetchApi } from "@/lib/fetchApi"
 
-interface RagResource {
-  id: string
-  name: string
-  url: string
-  mimeType?: string | null
-  size?: number | null
-  altText?: string | null
-  createdAt: string
-  chunks: number
-  indexed: boolean
-}
-
-const formatBytes = (bytes?: number | null) => {
-  if (!bytes) return "Tamaño no indicado"
-  if (bytes < 1024) return `${bytes} B`
-  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`
-  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`
-}
-
 export default function SuperAdminDashboard() {
-  const [resources, setResources] = useState<RagResource[]>([])
-  const [query, setQuery] = useState("")
-  const [isFormOpen, setIsFormOpen] = useState(false)
-  const [isLoading, setIsLoading] = useState(true)
-  const [isSaving, setIsSaving] = useState(false)
-  const [deletingId, setDeletingId] = useState<string | null>(null)
-  const [error, setError] = useState("")
-  const [form, setForm] = useState({ name: "", url: "", mimeType: "application/pdf", size: "", altText: "", content: "" })
+  const [stats, setStats] = useState({
+    usersCount: 154,
+    resourcesCount: 42,
+    changesToday: 12,
+    activeSessions: 8,
+  })
 
-  const loadResources = async () => {
-    setIsLoading(true)
-    setError("")
-    try {
-      const response = await fetchApi("/api/rag/resources")
-      const data = await response.json()
-      if (!response.ok) throw new Error(data.error || "No se pudo cargar el catálogo")
-      setResources(Array.isArray(data) ? data : [])
-    } catch (loadError) {
-      setError(loadError instanceof Error ? loadError.message : "No se pudo cargar el catálogo")
-    } finally {
-      setIsLoading(false)
-    }
+  interface AdminUser {
+    id: string
+    name: string
+    email: string
+    role: string
+    status: boolean | string
   }
 
+  const [admins, setAdmins] = useState<AdminUser[]>([
+    { id: "1", name: "Carlos Alberto Restrepo", email: "carestrepo@sena.edu.co", role: "SUPER_ADMIN", status: true },
+    { id: "2", name: "María Fernanda Gómez", email: "mfgomez@soy.sena.edu.co", role: "ADMIN", status: true },
+    { id: "3", name: "Robinson Andrés Galeano", email: "ragaleano@soy.sena.edu.co", role: "ADMIN", status: true },
+    { id: "4", name: "Diana Marcela Garzón", email: "dagarzonh@sena.edu.co", role: "EDITOR", status: true },
+  ])
+
+  // Estado para alternar la visualización del formulario
+  const [registerAdmin, setRegisterAdmin] = useState(true)
+
+  // Campos del formulario
+  const [name, setName] = useState("")
+  const [email, setEmail] = useState("")
+  const [role, setRole] = useState("ADMIN")
+  const [status, setStatus] = useState("ACTIVE")
+
+  // Estados de envío y feedback
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [feedback, setFeedback] = useState<{ type: "success" | "error"; message: string } | null>(null)
+  const [searchTerm, setSearchTerm] = useState("")
+
+  // Carga de datos
   useEffect(() => {
-    const loadTimer = window.setTimeout(() => { void loadResources() }, 0)
-    return () => window.clearTimeout(loadTimer)
+    const loadUsers = async () => {
+      try {
+        const res = await fetchApi("/api/users")
+        if (res.ok) {
+          const data = await res.json()
+          if (Array.isArray(data) && data.length > 0) {
+            const mapped = data.map((u: any) => ({
+              id: u.id,
+              name: u.name || "Usuario del Sistema",
+              email: u.email,
+              role: u.role?.name || u.role || "ADMIN",
+              status: u.status === "ACTIVE" || u.status === true || true,
+            }))
+            setAdmins(mapped)
+          }
+        }
+      } catch (error) {
+        console.warn("Usando datos de demostración para el directorio:", error)
+      }
+    }
+
+    loadUsers()
   }, [])
 
-  const filteredResources = useMemo(() => {
-    const normalizedQuery = query.trim().toLowerCase()
-    if (!normalizedQuery) return resources
-    return resources.filter((resource) => `${resource.name} ${resource.url} ${resource.altText || ""}`.toLowerCase().includes(normalizedQuery))
-  }, [query, resources])
-
-  const resetForm = () => {
-    setForm({ name: "", url: "", mimeType: "application/pdf", size: "", altText: "", content: "" })
-    setIsFormOpen(false)
+  const handleReset = () => {
+    setName("")
+    setEmail("")
+    setRole("ADMIN")
+    setStatus("ACTIVE")
   }
 
-  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault()
-    setIsSaving(true)
-    setError("")
-    try {
-      const response = await fetchApi("/api/rag/resources", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...form, size: form.size ? Number(form.size) : null }),
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+
+    if (!name.trim() || !email.trim()) {
+      setFeedback({
+        type: "error",
+        message: "El nombre y el correo institucional son obligatorios.",
       })
-      const data = await response.json()
-      if (!response.ok) throw new Error(data.error || "No se pudo guardar el documento")
-      setResources((current) => [data, ...current])
-      resetForm()
-    } catch (saveError) {
-      setError(saveError instanceof Error ? saveError.message : "No se pudo guardar el documento")
-    } finally {
-      setIsSaving(false)
+      return
     }
-  }
 
-  const handleDelete = async (resource: RagResource) => {
-    if (!window.confirm(`¿Eliminar “${resource.name}” del catálogo RAG?`)) return
-    setDeletingId(resource.id)
-    setError("")
+    setIsSubmitting(true)
+    setFeedback(null)
+
     try {
-      const response = await fetchApi(`/api/rag/resources/${resource.id}`, { method: "DELETE" })
-      if (!response.ok) {
-        const data = await response.json()
-        throw new Error(data.error || "No se pudo eliminar el documento")
+      const tempPassword = `Sena${new Date().getFullYear()}*!`
+
+      const res = await fetchApi("/api/auth/createadmin", {
+        method: "POST",
+        body: JSON.stringify({
+          name: name.trim(),
+          email: email.trim().toLowerCase(),
+          password: tempPassword,
+          role,
+          status: status === "ACTIVE",
+        }),
+      })
+
+      console.log("STATUS:", res.status)
+      console.log("CONTENT-TYPE:", res.headers.get("content-type"))
+
+      if (!res.ok) {
+        const text = await res.text()
+
+        console.error("RESPUESTA DEL SERVIDOR:", text)
+
+        throw new Error(
+          `Error ${res.status}: No se pudo registrar el administrador`
+        )
       }
-      setResources((current) => current.filter((item) => item.id !== resource.id))
-    } catch (deleteError) {
-      setError(deleteError instanceof Error ? deleteError.message : "No se pudo eliminar el documento")
+
+      const data = await res.json()
+
+      const newAdmin: AdminUser = {
+        id: data.data?.id || `adm-${Date.now()}`,
+        name: name.trim(),
+        email: email.trim().toLowerCase(),
+        role,
+        status: status === "ACTIVE",
+      }
+
+      setAdmins((prev) => [newAdmin, ...prev])
+
+      setFeedback({
+        type: "success",
+        message: `¡Administrador institucional "${name}" registrado exitosamente en la plataforma SENA!`,
+      })
+
+      handleReset()
+    } catch (err: any) {
+      console.error("Error registrando administrador:", err)
+
+      setFeedback({
+        type: "error",
+        message: err.message || "No se pudo registrar el administrador.",
+      })
     } finally {
-      setDeletingId(null)
+      setIsSubmitting(false)
     }
   }
 
-  const indexedCount = resources.filter((resource) => resource.indexed).length
-  const pendingCount = resources.length - indexedCount
+  const filteredAdmins = admins.filter(
+    (a) =>
+      a.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      a.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      a.role.toLowerCase().includes(searchTerm.toLowerCase())
+  )
 
   return (
-    <main className="min-h-[calc(100vh-5rem)] bg-slate-50 px-4 py-6 text-slate-900 sm:px-6 lg:px-10 lg:py-9">
-      <div className="mx-auto max-w-7xl space-y-6">
-        <section className="relative overflow-hidden rounded-4xl bg-slate-950 px-6 py-8 text-white shadow-xl sm:px-9 sm:py-10">
-          <div className="absolute -right-16 -top-24 h-72 w-72 rounded-full border-32 border-sena-500/20" />
-          <div className="relative max-w-3xl">
-            <div className="mb-5 flex flex-wrap items-center gap-2 text-xs font-bold uppercase tracking-[0.18em] text-sena-300">
-              <ShieldCheck className="h-4 w-4" /> SUPER ADMIN · RAG CONTROL CENTER
-            </div>
-            <h1 className="max-w-2xl text-3xl font-black tracking-tight sm:text-5xl">Base de conocimiento</h1>
-            <p className="mt-3 max-w-xl text-sm leading-6 text-slate-300 sm:text-base">Registra las fuentes documentales que alimentan Synapse y mantén bajo control el catálogo de recuperación.</p>
+    <div className="mx-auto w-full min-w-0 space-y-6 overflow-hidden px-3 py-5 sm:space-y-8 sm:px-4 sm:py-8 md:px-8">
+      {/* BANNER INSTITUCIONAL */}
+      <div className="relative overflow-hidden rounded-3xl bg-slate-900 p-6 text-white shadow-xl sm:p-8">
+        <div className="absolute top-0 right-0 opacity-10 pointer-events-none">
+          <Settings className="w-64 h-64 -mt-10 -mr-10" />
+        </div>
+        <div className="relative z-10">
+          <div className="mb-2 flex items-center gap-2 text-xs font-bold uppercase tracking-[0.18em] text-sena-400">
+            <Settings className="h-4 w-4" /> PANEL DE CONTROL SUPER ADMIN · SENA
           </div>
-        </section>
-
-        <section className="grid grid-cols-1 gap-3 sm:grid-cols-3">
-          <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"><div className="flex items-center justify-between"><span className="text-sm font-semibold text-slate-500">Fuentes totales</span><FolderOpen className="h-5 w-5 text-sena-600" /></div><p className="mt-3 text-3xl font-black">{resources.length}</p></div>
-          <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"><div className="flex items-center justify-between"><span className="text-sm font-semibold text-slate-500">Indexadas</span><Database className="h-5 w-5 text-emerald-600" /></div><p className="mt-3 text-3xl font-black text-emerald-600">{indexedCount}</p></div>
-          <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"><div className="flex items-center justify-between"><span className="text-sm font-semibold text-slate-500">Pendientes</span><FileText className="h-5 w-5 text-amber-500" /></div><p className="mt-3 text-3xl font-black text-amber-600">{pendingCount}</p></div>
-        </section>
-
-        {error && <div className="flex items-start justify-between gap-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-700"><span>{error}</span><button type="button" onClick={() => setError("")} aria-label="Cerrar error"><X className="h-4 w-4" /></button></div>}
-
-        <section className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
-          <div className="flex flex-col gap-4 border-b border-slate-200 p-5 sm:flex-row sm:items-center sm:justify-between sm:p-6">
-            <div><h2 className="text-xl font-black tracking-tight">Fuentes documentales</h2><p className="mt-1 text-sm text-slate-500">Administra URLs y documentos disponibles para indexación.</p></div>
-            <button type="button" onClick={() => setIsFormOpen((open) => !open)} className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-sena-600 px-4 text-sm font-bold text-white transition hover:bg-sena-700 focus:outline-none focus:ring-2 focus:ring-sena-500 focus:ring-offset-2"><Plus className="h-4 w-4" /> Añadir fuente</button>
-          </div>
-
-          {isFormOpen && <form onSubmit={handleSubmit} className="grid gap-4 border-b border-slate-200 bg-slate-50 p-5 sm:grid-cols-2 sm:p-6">
-            <div className="sm:col-span-2"><label className="mb-1.5 block text-xs font-bold uppercase tracking-wider text-slate-500" htmlFor="resource-name">Nombre del documento</label><input id="resource-name" required value={form.name} onChange={(event) => setForm({ ...form, name: event.target.value })} placeholder="Manual de procedimientos CTMA" className="h-11 w-full rounded-xl border border-slate-300 bg-white px-3 text-sm outline-none transition focus:border-sena-500 focus:ring-2 focus:ring-sena-100" /></div>
-            <div className="sm:col-span-2"><label className="mb-1.5 block text-xs font-bold uppercase tracking-wider text-slate-500" htmlFor="resource-url">URL de origen</label><input id="resource-url" required type="url" value={form.url} onChange={(event) => setForm({ ...form, url: event.target.value })} placeholder="https://..." className="h-11 w-full rounded-xl border border-slate-300 bg-white px-3 text-sm outline-none transition focus:border-sena-500 focus:ring-2 focus:ring-sena-100" /></div>
-            <div><label className="mb-1.5 block text-xs font-bold uppercase tracking-wider text-slate-500" htmlFor="resource-type">Tipo MIME</label><select id="resource-type" value={form.mimeType} onChange={(event) => setForm({ ...form, mimeType: event.target.value })} className="h-11 w-full rounded-xl border border-slate-300 bg-white px-3 text-sm outline-none focus:border-sena-500"><option value="application/pdf">PDF</option><option value="text/plain">Texto</option><option value="text/html">HTML</option><option value="application/msword">Documento Word</option></select></div>
-            <div><label className="mb-1.5 block text-xs font-bold uppercase tracking-wider text-slate-500" htmlFor="resource-size">Tamaño en bytes <span className="font-normal normal-case">(opcional)</span></label><input id="resource-size" type="number" min="0" value={form.size} onChange={(event) => setForm({ ...form, size: event.target.value })} placeholder="524288" className="h-11 w-full rounded-xl border border-slate-300 bg-white px-3 text-sm outline-none focus:border-sena-500" /></div>
-            <div className="sm:col-span-2"><label className="mb-1.5 block text-xs font-bold uppercase tracking-wider text-slate-500" htmlFor="resource-description">Descripción <span className="font-normal normal-case">(opcional)</span></label><textarea id="resource-description" rows={2} value={form.altText} onChange={(event) => setForm({ ...form, altText: event.target.value })} placeholder="Qué información contiene esta fuente..." className="w-full resize-none rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm outline-none focus:border-sena-500" /></div>
-            <div className="sm:col-span-2"><label className="mb-1.5 block text-xs font-bold uppercase tracking-wider text-slate-500" htmlFor="resource-content">Contenido para el RAG</label><textarea id="resource-content" required rows={6} value={form.content} onChange={(event) => setForm({ ...form, content: event.target.value })} placeholder="Pega aquí el texto que quieres dividir e indexar..." className="w-full resize-y rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm leading-6 outline-none focus:border-sena-500 focus:ring-2 focus:ring-sena-100" /></div>
-            <div className="flex flex-col-reverse gap-2 sm:col-span-2 sm:flex-row sm:justify-end"><button type="button" onClick={resetForm} className="h-11 rounded-xl px-4 text-sm font-bold text-slate-600 hover:bg-slate-200">Cancelar</button><button disabled={isSaving} type="submit" className="inline-flex h-11 items-center justify-center gap-2 rounded-xl bg-slate-950 px-5 text-sm font-bold text-white hover:bg-slate-800 disabled:cursor-wait disabled:opacity-60">{isSaving && <Loader2 className="h-4 w-4 animate-spin" />} Guardar fuente</button></div>
-          </form>}
-
-          <div className="border-b border-slate-200 p-4 sm:p-5"><div className="relative max-w-md"><Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" /><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Buscar por nombre o URL" className="h-11 w-full rounded-xl border border-slate-300 bg-slate-50 pl-10 pr-3 text-sm outline-none focus:border-sena-500 focus:ring-2 focus:ring-sena-100" /></div></div>
-
-          {isLoading ? <div className="flex min-h-48 items-center justify-center gap-2 text-sm text-slate-500"><Loader2 className="h-5 w-5 animate-spin text-sena-600" /> Cargando fuentes...</div> : filteredResources.length === 0 ? <div className="flex min-h-48 flex-col items-center justify-center px-6 text-center"><div className="mb-3 rounded-2xl bg-slate-100 p-3"><FolderOpen className="h-6 w-6 text-slate-400" /></div><p className="font-bold text-slate-700">{query ? "No hay coincidencias" : "Aún no hay fuentes documentales"}</p><p className="mt-1 text-sm text-slate-500">{query ? "Prueba con otro término de búsqueda." : "Añade la primera fuente para preparar tu base RAG."}</p></div> : <div className="divide-y divide-slate-100">
-            {filteredResources.map((resource) => <article key={resource.id} className="flex flex-col gap-4 p-5 transition hover:bg-slate-50 sm:flex-row sm:items-center sm:justify-between sm:p-6"><div className="flex min-w-0 items-start gap-3"><div className="mt-0.5 rounded-xl bg-red-50 p-2.5 text-red-500"><FileText className="h-5 w-5" /></div><div className="min-w-0"><h3 className="truncate font-bold text-slate-800">{resource.name}</h3><a href={resource.url} target="_blank" rel="noreferrer" className="mt-1 flex max-w-xl items-center gap-1 truncate text-xs text-sena-700 hover:underline"><Link2 className="h-3.5 w-3.5 shrink-0" />{resource.url}</a><p className="mt-2 text-xs text-slate-500">{resource.mimeType || "Documento"} · {formatBytes(resource.size)} · Añadido {new Date(resource.createdAt).toLocaleDateString("es-CO")}</p></div></div><div className="flex items-center justify-between gap-3 border-t border-slate-100 pt-3 sm:border-0 sm:pt-0"><span className={`rounded-full px-2.5 py-1 text-xs font-bold ${resource.indexed ? "bg-emerald-50 text-emerald-700" : "bg-amber-50 text-amber-700"}`}>{resource.indexed ? `${resource.chunks} chunks` : "Pendiente de indexar"}</span><button type="button" disabled={deletingId === resource.id} onClick={() => void handleDelete(resource)} aria-label={`Eliminar ${resource.name}`} className="rounded-lg p-2 text-slate-400 transition hover:bg-red-50 hover:text-red-600 disabled:opacity-50"><Trash2 className="h-4 w-4" /></button></div></article>)}
-          </div>}
-        </section>
+          <h1 className="mb-2 text-2xl font-extrabold sm:text-4xl tracking-tight">Monitoreo General del Sistema</h1>
+          <p className="text-base text-slate-400 sm:text-lg max-w-2xl">
+            Supervisa los recursos RAG, actividad del centro y gestiona los administradores y accesos de Synapse.
+          </p>
+        </div>
       </div>
-    </main>
+
+      {/* MONITORING SYSTEM */}
+      <div className="space-y-6">
+        <h2 className="text-xl font-bold text-slate-800 flex items-center gap-2">
+          <BarChart3 className="w-5 h-5 text-sena-500" /> Estadísticas Visuales
+        </h2>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex flex-col hover:border-sena-200 transition-colors">
+            <div className="flex items-center justify-between mb-4">
+              <div className="p-3 bg-blue-50 text-blue-600 rounded-xl">
+                <Users className="w-6 h-6" />
+              </div>
+              <span className="text-xs font-bold text-green-600 flex items-center">
+                <ArrowUpRight className="w-3 h-3 mr-1" /> +12%
+              </span>
+            </div>
+            <p className="text-sm font-semibold text-slate-500 uppercase tracking-wider">Usuarios Totales</p>
+            <h3 className="text-3xl font-black text-slate-800 mt-1">{stats.usersCount}</h3>
+          </div>
+
+          <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex flex-col hover:border-sena-200 transition-colors">
+            <div className="flex items-center justify-between mb-4">
+              <div className="p-3 bg-emerald-50 text-sena-600 rounded-xl">
+                <Database className="w-6 h-6" />
+              </div>
+              <span className="text-xs font-bold text-green-600 flex items-center">
+                <ArrowUpRight className="w-3 h-3 mr-1" /> +5%
+              </span>
+            </div>
+            <p className="text-sm font-semibold text-slate-500 uppercase tracking-wider">Recursos RAG</p>
+            <h3 className="text-3xl font-black text-slate-800 mt-1">{stats.resourcesCount}</h3>
+          </div>
+
+          <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex flex-col hover:border-sena-200 transition-colors">
+            <div className="flex items-center justify-between mb-4">
+              <div className="p-3 bg-amber-50 text-amber-600 rounded-xl">
+                <Activity className="w-6 h-6" />
+              </div>
+            </div>
+            <p className="text-sm font-semibold text-slate-500 uppercase tracking-wider">Cambios Hoy</p>
+            <h3 className="text-3xl font-black text-slate-800 mt-1">{stats.changesToday}</h3>
+          </div>
+
+          <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex flex-col hover:border-sena-200 transition-colors">
+            <div className="flex items-center justify-between mb-4">
+              <div className="p-3 bg-purple-50 text-purple-600 rounded-xl">
+                <FileText className="w-6 h-6" />
+              </div>
+            </div>
+            <p className="text-sm font-semibold text-slate-500 uppercase tracking-wider">Sesiones Activas</p>
+            <h3 className="text-3xl font-black text-slate-800 mt-1">{stats.activeSessions}</h3>
+          </div>
+        </div>
+
+        {/* MOCK VISUAL CHART */}
+        <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm h-48 flex flex-col justify-center items-center text-center">
+          <BarChart3 className="w-10 h-10 text-sena-300 mb-2" />
+          <p className="text-slate-600 font-semibold text-sm">Monitoreo de Telemetría Activo</p>
+          <p className="text-slate-400 text-xs">Métricas de interacción sincronizadas con el nodo local CTMA.</p>
+        </div>
+      </div>
+
+      {/* FORMULARIO ESTILO SENA - GESTIÓN Y REGISTRO DE ADMINISTRADORES */}
+      <div className="mt-10 space-y-6">
+        {/* ENCABEZADO DE SECCIÓN Y TOGGLE */}
+        <div className="relative overflow-hidden rounded-3xl bg-slate-900 border border-slate-800 p-6 shadow-xl">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div className="space-y-1">
+              <div className="inline-flex items-center gap-2 rounded-full bg-sena-500/10 px-3 py-1 text-xs font-extrabold uppercase tracking-wider text-sena-400 border border-sena-500/20">
+                <ShieldCheck className="h-3.5 w-3.5" /> GESTIÓN DE ROLES INSTITUCIONALES
+              </div>
+              <h2 className="text-xl sm:text-2xl font-black tracking-tight text-white flex items-center gap-2">
+                Sistema de Registro de Administradores
+              </h2>
+              <p className="text-sm text-slate-400 max-w-xl">
+                Alta y asignación de credenciales para instructores, coordinadores y personal administrativo SENA CTMA.
+              </p>
+            </div>
+
+            <button
+              type="button"
+              onClick={() => setRegisterAdmin(!registerAdmin)}
+              className={`inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl font-bold text-sm transition-all duration-200 shadow-lg ${registerAdmin
+                  ? "bg-slate-800 text-slate-200 hover:bg-slate-700 border border-slate-700"
+                  : "bg-sena-500 text-white hover:bg-sena-600 shadow-sena-500/25 hover:scale-[1.02]"
+                }`}
+            >
+              {registerAdmin ? (
+                <>
+                  <ChevronUp className="w-4 h-4" /> Ocultar Formulario
+                </>
+              ) : (
+                <>
+                  <Plus className="w-4 h-4" /> Nuevo Administrador
+                </>
+              )}
+            </button>
+          </div>
+        </div>
+
+        {/* CONTENEDOR DEL FORMULARIO CON ESTILO Y COLORES SENA */}
+        {registerAdmin && (
+          <div className="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-xl transition-all">
+            {/* BARRA SUPERIOR CON DEGRADADO INSTITUCIONAL SENA */}
+            <div className="h-2 w-full bg-gradient-to-r from-sena-600 via-sena-500 to-emerald-400" />
+
+            {/* CABECERA DEL FORMULARIO */}
+            <div className="border-b border-slate-100 bg-slate-50/70 p-6 sm:px-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+              <div className="flex items-center gap-3">
+                <div className="w-11 h-11 rounded-2xl bg-sena-500 text-white flex items-center justify-center shadow-md shadow-sena-500/25">
+                  <UserPlus className="w-6 h-6" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-extrabold text-slate-800">
+                    Formulario Oficial de Alta Administrativa
+                  </h3>
+                  <p className="text-xs font-medium text-slate-500">
+                    Complete la información requerida con dominios y datos válidos del centro.
+                  </p>
+                </div>
+              </div>
+
+              <div className="inline-flex items-center gap-1.5 self-start sm:self-center px-3 py-1.5 rounded-lg bg-sena-50 border border-sena-200 text-sena-800 text-xs font-bold">
+                <Building className="w-3.5 h-3.5 text-sena-600" /> CTMA · Complejo Pedregal
+              </div>
+            </div>
+
+            {/* FEEDBACK BANNER (SI EXISTE) */}
+            {feedback && (
+              <div
+                className={`mx-6 sm:mx-8 mt-6 p-4 rounded-2xl flex items-start gap-3 border ${feedback.type === "success"
+                    ? "bg-emerald-50 border-emerald-200 text-emerald-800"
+                    : "bg-rose-50 border-rose-200 text-rose-800"
+                  }`}
+              >
+                {feedback.type === "success" ? (
+                  <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
+                ) : (
+                  <AlertCircle className="w-5 h-5 text-rose-600 shrink-0 mt-0.5" />
+                )}
+                <div className="text-sm font-semibold">{feedback.message}</div>
+              </div>
+            )}
+
+            {/* FORMULARIO */}
+            <form onSubmit={handleSubmit} className="p-6 sm:p-8 space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                {/* NOMBRES */}
+                <div className="space-y-1.5">
+                  <label className="text-xs font-bold uppercase tracking-wider text-slate-600 flex items-center gap-1.5">
+                    <Users className="w-3.5 h-3.5 text-sena-600" /> Nombres <span className="text-rose-500">*</span>
+                  </label>
+                  <div className="relative">
+                    <input
+                      type="text"
+                      required
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                      placeholder="Ej. Juan Carlos"
+                      className="w-full h-12 rounded-xl border border-slate-200 bg-slate-50/60 px-4 text-sm font-medium text-slate-800 placeholder-slate-400 outline-none transition focus:border-sena-500 focus:bg-white focus:ring-4 focus:ring-sena-500/15"
+                    />
+                  </div>
+                  <p className="text-[11px] text-slate-400">Nombres del funcionario o instructor.</p>
+                </div>
+
+                {/* CORREO INSTITUCIONAL */}
+                <div className="space-y-1.5">
+                  <label className="text-xs font-bold uppercase tracking-wider text-slate-600 flex items-center gap-1.5">
+                    <Mail className="w-3.5 h-3.5 text-sena-600" /> Correo Electrónico Institucional <span className="text-rose-500">*</span>
+                  </label>
+                  <div className="relative">
+                    <input
+                      type="email"
+                      required
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      placeholder="ejemplo@soy.sena.edu.co"
+                      className="w-full h-12 rounded-xl border border-slate-200 bg-slate-50/60 px-4 text-sm font-medium text-slate-800 placeholder-slate-400 outline-none transition focus:border-sena-500 focus:bg-white focus:ring-4 focus:ring-sena-500/15"
+                    />
+                  </div>
+                  <p className="text-[11px] text-slate-400">Preferiblemente @soy.sena.edu.co, @sena.edu.co o @gmail.com</p>
+                </div>
+
+                {/* ROL ASIGNADO */}
+                <div className="space-y-1.5">
+                  <label className="text-xs font-bold uppercase tracking-wider text-slate-600 flex items-center gap-1.5">
+                    <Shield className="w-3.5 h-3.5 text-sena-600" /> Rol y Nivel de Privilegios <span className="text-rose-500">*</span>
+                  </label>
+                  <div className="relative">
+                    <select
+                      value={role}
+                      onChange={(e) => setRole(e.target.value)}
+                      className="w-full h-12 rounded-xl border border-slate-200 bg-slate-50/60 px-4 text-sm font-medium text-slate-800 outline-none transition focus:border-sena-500 focus:bg-white focus:ring-4 focus:ring-sena-500/15"
+                    >
+                      <option value="ADMIN">ADMIN - Administrador de Contenidos & RAG</option>
+                    </select>
+                  </div>
+                  <p className="text-[11px] text-slate-400">Nivel de autorización institucional dentro del ecosistema Synapse.</p>
+                </div>
+
+                {/* ESTADO DE LA CUENTA */}
+                <div className="space-y-1.5">
+                  <label className="text-xs font-bold uppercase tracking-wider text-slate-600 flex items-center gap-1.5">
+                    <CheckCircle2 className="w-3.5 h-3.5 text-sena-600" /> Estado de la Cuenta <span className="text-rose-500">*</span>
+                  </label>
+                  <div className="relative">
+                    <select
+                      value={status}
+                      onChange={(e) => setStatus(e.target.value)}
+                      className="w-full h-12 rounded-xl border border-slate-200 bg-slate-50/60 px-4 text-sm font-medium text-slate-800 outline-none transition focus:border-sena-500 focus:bg-white focus:ring-4 focus:ring-sena-500/15"
+                    >
+                      <option value="ACTIVE">ACTIVO - Habilitado para operar de inmediato</option>
+                      <option value="INACTIVE">INACTIVO - En espera de validación de credenciales</option>
+                    </select>
+                  </div>
+                  <p className="text-[11px] text-slate-400">Controla si el administrador puede autenticarse actualmente.</p>
+                </div>
+              </div>
+
+              {/* INFORMACIÓN INSTITUCIONAL DE SEDE */}
+              <div className="rounded-2xl border border-sena-200 bg-sena-50/60 p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs text-sena-900">
+                <div className="flex items-center gap-2">
+                  <Sparkles className="w-4 h-4 text-sena-600 shrink-0" />
+                  <div>
+                    <span className="font-extrabold text-sena-800">Centro Asignado: </span>
+                    Centro de Tecnología de la Manufactura Avanzada (CTMA) · Regional Antioquia
+                  </div>
+                </div>
+                <span className="inline-block px-2.5 py-1 rounded-md bg-white border border-sena-200 font-bold text-[11px] text-sena-700">
+                  Synapse v2.0
+                </span>
+              </div>
+
+              {/* BOTONES DE ACCIÓN */}
+              <div className="pt-2 flex flex-col-reverse sm:flex-row items-center justify-end gap-3 border-t border-slate-100">
+                <button
+                  type="button"
+                  onClick={handleReset}
+                  disabled={isSubmitting}
+                  className="w-full sm:w-auto px-5 py-3 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-600 font-bold text-sm transition flex items-center justify-center gap-2 disabled:opacity-50"
+                >
+                  <RotateCcw className="w-4 h-4" /> Limpiar Campos
+                </button>
+
+                <button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="w-full sm:w-auto px-7 py-3 rounded-xl bg-sena-500 hover:bg-sena-600 active:scale-98 text-white font-extrabold text-sm shadow-lg shadow-sena-500/25 transition-all flex items-center justify-center gap-2 disabled:opacity-50 hover:shadow-xl hover:shadow-sena-500/30"
+                >
+                  <UserPlus className="w-4 h-4" />
+                  {isSubmitting ? "Registrando Administrador..." : "Registrar Administrador"}
+                </button>
+              </div>
+            </form>
+          </div>
+        )}
+
+        {/* DIRECTORIO Y LISTA DE ADMINISTRADORES REGISTRADOS */}
+        <div className="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm">
+          <div className="p-5 sm:p-6 border-b border-slate-100 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+            <div>
+              <div className="flex items-center gap-2">
+                <h3 className="text-lg font-black text-slate-800">Directorio de Administradores</h3>
+                <span className="px-2.5 py-0.5 rounded-full bg-sena-100 text-sena-800 text-xs font-black">
+                  {admins.length} Registrados
+                </span>
+              </div>
+              <p className="text-xs text-slate-500">Cuentas con privilegios administrativos activos en la plataforma.</p>
+            </div>
+
+            <div className="relative w-full md:w-72">
+              <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
+              <input
+                type="text"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                placeholder="Buscar por nombre, correo o rol..."
+                className="w-full h-10 pl-9 pr-3 rounded-xl border border-slate-200 bg-slate-50 text-xs font-medium placeholder-slate-400 outline-none focus:border-sena-500 focus:bg-white focus:ring-2 focus:ring-sena-500/10 transition"
+              />
+            </div>
+          </div>
+
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-sm border-collapse">
+              <thead>
+                <tr className="bg-slate-50/80 border-b border-slate-100 text-[11px] font-extrabold uppercase tracking-wider text-slate-500">
+                  <th className="py-3.5 px-6">Administrador</th>
+                  <th className="py-3.5 px-6">Correo Institucional</th>
+                  <th className="py-3.5 px-6">Rol Asignado</th>
+                  <th className="py-3.5 px-6">Estado</th>
+                  <th className="py-3.5 px-6 text-right">Vinculación</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100">
+                {filteredAdmins.length === 0 ? (
+                  <tr>
+                    <td colSpan={5} className="py-12 text-center text-slate-400 text-sm">
+                      No se encontraron administradores con el criterio de búsqueda.
+                    </td>
+                  </tr>
+                ) : (
+                  filteredAdmins.map((admin) => (
+                    <tr key={admin.id} className="hover:bg-sena-50/40 transition-colors">
+                      <td className="py-4 px-6 font-bold text-slate-800 flex items-center gap-3">
+                        <div className="w-9 h-9 rounded-xl bg-sena-100 text-sena-800 flex items-center justify-center font-black text-xs border border-sena-200">
+                          {admin.name
+                            .split(" ")
+                            .map((p) => p[0])
+                            .slice(0, 2)
+                            .join("")
+                            .toUpperCase()}
+                        </div>
+                        <div>
+                          <div className="text-sm font-bold text-slate-800">{admin.name}</div>
+                          <div className="text-[11px] text-slate-400 font-normal">ID: {admin.id}</div>
+                        </div>
+                      </td>
+                      <td className="py-4 px-6 text-slate-600 font-medium text-xs">
+                        <span className="inline-flex items-center gap-1.5">
+                          <Mail className="w-3.5 h-3.5 text-slate-400" />
+                          {admin.email}
+                        </span>
+                      </td>
+                      <td className="py-4 px-6">
+                        <span
+                          className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-bold ${admin.role === "SUPER_ADMIN"
+                              ? "bg-purple-50 text-purple-700 border border-purple-200"
+                              : admin.role === "ADMIN"
+                                ? "bg-sena-50 text-sena-800 border border-sena-200"
+                                : "bg-blue-50 text-blue-700 border border-blue-200"
+                            }`}
+                        >
+                          <ShieldCheck className="w-3 h-3" />
+                          {admin.role}
+                        </span>
+                      </td>
+                      <td className="py-4 px-6">
+                        <span className="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-200">
+                          <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                          Activo
+                        </span>
+                      </td>
+                      <td className="py-4 px-6 text-right text-xs font-semibold text-slate-500">
+                        SENA CTMA
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
   )
 }
+

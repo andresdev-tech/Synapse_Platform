@@ -3,7 +3,8 @@ import { fetchApi } from "@/lib/fetchApi";
 
 import { useState, useEffect } from "react"
 import { useSession } from "next-auth/react"
-import { Edit2, Trash2, Megaphone, Plus, Users, Image as ImageIcon, Tag, Activity } from "lucide-react"
+import { Edit2, Trash2, Megaphone, Plus, Users, Image as ImageIcon, Tag, Activity, Database } from "lucide-react"
+import RagControlCenter from "./RagControlCenter"
 
 interface Category {
   id: string
@@ -27,6 +28,7 @@ interface Note {
   isGlobal: boolean
   authorId: string
   categoryId?: string
+  section?: string
   category?: { name: string }
   author?: { name: string; role: string }
   createdAt: string
@@ -46,7 +48,11 @@ export function AdminDashboard() {
   const [ragMimeType, setRagMimeType] = useState("application/pdf")
   const [ragSize, setRagSize] = useState("")
   const [ragContent, setRagContent] = useState("")
-  const [newCategoryId, setNewCategoryId] = useState(""); const [newAttachments, setNewAttachments] = useState<{type: string, url: string}[]>([]);
+  const [ragFile, setRagFile] = useState<File | null>(null);
+  const [isUploadingRag, setIsUploadingRag] = useState(false);
+  const [newCategoryId, setNewCategoryId] = useState(""); 
+  const [newSection, setNewSection] = useState("");
+  const [newAttachments, setNewAttachments] = useState<{type: string, url: string}[]>([]);
   const [editingId, setEditingId] = useState<string | null>(null)
   const [isFormOpen, setIsFormOpen] = useState(false)
   const [isExtracting, setIsExtracting] = useState(false)
@@ -62,7 +68,7 @@ export function AdminDashboard() {
   const [editingCategoryId, setEditingCategoryId] = useState<string | null>(null)
   const [isCategoryFormOpen, setIsCategoryFormOpen] = useState(false)
   
-  const [activeTab, setActiveTab] = useState<"anuncios" | "sugerencias" | "categorias">("anuncios")
+  const [activeTab, setActiveTab] = useState<"anuncios" | "sugerencias" | "categorias" | "rag">("anuncios")
   const [suggestions, setSuggestions] = useState<Note[]>([])
 
   useEffect(() => {
@@ -81,7 +87,7 @@ export function AdminDashboard() {
     }
   }
 
-  // Efecto mÃ¡gico para extraer imÃ¡genes de links automÃ¡ticamente
+  // Efecto magico para extraer imagenes de links automaticamente
   useEffect(() => {
     const timer = setTimeout(async () => {
       setExtractError(false)
@@ -91,13 +97,13 @@ export function AdminDashboard() {
         return;
       }
 
-      // Si parece una imagen normal, la damos por vÃ¡lida inmediatamente
+      // Si parece una imagen normal, la damos por valida inmediatamente
       if (newImageUrl.match(/\.(jpeg|jpg|gif|png|webp)(\?.*)?$/i)) {
         setValidImageUrl(newImageUrl)
         return;
       }
 
-      // Si no tiene extensiÃ³n clara (ej. Google Images o link web), verificamos en el servidor
+      // Si no tiene extension clara (ej. Google Images o link web), verificamos en el servidor
       setIsExtracting(true)
       try {
         const res = await fetchApi(`/api/extract-image?url=${encodeURIComponent(newImageUrl)}`)
@@ -141,6 +147,44 @@ export function AdminDashboard() {
     }
   }
 
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>, isAttachment: boolean = false, attachmentIndex: number = -1) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append("file", file);
+
+    try {
+      if (!isAttachment) setIsUploadingRag(true);
+      
+      const res = await fetchApi("/api/upload", {
+        method: "POST",
+        body: formData,
+      });
+      
+      const data = await res.json();
+      
+      if (data.url) {
+        if (!isAttachment) {
+          setRagUrl(data.url);
+          setRagSize(data.size.toString());
+          setRagMimeType(data.mimeType);
+          setRagFile(file);
+        } else if (attachmentIndex >= 0) {
+          const n = [...newAttachments];
+          n[attachmentIndex].url = data.url;
+          n[attachmentIndex].type = file.type.startsWith('image/') ? 'image' : file.type.includes('pdf') ? 'pdf' : 'document';
+          setNewAttachments(n);
+        }
+      }
+    } catch (error) {
+      console.error("Error uploading file:", error);
+      alert("Error al subir el archivo.");
+    } finally {
+      if (!isAttachment) setIsUploadingRag(false);
+    }
+  }
+
   const handleSaveNote = async () => {
     if (!newTitle.trim() || !newContent.trim()) return
 
@@ -151,6 +195,7 @@ export function AdminDashboard() {
       imageUrl: newImageUrl.trim() || null,
       attachments: newAttachments,
       categoryId: newCategoryId || null,
+      section: newSection || null,
       isGlobal: true,
       published: true,
       authorId: session?.user?.id,
@@ -186,7 +231,7 @@ export function AdminDashboard() {
       setNewContent("")
       setNewImageUrl("")
       setRagName(""); setRagUrl(""); setRagMimeType("application/pdf"); setRagSize(""); setRagContent("")
-      setNewCategoryId(""); setNewAttachments([]);
+      setNewCategoryId(""); setNewSection(""); setNewAttachments([]);
       setEditingId(null)
       setIsFormOpen(false)
       fetchGlobalNotes()
@@ -200,7 +245,9 @@ export function AdminDashboard() {
     setNewContent(note.body)
     setNewImageUrl(note.seoImage || "")
     setRagName(""); setRagUrl(""); setRagMimeType("application/pdf"); setRagSize(""); setRagContent("")
-    setNewCategoryId(note.categoryId || ""); setNewAttachments(note.attachments || []);
+    setNewCategoryId(note.categoryId || "");
+    setNewSection(note.section || "");
+    setNewAttachments(note.attachments || []);
     setEditingId(note.id)
     setIsFormOpen(true)
   }
@@ -288,9 +335,18 @@ export function AdminDashboard() {
             <span className="bg-sena-100 text-sena-600 py-0.5 px-2 rounded-full text-xs">{suggestions.length}</span>
           )}
         </button>
+        <button 
+          onClick={() => setActiveTab("rag")}
+          className={`min-h-12 flex-1 px-2 py-3 text-center text-[11px] font-bold tracking-wide transition-colors border-b-2 sm:flex-none sm:px-4 sm:text-sm flex items-center justify-center gap-2 ${activeTab === "rag" ? "text-sena-500 border-sena-500" : "text-slate-500 border-transparent hover:text-zinc-700"}`}
+        >
+          <Database className="w-4 h-4" />
+          BASE DE CONOCIMIENTO (RAG)
+        </button>
       </div>
 
-            {activeTab === "categorias" ? (
+      {activeTab === "rag" ? (
+        <RagControlCenter />
+      ) : activeTab === "categorias" ? (
         <div className="bg-white p-8 rounded-3xl shadow-lg shadow-sena-100/50 border border-slate-100">
           <div className="flex items-center justify-between mb-8 border-b border-slate-100 pb-5">
             <div>
@@ -580,7 +636,7 @@ export function AdminDashboard() {
         {/* FORMULARIO */}
         <div className={`overflow-hidden transition-all duration-300 ease-in-out ${isFormOpen ? "max-h-200 opacity-100 mb-8" : "max-h-0 opacity-0"}`}>
           <div className="bg-slate-50/80 p-8 rounded-3xl border border-slate-200 space-y-5">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div>
                 <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">Titulo del Anuncio</label>
                 <input 
@@ -604,6 +660,22 @@ export function AdminDashboard() {
                   ))}
                 </select>
               </div>
+              <div>
+                <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">Apartado (Sección)</label>
+                <select 
+                  className="w-full p-4 bg-white border border-slate-200 rounded-xl focus:ring-4 focus:ring-sena-500/20 focus:border-sena-500 outline-none text-zinc-800 font-medium transition-all appearance-none"
+                  value={newSection}
+                  onChange={(e) => setNewSection(e.target.value)}
+                >
+                  <option value="">-- Selecciona un apartado --</option>
+                  <option value="Bienestar al Aprendiz">Bienestar al Aprendiz</option>
+                  <option value="Etapa Productiva">Etapa Productiva</option>
+                  <option value="Administración Educativa">Administración Educativa</option>
+                  <option value="ICFES Pruebas TYT">ICFES Pruebas TYT</option>
+                  <option value="Biblioteca">Biblioteca</option>
+                  <option value="Cursos presenciales">Cursos presenciales</option>
+                </select>
+              </div>
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -612,13 +684,29 @@ export function AdminDashboard() {
                   <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">URL de la Imagen (Opcional)</label>
                   <div className="relative">
                     <ImageIcon className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
-                    <input 
-                      type="url" 
-                      placeholder="https://ejemplo.com/imagen.jpg o link del blog..." 
-                      className="w-full pl-12 p-4 bg-white border border-slate-200 rounded-xl focus:ring-4 focus:ring-sena-500/20 focus:border-sena-500 outline-none text-zinc-800 transition-all font-medium"
-                      value={newImageUrl}
-                      onChange={(e) => setNewImageUrl(e.target.value)}
-                    />
+                    <div className="flex w-full gap-2 pl-12 pr-4 bg-white border border-slate-200 rounded-xl focus-within:ring-4 focus-within:ring-sena-500/20 focus-within:border-sena-500 transition-all">
+                      <input 
+                        type="url" 
+                        placeholder="https://ejemplo.com/imagen.jpg o link del blog..." 
+                        className="flex-1 py-4 bg-transparent outline-none text-zinc-800 font-medium"
+                        value={newImageUrl}
+                        onChange={(e) => setNewImageUrl(e.target.value)}
+                      />
+                      <label className="flex my-2 cursor-pointer items-center justify-center rounded-lg bg-slate-100 px-4 text-xs font-bold text-slate-700 hover:bg-slate-200">
+                        Subir
+                        <input type="file" className="hidden" accept="image/*" onChange={async (e) => {
+                          const file = e.target.files?.[0];
+                          if (!file) return;
+                          const formData = new FormData();
+                          formData.append("file", file);
+                          try {
+                            const res = await fetchApi("/api/upload", { method: "POST", body: formData });
+                            const data = await res.json();
+                            if (data.url) setNewImageUrl(data.url);
+                          } catch (error) { alert("Error al subir imagen"); }
+                        }} />
+                      </label>
+                    </div>
                   </div>
                 </div>
                 
@@ -657,7 +745,7 @@ export function AdminDashboard() {
               <div>
                 <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">Contenido Detallado</label>
                 <textarea 
-                  placeholder="Escribe toda la informaciÃ³n relevante aquÃ­..." 
+                  placeholder="Escribe toda la información relevante aquí..." 
                   className="h-full min-h-40 w-full resize-y rounded-xl border border-slate-200 bg-white p-5 font-medium text-zinc-800 outline-none transition-all focus:border-sena-500 focus:ring-4 focus:ring-sena-500/20"
                   value={newContent}
                   onChange={(e) => setNewContent(e.target.value)}
@@ -683,17 +771,23 @@ export function AdminDashboard() {
                         <option value="pdf">Documento PDF</option>
                         <option value="video">Video (YouTube/Vimeo)</option>
                       </select>
-                      <input 
-                        type="text" 
-                        value={att.url} 
-                        onChange={(e) => {
-                          const n = [...newAttachments];
-                          n[idx].url = e.target.value;
-                          setNewAttachments(n);
-                        }}
-                        placeholder="https://... o pega el código <iframe..."
-                        className="flex-1 p-2 border border-slate-200 rounded-lg text-sm bg-white focus:outline-none focus:border-sena-500"
-                      />
+                      <div className="flex flex-1 gap-2">
+                        <input 
+                          type="text" 
+                          value={att.url} 
+                          onChange={(e) => {
+                            const n = [...newAttachments];
+                            n[idx].url = e.target.value;
+                            setNewAttachments(n);
+                          }}
+                          placeholder="https://... o pega el código <iframe..."
+                          className="flex-1 p-2 border border-slate-200 rounded-lg text-sm bg-white focus:outline-none focus:border-sena-500"
+                        />
+                        <label className="flex cursor-pointer items-center justify-center rounded-lg bg-slate-100 px-3 text-xs font-bold text-slate-700 hover:bg-slate-200" title="Subir a S3">
+                          Subir
+                          <input type="file" className="hidden" onChange={(e) => handleFileUpload(e, true, idx)} />
+                        </label>
+                      </div>
                       <div className="flex flex-col sm:flex-row gap-1">
                         <button 
                           onClick={() => {
@@ -737,16 +831,6 @@ export function AdminDashboard() {
                   </button>
                 </div>
               </div>
-            
-            <div className="flex justify-end pt-4">
-              <button 
-                onClick={handleSaveNote}
-                disabled={!newTitle.trim() || !newContent.trim()}
-                className="bg-sena-900 text-white px-8 py-4 rounded-xl font-bold hover:bg-sena-800 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-xl shadow-sena-900/20 hover:-translate-y-0.5"
-              >
-                {editingId ? "Actualizar Anuncio" : "Publicar Anuncio Ahora"}
-              </button>
-            </div>
 
             <div className="space-y-5 rounded-2xl border border-sena-200 bg-sena-50/60 p-5">
               <div>
@@ -755,11 +839,35 @@ export function AdminDashboard() {
               </div>
               <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                 <input value={ragName} onChange={(e) => setRagName(e.target.value)} placeholder="Nombre del documento" className="w-full rounded-xl border border-sena-200 bg-white p-3 text-sm outline-none focus:border-sena-500" />
-                <input type="url" value={ragUrl} onChange={(e) => setRagUrl(e.target.value)} placeholder="URL del documento" className="w-full rounded-xl border border-sena-200 bg-white p-3 text-sm outline-none focus:border-sena-500" />
+                <div className="relative">
+                  {isUploadingRag ? (
+                    <div className="flex w-full items-center justify-center rounded-xl border border-sena-200 bg-slate-50 p-3 text-sm text-slate-500">
+                      Subiendo a AWS S3...
+                    </div>
+                  ) : (
+                    <div className="flex gap-2">
+                      <input type="url" value={ragUrl} onChange={(e) => setRagUrl(e.target.value)} placeholder="URL del documento" className="flex-1 rounded-xl border border-sena-200 bg-white p-3 text-sm outline-none focus:border-sena-500" />
+                      <label className="flex cursor-pointer items-center justify-center rounded-xl bg-slate-100 px-4 text-sm font-bold text-slate-700 hover:bg-slate-200">
+                        Subir
+                        <input type="file" className="hidden" onChange={(e) => handleFileUpload(e, false)} />
+                      </label>
+                    </div>
+                  )}
+                </div>
                 <select value={ragMimeType} onChange={(e) => setRagMimeType(e.target.value)} className="w-full rounded-xl border border-sena-200 bg-white p-3 text-sm outline-none focus:border-sena-500"><option value="application/pdf">PDF</option><option value="text/plain">Texto</option><option value="text/html">HTML</option><option value="application/msword">Documento Word</option></select>
                 <input type="number" min="0" value={ragSize} onChange={(e) => setRagSize(e.target.value)} placeholder="Tamaño en bytes (opcional)" className="w-full rounded-xl border border-sena-200 bg-white p-3 text-sm outline-none focus:border-sena-500" />
               </div>
               <textarea rows={5} value={ragContent} onChange={(e) => setRagContent(e.target.value)} placeholder="Pega aquí el contenido que quieres convertir en chunks para el chatbot..." className="w-full resize-y rounded-xl border border-sena-200 bg-white p-3 text-sm leading-6 outline-none focus:border-sena-500" />
+            </div>
+
+            <div className="flex justify-end pt-4 border-t border-slate-100 mt-6 pt-6">
+              <button 
+                onClick={handleSaveNote}
+                disabled={!newTitle.trim() || !newContent.trim()}
+                className="bg-sena-900 text-white px-8 py-4 rounded-xl font-bold hover:bg-sena-800 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-xl shadow-sena-900/20 hover:-translate-y-0.5"
+              >
+                {editingId ? "Actualizar Anuncio" : "Publicar Anuncio Ahora"}
+              </button>
             </div>
           </div>
         </div>

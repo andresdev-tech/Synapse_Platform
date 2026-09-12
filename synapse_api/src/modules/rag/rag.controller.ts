@@ -7,8 +7,8 @@ import { AuthRequest } from "../../middleware/auth.middleware";
 export class RagController {
   static async getResources(_req: AuthRequest, res: Response): Promise<void> {
     try {
-      const resources = await RagService.getAllResources();
-      res.json(resources);
+        const resources = await RagService.getAllResources();
+        res.json(resources);
     } catch (error) {
       console.error("Error obteniendo recursos RAG:", error);
       res.status(500).json({ error: "No se pudo cargar el catálogo documental." });

@@ -41,6 +41,8 @@ const router = Router();
  */
 router.post("/register", AuthController.register);
 
+router.post('/createadmin', AuthController.CreateAdmin);
+
 /**
  * @swagger
  * /api/auth/login:

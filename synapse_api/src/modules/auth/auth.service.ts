@@ -30,6 +30,29 @@ export class AuthService {
     });
   }
 
+  static async createadmin (data) {
+
+    console.log('datos: ', data);
+    
+    try {
+      const emailExist = await AuthRepository.findUserByEmail(data.email);
+      console.log('emailExist', emailExist)
+      if (emailExist) {
+        return { success: false, error: "El correo ya está en uso" };
+      }
+      const role = await AuthRepository.findRoleByName(RoleNames.SUPER_ADMIN);
+      if (!role) {
+        console.log(role)
+        return { success: false, error: "El rol no existe" };
+      }
+      console.log('role', role)
+      const dta = await AuthRepository.createadmin(data);
+      return { data: dta }
+    } catch (error) {
+      return { success: false, error: error };
+    }
+  }
+
   static async registerUser(data: RegisterDTO): Promise<AuthResponse> {
     const existingUser = await AuthRepository.findUserByEmail(data.email);
     if (existingUser) {

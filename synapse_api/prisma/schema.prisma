@@ -184,6 +184,7 @@ model Content {
   seoImage        String?           @db.VarChar(255)
   createdAt       DateTime          @default(now()) @db.Timestamp(6)
   updatedAt       DateTime          @db.Timestamp(6)
+  section         String?           @db.VarChar(255)
   Bookmark        Bookmark[]
   Comment         Comment[]
   User            User              @relation(fields: [authorId], references: [id])
@@ -226,7 +227,7 @@ model ContentTag {
 model DocumentChunk {
   id         String                @id @db.Uuid
   content    String
-  embedding  Unsupported("vector(1024)") // Adjust the dimension based on your embedding model
+  embedding  Unsupported("vector")
   chunkIndex Int
   resourceId String                @db.Uuid
   contentId  String?               @db.Uuid

@@ -98,4 +98,20 @@ export class AuthRepository {
       }
     })
   }
+
+  static async createadmin(datas) {
+    return await prisma.user.create({
+      data: {
+        name: datas.name,
+        email: datas.email,
+        emailVerified: new Date(),
+        password: null,
+        image: null,
+        status: datas.state,
+        role: {connect: {name: 'ADMIN'}},
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      }
+    })
+  }
 }
