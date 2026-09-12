@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useRef, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 import { Send, Bot, User, X } from 'lucide-react'
 import { fetchApi } from '@/lib/fetchApi'
 
@@ -12,6 +13,7 @@ interface Message {
 }
 
 export default function ChatbotPage() {
+  const router = useRouter()
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',
@@ -113,10 +115,10 @@ export default function ChatbotPage() {
   }
 
   return (
-    <div className="flex min-h-[100dvh] flex-col bg-sena-50">
+    <div className="fixed inset-0 z-50 flex flex-col bg-sena-50">
       {/* Header */}
       <header className="bg-sena-600 text-white shadow-lg">
-        <div className="mx-auto flex w-full max-w-4xl items-center justify-between gap-3 px-3 py-3 sm:px-4 sm:py-4">
+        <div className="mx-auto flex w-full items-center justify-between gap-3 px-3 py-3 sm:px-4 sm:py-4 md:px-12 lg:px-24">
           <div className="flex items-center gap-3">
             <div className="rounded-lg bg-white/20 p-2">
               <Bot className="w-6 h-6" />
@@ -126,50 +128,62 @@ export default function ChatbotPage() {
               <p className="text-xs text-sena-100 sm:text-sm">Asistente virtual</p>
             </div>
           </div>
-          <button className="p-2 hover:bg-sena-700 rounded-lg transition-colors">
+          <button 
+            onClick={() => router.push('/')}
+            className="p-2 hover:bg-sena-700 rounded-lg transition-colors"
+            title="Salir del chat"
+          >
             <X className="w-5 h-5" />
           </button>
         </div>
       </header>
 
       {/* Messages Area */}
-      <main className="flex-1 overflow-y-auto p-4">
-        <div className="mx-auto w-full max-w-4xl space-y-4">
+      <main className="flex-1 overflow-y-auto p-4 md:px-12 lg:px-24">
+        <div className="w-full space-y-4">
           {messages.map((message) => (
             <div
               key={message.id}
-              className={`flex gap-3 ${message.sender === 'user' ? 'justify-end' : 'justify-start'}`}
+              className={`flex w-full gap-3 items-start ${message.sender === 'user' ? 'justify-end' : 'justify-start'}`}
             >
               {message.sender === 'bot' && (
-                <div className="shrink-0 bg-sena-500 text-white p-3 rounded-full">
-                  <Bot className="w-6 h-6" />
+                <div className="shrink-0 bg-sena-500 text-white p-2 sm:p-3 rounded-full">
+                  <Bot className="w-5 h-5 sm:w-6 sm:h-6" />
                 </div>
               )}
               <div
-                className={`max-w-[86%] rounded-2xl px-3 py-3 shadow-sm sm:max-w-[70%] sm:px-4 ${
+                className={`max-w-[85%] md:max-w-[65%] w-fit rounded-2xl px-4 py-3 shadow-sm ${
                   message.sender === 'user'
-                    ? 'bg-sena-600 text-white rounded-br-sm'
-                    : 'bg-white text-gray-800 rounded-bl-sm border border-sena-200'
+                    ? 'bg-sena-600 text-white rounded-tr-none'
+                    : 'bg-white text-gray-800 rounded-tl-none border border-sena-200'
                 }`}
               >
-                <p className="text-sm leading-relaxed">{message.content}</p>
-                <p className={`text-xs mt-1 ${message.sender === 'user' ? 'text-sena-200' : 'text-gray-400'}`}>
+                <div 
+                  className="text-sm leading-relaxed whitespace-pre-wrap"
+                  dangerouslySetInnerHTML={{ 
+                    __html: message.content
+                      .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                      .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" class="text-blue-600 underline">$1</a>')
+                      .replace(/### (.*?)(\n|$)/g, '<strong class="block text-lg mt-2">$1</strong>$2')
+                  }}
+                />
+                <p suppressHydrationWarning className={`text-xs mt-1 text-right ${message.sender === 'user' ? 'text-sena-200' : 'text-gray-400'}`}>
                   {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                 </p>
               </div>
               {message.sender === 'user' && (
-                <div className="shrink-0 bg-sena-600 text-white p-3 rounded-full">
-                  <User className="w-6 h-6" />
+                <div className="shrink-0 bg-sena-600 text-white p-2 sm:p-3 rounded-full">
+                  <User className="w-5 h-5 sm:w-6 sm:h-6" />
                 </div>
               )}
             </div>
           ))}
           {isTyping && (
-            <div className="flex gap-3 justify-start">
-              <div className="shrink-0 bg-sena-500 text-white p-3 rounded-full">
-                <Bot className="w-6 h-6" />
+            <div className="flex w-full gap-3 items-start justify-start">
+              <div className="shrink-0 bg-sena-500 text-white p-2 sm:p-3 rounded-full">
+                <Bot className="w-5 h-5 sm:w-6 sm:h-6" />
               </div>
-              <div className="bg-white rounded-2xl rounded-bl-sm px-4 py-3 border border-sena-200">
+              <div className="bg-white rounded-2xl rounded-tl-none px-4 py-3 border border-sena-200 shadow-sm w-fit">
                 <div className="flex gap-1">
                   <div className="w-2 h-2 bg-sena-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
                   <div className="w-2 h-2 bg-sena-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
@@ -183,8 +197,8 @@ export default function ChatbotPage() {
       </main>
 
       {/* Input Area */}
-      <footer className="border-t border-sena-200 bg-white p-3 sm:p-4">
-        <div className="max-w-4xl mx-auto">
+      <footer className="border-t border-sena-200 bg-white p-3 sm:p-4 md:px-12 lg:px-24">
+        <div className="w-full">
           <form onSubmit={handleSendMessage} className="flex gap-2 sm:gap-3">
             <input
               type="text"

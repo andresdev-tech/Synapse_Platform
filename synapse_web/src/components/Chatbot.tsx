@@ -90,15 +90,30 @@ export default function Chatbot() {
       <main className="bg-gray-100 h-screen w-screen">
           <p className="text-2xl font-bold text-white mb-4 text-center bg-green-800 rounded-r-full py-2">SYNAPSE</p>
 
-          <section className="max-h-64 overflow-y-auto p-4">
-            {messages.length === 0 && <p>Historial de conversación</p>}
-            {messages.map((item, index) => (
-              <p key={`${item.role}-${index}`} className={item.role === "user" ? "text-right" : "text-left"}>
-                <strong>{item.role === "user" ? "Tú: " : "Synapse: "}</strong>
-                {item.content || (isLoading && item.role === "assistant" ? "..." : "")}
-              </p>
-            ))}
-            {error && <p className="text-red-600">{error}</p>}
+          <section className="flex-1 overflow-y-auto p-4 flex flex-col gap-4">
+            {messages.length === 0 && <p className="text-center text-gray-500 mt-4">Historial de conversación</p>}
+            {messages.map((item, index) => {
+              // Formateador básico de Markdown
+              let formattedContent = item.content
+                .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>') // Negritas
+                .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" class="text-blue-600 underline">$1</a>') // Enlaces
+                .replace(/### (.*?)(\n|$)/g, '<strong class="block text-lg mt-2">$1</strong>$2'); // Subtítulos
+              
+              return (
+                <div key={`${item.role}-${index}`} className={`flex flex-col ${item.role === "user" ? "items-end" : "items-start"}`}>
+                  <span className="text-xs text-gray-500 mb-1 ml-1">{item.role === "user" ? "Tú" : "Synapse"}</span>
+                  <div 
+                    className={`inline-block p-3 rounded-2xl max-w-[85%] whitespace-pre-wrap text-sm shadow-sm ${
+                      item.role === "user" 
+                        ? "bg-green-500 text-white rounded-tr-none" 
+                        : "bg-white text-gray-800 border border-gray-200 rounded-tl-none"
+                    }`}
+                    dangerouslySetInnerHTML={{ __html: formattedContent || (isLoading && item.role === "assistant" ? "..." : "") }}
+                  />
+                </div>
+              );
+            })}
+            {error && <p className="text-red-600 text-center text-sm">{error}</p>}
           </section>
 
           <form className="flex flex-row gap-2 p-4" onSubmit={handleSubmit}>
