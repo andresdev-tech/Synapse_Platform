@@ -4,7 +4,7 @@ import crypto from "crypto";
 
 const s3 = new S3Client({
   region: process.env.AWS_REGION || "us-east-2",
-  endpoint: process.env.AWS_ENDPOINT_URL_S3, // Optional if it's not standard AWS
+  endpoint: process.env.AWS_ENDPOINT_URL_S3,
   forcePathStyle: true,
   credentials: {
     accessKeyId: process.env.AWS_ACCESS_KEY_ID || "",
@@ -15,47 +15,65 @@ const s3 = new S3Client({
 export const uploadFile = async (req: Request, res: Response) => {
   try {
     if (!req.file) {
-      return res.status(400).json({ error: "No file provided" });
+      return res.status(400).json({
+        error: "No file provided",
+      });
     }
 
     const file = req.file;
-    const bucketName = process.env.AWS_BUCKET_NAME || "synapse-platform-storage";
-    const fileExtension = file.originalname.split('.').pop();
-    const uniqueFileName = `${crypto.randomUUID()}.${fileExtension}`;
-    const objecKey = `systemdocs/${uniqueFileName}`;
 
-    const params = {
-      Bucket: bucketName,
-      Key: objecKey,
-      Body: file.buffer,
-      ContentType: file.mimetype,
-      // ACL: "public-read", // Neon/S3 standard ACL if needed
-    };
+    const bucketName =
+      process.env.AWS_BUCKET_NAME ||
+      "synapse-platform-storage";
 
-    const command = new PutObjectCommand(params);
-    await s3.send(command);
+    const fileExtension =
+      file.originalname.split(".").pop()?.toLowerCase() || "bin";
 
-    // Depending on the endpoint, the URL will be formatted differently
-    // For standard AWS S3: `https://${bucketName}.s3.${process.env.AWS_REGION}.amazonaws.com/${uniqueFileName}`
-    // Since it's a custom endpoint (Neon), construct URL based on it:
-    let fileUrl = "";
-    if (process.env.AWS_ENDPOINT_URL_S3) {
-      // Neon S3 URLs usually serve directly from the endpoint
-      // Adjust if the bucket name is part of the path or domain
-      fileUrl = `${process.env.AWS_ENDPOINT_URL_S3}/${uniqueFileName}`;
-    } else {
-      fileUrl = `https://${bucketName}.s3.${process.env.AWS_REGION}.amazonaws.com/${uniqueFileName}`;
-    }
+    const uniqueFileName =
+      `${crypto.randomUUID()}.${fileExtension}`;
 
-    res.status(200).json({
+    // Ruta REAL dentro del bucket
+    const objectKey =
+      `systemdocs/${uniqueFileName}`;
+
+    await s3.send(
+      new PutObjectCommand({
+        Bucket: bucketName,
+        Key: objectKey,
+        Body: file.buffer,
+        ContentType: file.mimetype,
+      })
+    );
+
+    // ==========================================================
+    // URL PÚBLICA DE NEON STORAGE
+    // ==========================================================
+
+    const endpoint =
+      (process.env.AWS_ENDPOINT_URL_S3 || "").replace(/\/$/, "");
+
+    const fileUrl =
+      `${endpoint}/${bucketName}/${objectKey}`;
+
+    console.log("File uploaded successfully:", {
+      bucket: bucketName,
+      key: objectKey,
+      url: fileUrl,
+    });
+
+    return res.status(200).json({
       url: fileUrl,
       fileName: uniqueFileName,
       originalName: file.originalname,
       mimeType: file.mimetype,
       size: file.size,
     });
+
   } catch (error) {
     console.error("Upload error:", error);
-    res.status(500).json({ error: "Failed to upload file to S3" });
+
+    return res.status(500).json({
+      error: "Failed to upload file to S3",
+    });
   }
 };

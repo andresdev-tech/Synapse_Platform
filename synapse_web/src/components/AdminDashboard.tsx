@@ -98,7 +98,7 @@ export function AdminDashboard() {
       }
 
       // Si parece una imagen normal, la damos por valida inmediatamente
-      if (newImageUrl.match(/\.(jpeg|jpg|gif|png|webp)(\?.*)?$/i)) {
+      if (newImageUrl.match(/\.(jpeg|jpg|gif|png|webp|svg)(\?.*)?$/i)) {
         setValidImageUrl(newImageUrl)
         return;
       }
@@ -370,8 +370,8 @@ export function AdminDashboard() {
           </div>
           
           {/* FORMULARIO DE CATEGORÍA */}
-          <div className={`overflow-hidden transition-all duration-300 ease-in-out ${isCategoryFormOpen ? "max-h-200 opacity-100 mb-8" : "max-h-0 opacity-0"}`}>
-            <div className="bg-slate-50/80 p-8 rounded-3xl border border-slate-200 space-y-5">
+          <div className={`overflow-hidden transition-all duration-300 ease-in-out ${isCategoryFormOpen ? "max-h-[1000px] opacity-100 mb-8" : "max-h-0 opacity-0"}`}>
+            <div className="bg-slate-50/80 p-8 rounded-3xl border border-slate-200 space-y-5 overflow-y-auto custom-scrollbar max-h-[75vh]">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                   <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">Nombre de la Categoría</label>
@@ -634,8 +634,8 @@ export function AdminDashboard() {
         </div>
 
         {/* FORMULARIO */}
-        <div className={`overflow-hidden transition-all duration-300 ease-in-out ${isFormOpen ? "max-h-200 opacity-100 mb-8" : "max-h-0 opacity-0"}`}>
-          <div className="bg-slate-50/80 p-8 rounded-3xl border border-slate-200 space-y-5">
+        <div className={`overflow-hidden transition-all duration-300 ease-in-out ${isFormOpen ? "max-h-[2000px] opacity-100 mb-8 " : "max-h-0 opacity-0"}`}>
+          <div className="bg-slate-50/80 p-8 rounded-3xl border border-slate-200 space-y-5 overflow-y-auto custom-scrollbar max-h-[75vh]">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div>
                 <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">Titulo del Anuncio</label>
