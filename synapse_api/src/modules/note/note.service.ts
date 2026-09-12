@@ -48,6 +48,8 @@ export class NoteService {
       throw new Error("El autor de la nota es obligatorio");
     }
 
+    console.log('section its: ', data.section || null);
+
     const slug = this.generateSlug(data.title);
     const hasRag = Boolean(
       data.ragDocument?.name?.trim() &&

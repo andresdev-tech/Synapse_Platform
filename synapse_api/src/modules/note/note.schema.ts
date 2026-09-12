@@ -20,6 +20,7 @@ export const createNoteSchema = z.object({
   categoryId: z.string().uuid("El ID de categoría debe ser un UUID válido").optional().nullable(),
   seoTitle: z.string().optional().nullable(),
   seoDescription: z.string().optional().nullable(),
+  section: z.string().trim().optional().nullable(),
   ragDocument: ragDocumentSchema.optional().nullable(),
 });
 
@@ -33,4 +34,5 @@ export const updateNoteSchema = z.object({
   categoryId: z.string().uuid("El ID de categoría debe ser un UUID válido").optional().nullable(),
   seoTitle: z.string().optional().nullable(),
   seoDescription: z.string().optional().nullable(),
+  section: z.string().trim().optional().nullable(),
 });

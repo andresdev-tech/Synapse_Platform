@@ -25,6 +25,7 @@ export interface NoteResponse {
   seoImage: string | null;
   createdAt: Date;
   updatedAt: Date;
+  section: string | null;
   User?: {
     name: string | null;
     email?: string;

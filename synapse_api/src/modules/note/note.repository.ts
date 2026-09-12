@@ -73,6 +73,7 @@ export class NoteRepository {
           type: "ARTICLE",
           status: "PUBLISHED",
           visibility: data.isGlobal ? "PUBLIC" : "PRIVATE",
+          section: data.section,
           updatedAt: new Date(),
         },
       });
@@ -130,6 +131,7 @@ export class NoteRepository {
     if (data.seoTitle !== undefined) updateData.seoTitle = data.seoTitle;
     if (data.seoDescription !== undefined) updateData.seoDescription = data.seoDescription;
     if (data.categoryId !== undefined) updateData.categoryId = data.categoryId;
+    if (data.section !== undefined) updateData.section = data.section;
     if (data.published !== undefined) {
       updateData.publishedAt = data.published ? new Date() : null;
     }
