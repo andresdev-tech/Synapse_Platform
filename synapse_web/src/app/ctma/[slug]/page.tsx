@@ -465,11 +465,55 @@ const pageContent: Record<string, { title: string, content: React.ReactNode }> =
   }
 };
 
+const sectionMap: Record<string, string> = {
+  // Nosotros
+  "mision-y-vision": "Misión y Visión",
+  "promesa-de-valor": "Promesa de Valor",
+  "organigrama": "Organigrama",
+  "historia": "Historia",
+  "contactenos": "Contáctenos",
+  "siga": "SIGA",
+  // Aprendices
+  "bienestar-al-aprendiz": "Bienestar al Aprendiz",
+  "etapa-productiva": "Etapa Productiva",
+  "administracion-educativa": "Administración Educativa",
+  "icfes-pruebas-tyt": "ICFES Pruebas TYT",
+  "biblioteca": "Biblioteca",
+  "cursos-presenciales": "Cursos presenciales",
+  // Programas
+  "oferta-educativa": "Oferta Educativa",
+  "portafolio-de-servicios": "Portafolio de Servicios",
+  "formacion-virtual": "Formación Virtual",
+  "bilinguismo": "Bilingüismo",
+  "inscripciones": "Inscripciones",
+  // Servicios
+  "certificacion-competencias": "Certificación de Competencias",
+  "alturas": "Alturas"
+};
+
+async function getNotesBySection(section: string) {
+  try {
+    const backendUrl = process.env.API_BACKEND_URL || "http://127.0.0.1:4000/api";
+    const res = await fetch(`${backendUrl}/notes?section=${encodeURIComponent(section)}`, { next: { revalidate: 30 } });
+    if (!res.ok) return [];
+    return await res.json();
+  } catch (err) {
+    console.error("Error fetching notes:", err);
+    return [];
+  }
+}
+
 export default async function CtmaPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   
+  const sectionName = sectionMap[slug];
+  let notes: any[] = [];
+  if (sectionName) {
+    notes = await getNotesBySection(sectionName);
+  }
+
   const pageData = pageContent[slug] || {
-    title: slug.replace(/-/g, ' ').replace(/\b\w/g, char => char.toUpperCase()),
+    title: sectionName || slug.replace(/-/g, ' ').replace(/\b\w/g, char => char.toUpperCase()),
     content: (
       <div className="py-8 text-center">
         <p className="text-slate-500 dark:text-slate-400 text-lg mb-4">
@@ -544,6 +588,40 @@ export default async function CtmaPage({ params }: { params: Promise<{ slug: str
             <div className="prose dark:prose-invert prose-slate prose-lg md:prose-xl max-w-none relative z-10 md:pl-8">
               {pageData.content}
             </div>
+
+            {notes && notes.length > 0 && (
+              <div className="mt-16 relative z-10">
+                <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-100 mb-8 flex items-center">
+                  <span className="w-8 h-1.5 bg-indigo-500 rounded-full mr-4"></span>
+                  Anuncios y Novedades ({notes.length})
+                </h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {notes.map((note: any) => (
+                    <div key={note.id} className="bg-white dark:bg-slate-800 rounded-3xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden hover:shadow-xl transition-all flex flex-col h-full group">
+                      {note.seoImage && (
+                        <div className="w-full h-48 overflow-hidden relative">
+                          <img src={note.seoImage} alt={note.title} className="w-full h-full object-cover transform transition-transform duration-700 group-hover:scale-110" loading="lazy" />
+                        </div>
+                      )}
+                      <div className="p-6 flex flex-col flex-1">
+                        <span className="text-xs font-bold text-indigo-500 uppercase tracking-wider mb-2">{note.section}</span>
+                        <h3 className="text-xl font-bold text-slate-800 dark:text-white mb-3 leading-snug group-hover:text-indigo-600 transition-colors">{note.title}</h3>
+                        <p className="text-slate-600 dark:text-slate-300 text-sm mb-6 line-clamp-3 leading-relaxed">{note.excerpt || note.body}</p>
+                        <div className="mt-auto flex items-center justify-between border-t border-slate-100 dark:border-slate-700 pt-4">
+                          <span className="text-xs font-medium text-slate-400 flex items-center">
+                            <span className="w-2 h-2 rounded-full bg-emerald-400 mr-2"></span>
+                            {new Date(note.createdAt).toLocaleDateString()}
+                          </span>
+                          <Link href={`/blogs/${note.slug}`} className="text-sm font-bold text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 flex items-center">
+                            Leer más <ExternalLink className="w-4 h-4 ml-1" />
+                          </Link>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
             
             {/* Elemento Decorativo Final */}
             <div className="mt-16 flex items-center justify-center space-x-2 opacity-50">

@@ -11,9 +11,13 @@ export interface CreateNoteParams {
 }
 
 export class NoteRepository {
-  static async findGlobal() {
+  static async findGlobal(section?: string) {
+    const whereClause: any = { isGlobal: true };
+    if (section) {
+      whereClause.section = section;
+    }
     return await prisma.content.findMany({
-      where: { isGlobal: true },
+      where: whereClause,
       include: {
         User: { select: { name: true, role: true } },
         Category: { select: { name: true } },

@@ -5,9 +5,10 @@ import { createNoteSchema, updateNoteSchema } from "./note.schema";
 import { AuthRequest } from "../../middleware/auth.middleware";
 
 export class NoteController {
-  static async getGlobal(_req: Request, res: Response): Promise<void> {
+  static async getGlobal(req: Request, res: Response): Promise<void> {
     try {
-      const notes = await NoteService.getGlobalNotes();
+      const section = req.query.section as string | undefined;
+      const notes = await NoteService.getGlobalNotes(section);
       res.json(notes);
     } catch (error) {
       console.error("Error al obtener notas globales:", error);

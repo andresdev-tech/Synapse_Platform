@@ -26,8 +26,8 @@ export class NoteService {
     return chunks;
   }
 
-  static async getGlobalNotes() {
-    return await NoteRepository.findGlobal();
+  static async getGlobalNotes(section?: string) {
+    return await NoteRepository.findGlobal(section);
   }
 
   static async getPersonalNotes(userId: string) {

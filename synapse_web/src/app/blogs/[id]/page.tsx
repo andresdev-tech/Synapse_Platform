@@ -10,6 +10,7 @@ interface Note {
   title: string
   content: string
   seoImage?: string
+  body?: string,
   attachments?: { type: string, url: string }[]
   isGlobal: boolean
   authorId: string
@@ -139,10 +140,10 @@ export default function BlogDetailPage({ params }: PageProps) {
           <div className="prose prose-lg dark:prose-invert max-w-none text-slate-700 dark:text-slate-300 leading-relaxed">
             {/* Si el backend envía HTML (listas, negritas), usamos dangerouslySetInnerHTML,
                 de lo contrario (texto con guiones/puntos), respetamos los saltos de línea con whitespace-pre-wrap */}
-            {(note.content || '').includes('<') && (note.content || '').includes('>') ? (
-              <div dangerouslySetInnerHTML={{ __html: note.content || '' }} />
+            {(note.content || '000').includes('<') && (note.content || 'hola1').includes('>') ? (
+              <div dangerouslySetInnerHTML={{ __html: note.content || 'hola2' }} />
             ) : (
-              <div className="whitespace-pre-wrap">{note.content || ''}</div>
+              <div className="whitespace-pre-wrap">{note.body || 'hola3'}</div>
             )}
           </div>
 

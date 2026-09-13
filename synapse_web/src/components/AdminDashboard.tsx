@@ -668,12 +668,33 @@ export function AdminDashboard() {
                   onChange={(e) => setNewSection(e.target.value)}
                 >
                   <option value="">-- Selecciona un apartado --</option>
-                  <option value="Bienestar al Aprendiz">Bienestar al Aprendiz</option>
-                  <option value="Etapa Productiva">Etapa Productiva</option>
-                  <option value="Administración Educativa">Administración Educativa</option>
-                  <option value="ICFES Pruebas TYT">ICFES Pruebas TYT</option>
-                  <option value="Biblioteca">Biblioteca</option>
-                  <option value="Cursos presenciales">Cursos presenciales</option>
+                  <optgroup label="Nosotros">
+                    <option value="Misión y Visión">Misión y Visión</option>
+                    <option value="Promesa de Valor">Promesa de Valor</option>
+                    <option value="Organigrama">Organigrama</option>
+                    <option value="Historia">Historia</option>
+                    <option value="Contáctenos">Contáctenos</option>
+                    <option value="SIGA">SIGA</option>
+                  </optgroup>
+                  <optgroup label="Aprendices">
+                    <option value="Bienestar al Aprendiz">Bienestar al Aprendiz</option>
+                    <option value="Etapa Productiva">Etapa Productiva</option>
+                    <option value="Administración Educativa">Administración Educativa</option>
+                    <option value="ICFES Pruebas TYT">ICFES Pruebas TYT</option>
+                    <option value="Biblioteca">Biblioteca</option>
+                    <option value="Cursos presenciales">Cursos presenciales</option>
+                  </optgroup>
+                  <optgroup label="Programas">
+                    <option value="Oferta Educativa">Oferta Educativa</option>
+                    <option value="Portafolio de Servicios">Portafolio de Servicios</option>
+                    <option value="Formación Virtual">Formación Virtual</option>
+                    <option value="Bilingüismo">Bilingüismo</option>
+                    <option value="Inscripciones">Inscripciones</option>
+                  </optgroup>
+                  <optgroup label="Servicios">
+                    <option value="Certificación de Competencias">Certificación de Competencias</option>
+                    <option value="Alturas">Alturas</option>
+                  </optgroup>
                 </select>
               </div>
             </div>
