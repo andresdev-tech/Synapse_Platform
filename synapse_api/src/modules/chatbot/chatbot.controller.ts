@@ -11,6 +11,7 @@ import {
 } from "./chatbot.realtime";
 
 import { chatbotService } from "./chatbot.container";
+import { chatRateLimiter } from "./chatbot.ratelimit";
 
 export class ChatbotController {
   static async chat(
@@ -30,11 +31,24 @@ export class ChatbotController {
       const { message } =
         chatbotMessageSchema.parse(req.body);
 
+      const rateLimitCheck = chatRateLimiter.checkRateLimit(req.user.id);
+      if (!rateLimitCheck.allowed) {
+        res.status(429).json({
+          success: false,
+          error: rateLimitCheck.reason,
+        });
+        return;
+      }
+
+      // If allowed, record the request
+      chatRateLimiter.recordRequest(req.user.id);
+
       setupChatbotStream(res);
 
       const stream =
         chatbotService.processMessage({
           userId: req.user.id,
+          correo: req.user.email || req.user.correo || 'test@test.com', // get from JWT
           message,
         });
 
