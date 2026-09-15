@@ -16,7 +16,8 @@ export const authOptions: NextAuthOptions = {
         }
         
         try {
-          const res = await fetch("http://127.0.0.1:4000/api/auth/otp/verify", {
+          const backendUrl = process.env.API_BACKEND_URL || "http://127.0.0.1:4000/api";
+          const res = await fetch(`${backendUrl}/auth/otp/verify`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ 
