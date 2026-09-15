@@ -59,6 +59,7 @@ export const CtmaMenu = () => {
                 <Link
                   key={link.name}
                   href={link.url}
+                  prefetch={false}
                   className="block px-4 py-2 text-sm text-zinc-700 dark:text-slate-300 hover:bg-sena-50 dark:hover:bg-sena-900/30 hover:text-sena-500 dark:hover:text-sena-400 transition-colors"
                 >
                   {link.name}
@@ -70,6 +71,7 @@ export const CtmaMenu = () => {
       ))}
       <Link 
         href="/ctma/directorio" 
+        prefetch={false}
         className="px-3 py-2 text-sm font-medium text-slate-300 hover:text-white hover:bg-zinc-800 rounded-md transition-colors"
       >
         Directorio
