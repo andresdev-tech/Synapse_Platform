@@ -162,8 +162,8 @@ export default function ChatbotPage() {
                   className="text-sm leading-relaxed whitespace-pre-wrap"
                   dangerouslySetInnerHTML={{ 
                     __html: message.content
-                      .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-                      .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" class="text-blue-600 underline">$1</a>')
+                      .replace(/\n/g, '<br/>')
+                      .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer" class="text-blue-600 underline">$1</a>')
                       .replace(/### (.*?)(\n|$)/g, '<strong class="block text-lg mt-2">$1</strong>$2')
                   }}
                 />

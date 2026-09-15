@@ -2,13 +2,19 @@
 
 import { useSession } from "next-auth/react"
 import { useSearchParams } from "next/navigation"
-import { AdminDashboard } from "./AdminDashboard"
-import SuperAdminDashboard from "./SuperAdminDashboard"
+import dynamic from "next/dynamic"
+import { Suspense } from "react"
 import { ApprenticeDashboard } from "./ApprenticeDashboard"
 import { LandingPage } from "./LandingPage"
-import { Suspense } from "react"
 
-function DashboardContent() {
+const AdminDashboard = dynamic(() => import("./AdminDashboard").then(mod => mod.AdminDashboard), { 
+  loading: () => <div className="flex items-center justify-center min-h-[50vh] text-slate-500">Cargando Admin...</div> 
+})
+const SuperAdminDashboard = dynamic(() => import("./SuperAdminDashboard"), { 
+  loading: () => <div className="flex items-center justify-center min-h-[50vh] text-slate-500">Cargando Super Admin...</div> 
+})
+
+function DashboardContent({ initialNotes, initialCategories }: { initialNotes?: any[], initialCategories?: any[] }) {
   const { data: session, status } = useSession()
   const searchParams = useSearchParams()
   const isGuest = searchParams.get("guest") === "true"
@@ -29,13 +35,13 @@ function DashboardContent() {
     return <LandingPage />
   }
 
-  return <ApprenticeDashboard />
+  return <ApprenticeDashboard initialNotes={initialNotes} initialCategories={initialCategories} />
 }
 
-export function Dashboard() {
+export function Dashboard({ initialNotes, initialCategories }: { initialNotes?: any[], initialCategories?: any[] }) {
   return (
     <Suspense fallback={<div className="flex items-center justify-center min-h-[50vh] text-slate-500">Cargando...</div>}>
-      <DashboardContent />
+      <DashboardContent initialNotes={initialNotes} initialCategories={initialCategories} />
     </Suspense>
   )
 }

@@ -2,7 +2,7 @@
 import { fetchApi } from "@/lib/fetchApi";
 
 import { useRouter } from "next/navigation"
-import { useState, useEffect } from "react"
+import { useState, useEffect, useMemo, memo } from "react"
 import { useSession, signOut } from "next-auth/react"
 import { Megaphone, Link as LinkIcon, Send, User, MessageSquarePlus, X, GripHorizontal, Search, BookOpen, Calendar, Moon, Sun, Download, FileText, ArrowLeft } from "lucide-react"
 import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors, DragEndEvent } from "@dnd-kit/core"
@@ -10,7 +10,7 @@ import { arrayMove, SortableContext, sortableKeyboardCoordinates, rectSortingStr
 import { useSortable } from "@dnd-kit/sortable"
 import { CSS } from "@dnd-kit/utilities"
 
-const InlineVideoPlayer = ({ videoId, videoUrl }: { videoId: string, videoUrl: string }) => {
+const InlineVideoPlayer = memo(({ videoId, videoUrl }: { videoId: string, videoUrl: string }) => {
   const [playing, setPlaying] = useState(false);
 
   if (!playing) {
@@ -19,7 +19,7 @@ const InlineVideoPlayer = ({ videoId, videoUrl }: { videoId: string, videoUrl: s
         onClick={() => setPlaying(true)}
         className="mt-3 group relative rounded-xl overflow-hidden border border-slate-200 dark:border-zinc-700 shadow-sm aspect-video bg-black cursor-pointer hover:shadow-xl transition-all duration-300"
       >
-        <img
+        <img loading="lazy" decoding="async"
           src={`https://img.youtube.com/vi/${videoId}/hqdefault.jpg`}
           alt="Miniatura de Video YouTube"
           className="w-full h-full object-cover opacity-70 group-hover:opacity-100 transition-all duration-300"
@@ -54,7 +54,7 @@ const InlineVideoPlayer = ({ videoId, videoUrl }: { videoId: string, videoUrl: s
       </a>
     </div>
   );
-};
+});
 
 interface Note {
   id: string
@@ -85,7 +85,7 @@ const officialResources = [
 
 import NextLink from "next/link"
 
-function SortableNoteItem({ note }: { note: Note }) {
+const SortableNoteItem = memo(function SortableNoteItem({ note }: { note: Note }) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: note.id })
 
   const style = {
@@ -113,7 +113,7 @@ function SortableNoteItem({ note }: { note: Note }) {
 
       {note.seoImage && (
         <div className="h-56 bg-slate-100 dark:bg-zinc-900 overflow-hidden relative">
-          <img loading="lazy"
+          <img loading="lazy" decoding="async"
             src={note.seoImage}
             alt={note.title}
             className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-in-out"
@@ -149,7 +149,7 @@ function SortableNoteItem({ note }: { note: Note }) {
               if (att.type === 'image') {
                 return (
                   <div key={idx} className="rounded-xl overflow-hidden mt-2 border border-slate-100 dark:border-zinc-700">
-                    <img src={att.url} alt="Adjunto" className="w-full h-auto object-cover" />
+                    <img loading="lazy" decoding="async" src={att.url} alt="Adjunto" className="w-full h-auto object-cover" />
                   </div>
                 );
               } else if (att.type === 'video') {
@@ -202,12 +202,12 @@ function SortableNoteItem({ note }: { note: Note }) {
       </div>
     </article>
   )
-}
+})
 
-export function ApprenticeDashboard() {
+export function ApprenticeDashboard({ initialNotes = [], initialCategories = [] }: { initialNotes?: Note[], initialCategories?: Category[] }) {
   const { data: session } = useSession()
-  const [globalNotes, setGlobalNotes] = useState<Note[]>([])
-  const [categories, setCategories] = useState<Category[]>([])
+  const [globalNotes, setGlobalNotes] = useState<Note[]>(initialNotes)
+  const [categories, setCategories] = useState<Category[]>(initialCategories)
 
   // Customization & Filters
   const [isDarkMode, setIsDarkMode] = useState(false)
@@ -240,8 +240,8 @@ export function ApprenticeDashboard() {
       document.documentElement.classList.remove("dark")
     }
 
-    fetchGlobalNotes()
-    fetchCategories()
+    if (initialNotes.length === 0) fetchGlobalNotes()
+    if (initialCategories.length === 0) fetchCategories()
   }, [])
 
   const fetchGlobalNotes = async () => {
@@ -396,19 +396,23 @@ export function ApprenticeDashboard() {
   }
 
   // Filtrado de Notas
-  const filteredNotes = globalNotes.filter(n => {
-    const matchesSearch = n.title.toLowerCase().includes(searchQuery.toLowerCase()) || n.content.toLowerCase().includes(searchQuery.toLowerCase())
-    const matchesCategory = selectedFilter === "ALL" || n.categoryId === selectedFilter
-    return matchesSearch && matchesCategory
-  })
+  const filteredNotes = useMemo(() => {
+    return globalNotes.filter(n => {
+      const matchesSearch = n.title.toLowerCase().includes(searchQuery.toLowerCase()) || n.content.toLowerCase().includes(searchQuery.toLowerCase())
+      const matchesCategory = selectedFilter === "ALL" || n.categoryId === selectedFilter
+      return matchesSearch && matchesCategory
+    })
+  }, [globalNotes, searchQuery, selectedFilter]);
 
   // Eventos para el Widget Lateral
-  const upcomingEvents = globalNotes.filter(n =>
-    n.category?.name?.toLowerCase().includes("evento") ||
-    n.category?.name?.toLowerCase().includes("acad") ||
-    n.title.toLowerCase().includes("inscrip") ||
-    n.title.toLowerCase().includes("fecha")
-  ).slice(0, 3)
+  const upcomingEvents = useMemo(() => {
+    return globalNotes.filter(n =>
+      n.category?.name?.toLowerCase().includes("evento") ||
+      n.category?.name?.toLowerCase().includes("acad") ||
+      n.title.toLowerCase().includes("inscrip") ||
+      n.title.toLowerCase().includes("fecha")
+    ).slice(0, 3)
+  }, [globalNotes]);
 
   return (
     <div className="bg-slate-50 dark:bg-zinc-900 text-zinc-900 dark:text-slate-100 min-h-screen transition-colors duration-300">

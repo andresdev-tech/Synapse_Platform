@@ -1,20 +1,35 @@
 "use client"
 
 import { useState } from "react"
+import Image from "next/image"
 import { X, ZoomIn } from "lucide-react"
 
-export function ImageZoom({ src, alt, className, loading }: { src: string, alt: string, className?: string, loading?: "lazy" | "eager" }) {
+export function ImageZoom({ src, alt, className, loading, width, height }: { src: string, alt: string, className?: string, loading?: "lazy" | "eager", width?: number | string, height?: number | string }) {
   const [isOpen, setIsOpen] = useState(false)
 
   return (
     <>
       <div className="relative group/zoom cursor-pointer" onClick={() => setIsOpen(true)}>
-        <img 
-          src={src} 
-          alt={alt} 
-          className={className}
-          loading={loading || "lazy"}
-        />
+        {width && height ? (
+          <Image 
+            src={src} 
+            alt={alt} 
+            className={className}
+            priority={loading === "eager"}
+            width={typeof width === 'string' ? parseInt(width) : width}
+            height={typeof height === 'string' ? parseInt(height) : height}
+            style={{ objectFit: 'cover' }}
+          />
+        ) : (
+          <img 
+            src={src} 
+            alt={alt} 
+            className={className}
+            loading={loading || "lazy"}
+            fetchPriority={loading === "eager" ? "high" : "auto"}
+            decoding={loading === "eager" ? "sync" : "async"}
+          />
+        )}
         <div className="absolute inset-0 bg-black/0 group-hover/zoom:bg-black/20 transition-all duration-300 rounded-xl flex items-center justify-center opacity-0 group-hover/zoom:opacity-100">
           <div className="bg-white/90 text-slate-800 px-4 py-2 rounded-full font-semibold flex items-center shadow-lg transform translate-y-4 group-hover/zoom:translate-y-0 transition-all duration-300">
             <ZoomIn className="w-5 h-5 mr-2" />
