@@ -163,4 +163,24 @@ router.put("/:id", verifyToken, NoteController.update);
  */
 router.delete("/:id", verifyToken, NoteController.delete);
 
+/**
+ * @swagger
+ * /api/notes/{id}/reaction:
+ *   post:
+ *     summary: Dar o quitar reacción a una nota
+ *     tags: [Notes]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Reacción registrada o eliminada
+ */
+router.post("/:id/reaction", verifyToken, NoteController.toggleReaction as any);
+
 export default router;

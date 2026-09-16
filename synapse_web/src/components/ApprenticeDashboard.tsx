@@ -192,12 +192,21 @@ const SortableNoteItem = memo(function SortableNoteItem({ note }: { note: Note }
           </div>
         )}
 
-        <div className="mt-8 pt-5 border-t border-slate-100 dark:border-zinc-700 flex items-center justify-between text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">
+        <div className="mt-8 pt-5 border-t border-slate-100 dark:border-zinc-700 flex items-center justify-between text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 relative z-20">
           <div className="flex items-center">
             <User className="w-4 h-4 mr-2 text-slate-300 dark:text-slate-500" />
-            {note.author?.name || "Administración"}
+            <span className="truncate max-w-[100px]">{note.author?.name || "Administración"}</span>
           </div>
-          <span>{new Date(note.createdAt).toLocaleDateString()}</span>
+          
+          <div className="flex items-center gap-4">
+            <span>{new Date(note.createdAt).toLocaleDateString()}</span>
+            <div className="flex items-center text-sena-500 hover:text-sena-600 transition-colors group cursor-pointer" title="Ver comentarios">
+              <svg className="w-4 h-4 mr-1 group-hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+              </svg>
+              <span className="hidden sm:inline">Comentar</span>
+            </div>
+          </div>
         </div>
       </div>
     </article>
