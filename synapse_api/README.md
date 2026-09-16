@@ -135,3 +135,34 @@ Con el servidor en ejecución, visita:
 👉 **`http://localhost:4000/api-docs`**
 
 *Asegúrate de configurar el token Bearer en el botón "Authorize" de Swagger para probar rutas protegidas.*
+
+---
+
+## 🧪 Pruebas (Testing & QA)
+
+El proyecto cuenta con un entorno de pruebas robusto, configurado para no afectar ni alterar la base de datos de producción mediante el uso de mocks.
+
+### Arquitectura de Pruebas
+- **Framework**: `Vitest`
+- **Simulación de DB**: `vitest-mock-extended` (intercepta el cliente de Prisma).
+- **Peticiones HTTP**: `supertest` (para probar endpoints sin abrir puertos reales).
+
+### Estructura de Pruebas
+Las pruebas se ubican en la carpeta raíz `tests/`, agrupadas por dominios o módulos de la aplicación:
+```text
+synapse_api/
+├── tests/
+│   ├── auth.test.ts     # Suite de pruebas para autenticación, registro y JWT
+│   └── ...              # Futuras pruebas (chatbot, rag, usuarios, etc.)
+```
+
+### Ejecutar Pruebas
+Puedes ejecutar la batería completa de pruebas con los siguientes comandos:
+
+```bash
+# Correr todas las pruebas
+pnpm run test
+
+# Correr pruebas y generar reporte de cobertura (Coverage)
+pnpm run test:coverage
+```

@@ -103,6 +103,7 @@ Aquí tienes un resumen de los comandos útiles que puedes correr dentro de cada
 - **`pnpm run dev`**: Levanta el servidor local en modo desarrollo con recarga en caliente.
 - **`pnpm run build`**: *(Solo en Web)* Compila Next.js para producción.
 - **`pnpm run start`**: Inicia el servicio en entorno de producción.
+- **`pnpm run test`**: Ejecuta las suites de pruebas integradas usando Vitest (desde la raíz o en los microservicios correspondientes).
 - **`pnpm run lint`**: *(Solo en Web)* Ejecuta ESLint para analizar errores de estilo y código.
 - **`pnpm prisma generate`**: Regenera el cliente local del ORM basado en el esquema.
 - **`pnpm prisma db push`**: Sincroniza rápidamente la base de datos remota con tu modelo Prisma actual.
