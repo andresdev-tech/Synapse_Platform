@@ -10,6 +10,8 @@ import extractRoutes from "./modules/extract/extract.routes";
 import chatbotRoutes from "./modules/chatbot/chatbot.routes";
 import ragRoutes from "./modules/rag/rag.routes";
 import uploadRoutes from "./modules/upload/upload.routes";
+import auditLogRoutes from "./modules/audit-log/audit-log.routes";
+import roleRoutes from "./modules/role/role.routes";
 import swaggerUi from "swagger-ui-express";
 import { swaggerSpec } from "./swagger/swagger.config";
 
@@ -31,6 +33,8 @@ app.use("/api/extract-image", extractRoutes);
 app.use("/api/chatbot", chatbotRoutes);
 app.use("/api/rag", ragRoutes);
 app.use("/api/upload", uploadRoutes);
+app.use("/api/audit-logs", auditLogRoutes);
+app.use("/api/roles", roleRoutes);
 
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
