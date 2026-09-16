@@ -2,6 +2,7 @@
 
 import { use, useEffect, useState } from 'react';
 import { fetchApi } from '@/lib/fetchApi';
+import Image from 'next/image';
 import { useSession } from 'next-auth/react';
 import { ArrowLeft, User, Calendar, Download, AlertCircle, Heart, ThumbsUp, Lightbulb, Star } from 'lucide-react';
 import { useRouter } from 'next/navigation';
@@ -191,11 +192,13 @@ export default function BlogDetailPage({ params }: PageProps) {
 
           {/* Imagen Principal (Edge to Edge) */}
           {note.seoImage && (
-            <div className="w-full flex justify-center border-y border-slate-100 dark:border-zinc-800 bg-white dark:bg-zinc-900 py-6">
-              <img 
+            <div className="w-full flex justify-center border-y border-slate-100 dark:border-zinc-800 bg-white dark:bg-zinc-900 py-6 relative aspect-video max-h-[85vh]">
+              <Image 
                 src={note.seoImage} 
                 alt={note.title} 
-                className="max-w-full h-auto max-h-[85vh] object-contain"
+                fill
+                sizes="(max-width: 1920px) 100vw, 1920px"
+                className="object-contain"
                 onError={(e) => { e.currentTarget.style.display = 'none'; }}
               />
             </div>
@@ -227,8 +230,8 @@ export default function BlogDetailPage({ params }: PageProps) {
                 {note.attachments.map((att, idx) => {
                   if (att.type === 'image') {
                     return (
-                      <div key={idx} className="rounded-xl overflow-hidden border border-slate-200 dark:border-zinc-700 shadow-sm">
-                        <img src={att.url} alt="Adjunto" className="w-full h-auto object-cover" />
+                      <div key={idx} className="rounded-xl overflow-hidden border border-slate-200 dark:border-zinc-700 shadow-sm relative aspect-video">
+                        <Image src={att.url} alt="Adjunto" fill className="object-cover" />
                       </div>
                     );
                   } else if (att.type === 'video') {

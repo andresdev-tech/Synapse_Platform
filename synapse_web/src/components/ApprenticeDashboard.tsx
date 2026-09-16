@@ -2,6 +2,7 @@
 import { fetchApi } from "@/lib/fetchApi";
 
 import { useRouter } from "next/navigation"
+import Image from "next/image"
 import { useState, useEffect, useMemo, memo } from "react"
 import { useSession, signOut } from "next-auth/react"
 import { Megaphone, Link as LinkIcon, Send, User, MessageSquarePlus, X, GripHorizontal, Search, BookOpen, Calendar, Moon, Sun, Download, FileText, ArrowLeft } from "lucide-react"
@@ -19,10 +20,11 @@ const InlineVideoPlayer = memo(({ videoId, videoUrl }: { videoId: string, videoU
         onClick={() => setPlaying(true)}
         className="mt-3 group relative rounded-xl overflow-hidden border border-slate-200 dark:border-zinc-700 shadow-sm aspect-video bg-black cursor-pointer hover:shadow-xl transition-all duration-300"
       >
-        <img loading="lazy" decoding="async"
+        <Image
           src={`https://img.youtube.com/vi/${videoId}/hqdefault.jpg`}
           alt="Miniatura de Video YouTube"
-          className="w-full h-full object-cover opacity-70 group-hover:opacity-100 transition-all duration-300"
+          fill
+          className="object-cover opacity-70 group-hover:opacity-100 transition-all duration-300"
         />
         <div className="absolute inset-0 flex flex-col items-center justify-center">
           <div className="w-16 h-16 bg-red-600/90 group-hover:bg-red-600 rounded-full flex items-center justify-center shadow-[0_0_20px_rgba(220,38,38,0.5)] group-hover:scale-110 transition-all duration-300">
@@ -113,10 +115,12 @@ const SortableNoteItem = memo(function SortableNoteItem({ note }: { note: Note }
 
       {note.seoImage && (
         <div className="h-56 bg-slate-100 dark:bg-zinc-900 overflow-hidden relative">
-          <img loading="lazy" decoding="async"
+          <Image
             src={note.seoImage}
             alt={note.title}
-            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-in-out"
+            fill
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+            className="object-cover group-hover:scale-110 transition-transform duration-700 ease-in-out"
             onError={(e) => { e.currentTarget.style.display = 'none'; }}
           />
           <div className="absolute inset-0 bg-linear-to-t from-zinc-900/60 via-transparent to-transparent opacity-60 transition-opacity group-hover:opacity-80 dark:from-zinc-900/90"></div>
@@ -148,8 +152,8 @@ const SortableNoteItem = memo(function SortableNoteItem({ note }: { note: Note }
             {note.attachments.map((att, idx) => {
               if (att.type === 'image') {
                 return (
-                  <div key={idx} className="rounded-xl overflow-hidden mt-2 border border-slate-100 dark:border-zinc-700">
-                    <img loading="lazy" decoding="async" src={att.url} alt="Adjunto" className="w-full h-auto object-cover" />
+                  <div key={idx} className="rounded-xl overflow-hidden mt-2 border border-slate-100 dark:border-zinc-700 relative w-full aspect-video">
+                    <Image src={att.url} alt="Adjunto" fill className="object-cover" />
                   </div>
                 );
               } else if (att.type === 'video') {
@@ -673,10 +677,10 @@ export function ApprenticeDashboard({ initialNotes = [], initialCategories = [] 
                 Enlaces Rápidos
               </h3>
               <div className="space-y-3">
-                <a href="/ctma/inicio" className="block p-4 rounded-xl bg-slate-50 dark:bg-zinc-900 hover:bg-orange-50 dark:hover:bg-zinc-700 hover:text-orange-700 dark:hover:text-orange-400 border border-transparent dark:border-zinc-700 transition-colors group">
+                <NextLink href="/ctma/inicio" className="block p-4 rounded-xl bg-slate-50 dark:bg-zinc-900 hover:bg-orange-50 dark:hover:bg-zinc-700 hover:text-orange-700 dark:hover:text-orange-400 border border-transparent dark:border-zinc-700 transition-colors group">
                   <span className="block font-bold text-zinc-700 dark:text-slate-300 group-hover:text-orange-700 dark:group-hover:text-orange-400">CTMA Principal</span>
                   <span className="text-xs text-slate-500">Información del centro</span>
-                </a>
+                </NextLink>
                 <a href="https://caprendizaje.sena.edu.co/sgva/SGVA_Diseno/pag/login.aspx" target="_blank" rel="noopener noreferrer" className="block p-4 rounded-xl bg-slate-50 dark:bg-zinc-900 hover:bg-emerald-50 dark:hover:bg-zinc-700 hover:text-emerald-700 dark:hover:text-emerald-400 border border-transparent dark:border-zinc-700 transition-colors group">
                   <span className="block font-bold text-zinc-700 dark:text-slate-300 group-hover:text-emerald-700 dark:group-hover:text-emerald-400">SGVA</span>
                   <span className="text-xs text-slate-500">Sistema de Gestión Virtual de Aprendices</span>
@@ -718,16 +722,16 @@ export function ApprenticeDashboard({ initialNotes = [], initialCategories = [] 
                 Redes Oficiales
               </h3>
               <div className="grid grid-cols-4 gap-2">
-                <a href="https://www.facebook.com/SENAColombiaOficial/" target="_blank" rel="noopener noreferrer" className="flex items-center justify-center p-3 bg-slate-50 dark:bg-zinc-900 rounded-xl hover:bg-blue-100 dark:hover:bg-blue-900/40 text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
+                <a href="https://www.facebook.com/SENAColombiaOficial/" target="_blank" rel="noopener noreferrer" aria-label="Facebook SENA Oficial" className="flex items-center justify-center p-3 bg-slate-50 dark:bg-zinc-900 rounded-xl hover:bg-blue-100 dark:hover:bg-blue-900/40 text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
                   <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z" /></svg>
                 </a>
-                <a href="https://twitter.com/senacomunica" target="_blank" rel="noopener noreferrer" className="flex items-center justify-center p-3 bg-slate-50 dark:bg-zinc-900 rounded-xl hover:bg-sky-100 dark:hover:bg-sky-900/40 text-slate-400 hover:text-sky-500 dark:hover:text-sky-400 transition-colors">
+                <a href="https://twitter.com/senacomunica" target="_blank" rel="noopener noreferrer" aria-label="Twitter SENA Comunica" className="flex items-center justify-center p-3 bg-slate-50 dark:bg-zinc-900 rounded-xl hover:bg-sky-100 dark:hover:bg-sky-900/40 text-slate-400 hover:text-sky-500 dark:hover:text-sky-400 transition-colors">
                   <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M8.29 20.251c7.547 0 11.675-6.253 11.675-11.675 0-.178 0-.355-.012-.53A8.348 8.348 0 0022 5.92a8.19 8.19 0 01-2.357.646 4.118 4.118 0 001.804-2.27 8.224 8.224 0 01-2.605.996 4.107 4.107 0 00-6.993 3.743 11.65 11.65 0 01-8.457-4.287 4.106 4.106 0 001.27 5.477A4.072 4.072 0 012.8 9.713v.052a4.105 4.105 0 003.292 4.022 4.095 4.095 0 01-1.853.07 4.108 4.108 0 003.834 2.85A8.233 8.233 0 012 18.407a11.616 11.616 0 006.29 1.84" /></svg>
                 </a>
-                <a href="https://www.youtube.com/user/SENATV" target="_blank" rel="noopener noreferrer" className="flex items-center justify-center p-3 bg-slate-50 dark:bg-zinc-900 rounded-xl hover:bg-red-100 dark:hover:bg-red-900/40 text-slate-400 hover:text-red-600 dark:hover:text-red-500 transition-colors">
+                <a href="https://www.youtube.com/user/SENATV" target="_blank" rel="noopener noreferrer" aria-label="YouTube SENA TV" className="flex items-center justify-center p-3 bg-slate-50 dark:bg-zinc-900 rounded-xl hover:bg-red-100 dark:hover:bg-red-900/40 text-slate-400 hover:text-red-600 dark:hover:text-red-500 transition-colors">
                   <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" /></svg>
                 </a>
-                <a href="https://www.instagram.com/senacomunica" target="_blank" rel="noopener noreferrer" className="flex items-center justify-center p-3 bg-slate-50 dark:bg-zinc-900 rounded-xl hover:bg-pink-100 dark:hover:bg-pink-900/40 text-slate-400 hover:text-pink-600 dark:hover:text-pink-500 transition-colors">
+                <a href="https://www.instagram.com/senacomunica" target="_blank" rel="noopener noreferrer" aria-label="Instagram SENA Comunica" className="flex items-center justify-center p-3 bg-slate-50 dark:bg-zinc-900 rounded-xl hover:bg-pink-100 dark:hover:bg-pink-900/40 text-slate-400 hover:text-pink-600 dark:hover:text-pink-500 transition-colors">
                   <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z" /></svg>
                 </a>
               </div>
@@ -768,11 +772,14 @@ export function ApprenticeDashboard({ initialNotes = [], initialCategories = [] 
             </div>
 
             <div className="flex gap-4">
-              <a href="https://www.facebook.com/SENA/" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-slate-100 dark:bg-zinc-800 flex items-center justify-center hover:bg-sena-100 dark:hover:bg-sena-900 hover:text-sena-500 dark:hover:text-sena-400 transition-colors border border-transparent dark:border-zinc-700">
+              <a href="https://www.facebook.com/SENA/" target="_blank" rel="noopener noreferrer" aria-label="Facebook SENA Oficial" className="w-10 h-10 rounded-full bg-slate-100 dark:bg-zinc-800 flex items-center justify-center hover:bg-sena-100 dark:hover:bg-sena-900 hover:text-sena-500 dark:hover:text-sena-400 transition-colors border border-transparent dark:border-zinc-700">
                 <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path fillRule="evenodd" d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z" clipRule="evenodd" /></svg>
               </a>
-              <a href="https://twitter.com/SENAComunica" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-slate-100 dark:bg-zinc-800 flex items-center justify-center hover:bg-sky-100 dark:hover:bg-sky-900 hover:text-sky-500 dark:hover:text-sky-400 transition-colors border border-transparent dark:border-zinc-700">
+              <a href="https://twitter.com/SENAComunica" target="_blank" rel="noopener noreferrer" aria-label="Twitter SENA Comunica" className="w-10 h-10 rounded-full bg-slate-100 dark:bg-zinc-800 flex items-center justify-center hover:bg-sky-100 dark:hover:bg-sky-900 hover:text-sky-500 dark:hover:text-sky-400 transition-colors border border-transparent dark:border-zinc-700">
                 <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path d="M8.29 20.251c7.547 0 11.675-6.253 11.675-11.675 0-.178 0-.355-.012-.53A8.348 8.348 0 0022 5.92a8.19 8.19 0 01-2.357.646 4.118 4.118 0 001.804-2.27 8.224 8.224 0 01-2.605.996 4.107 4.107 0 00-6.993 3.743 11.65 11.65 0 01-8.457-4.287 4.106 4.106 0 001.27 5.477A4.072 4.072 0 012.8 9.713v.052a4.105 4.105 0 003.292 4.022 4.095 4.095 0 01-1.853.07 4.108 4.108 0 003.834 2.85A8.233 8.233 0 012 18.407a11.616 11.616 0 006.29 1.84" /></svg>
+              </a>
+              <a href="https://www.instagram.com/senacomunica/" target="_blank" rel="noopener noreferrer" aria-label="Instagram SENA Comunica" className="w-10 h-10 rounded-full bg-slate-100 dark:bg-zinc-800 flex items-center justify-center hover:bg-pink-100 dark:hover:bg-pink-900 hover:text-pink-500 dark:hover:text-pink-400 transition-colors border border-transparent dark:border-zinc-700">
+                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path fillRule="evenodd" d="M12.315 2c2.43 0 2.784.013 3.808.06 1.064.049 1.791.218 2.427.465a4.902 4.902 0 011.772 1.153 4.902 4.902 0 011.153 1.772c.247.636.416 1.363.465 2.427.048 1.067.06 1.407.06 4.123v.08c0 2.643-.012 2.987-.06 4.043-.049 1.064-.218 1.791-.465 2.427a4.902 4.902 0 01-1.153 1.772 4.902 4.902 0 01-1.772 1.153c-.636.247-1.363.416-2.427.465-1.067.048-1.407.06-4.123.06h-.08c-2.643 0-2.987-.012-4.043-.06-1.064-.049-1.791-.218-2.427-.465a4.902 4.902 0 01-1.772-1.153 4.902 4.902 0 01-1.153-1.772c-.247-.636-.416-1.363-.465-2.427-.047-1.024-.06-1.379-.06-3.808v-.63c0-2.43.013-2.784.06-3.808.049-1.064.218-1.791.465-2.427a4.902 4.902 0 011.153-1.772A4.902 4.902 0 015.45 2.525c.636-.247 1.363-.416 2.427-.465C8.901 2.013 9.256 2 11.685 2h.63zm-.081 1.802h-.468c-2.456 0-2.784.011-3.807.058-.975.045-1.504.207-1.857.344-.467.182-.8.398-1.15.748-.35.35-.566.683-.748 1.15-.137.353-.3.882-.344 1.857-.047 1.023-.058 1.351-.058 3.807v.468c0 2.456.011 2.784.058 3.807.045.975.207 1.504.344 1.857.182.466.399.8.748 1.15.35.35.683.566 1.15.748.353.137.882.3 1.857.344 1.054.048 1.37.058 4.041.058h.08c2.597 0 2.917-.01 3.96-.058.976-.045 1.505-.207 1.858-.344.466-.182.8-.398 1.15-.748.35-.35.566-.683.748-1.15.137-.353.3-.882.344-1.857.048-1.055.058-1.37.058-4.041v-.08c0-2.597-.01-2.917-.058-3.96-.045-.976-.207-1.505-.344-1.858a3.097 3.097 0 00-.748-1.15 3.098 3.098 0 00-1.15-.748c-.353-.137-.882-.3-1.857-.344-1.023-.047-1.351-.058-3.807-.058zM12 6.865a5.135 5.135 0 110 10.27 5.135 5.135 0 010-10.27zm0 1.802a3.333 3.333 0 100 6.666 3.333 3.333 0 000-6.666zm5.338-3.205a1.2 1.2 0 110 2.4 1.2 1.2 0 010-2.4z" clipRule="evenodd" /></svg>
               </a>
             </div>
           </div>
