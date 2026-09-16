@@ -1,25 +1,31 @@
 import { z } from "zod";
 
-const passwordRegex = /^(?=.*[A-Z])(?=.*\d.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]).{6,}$/;
-const passwordMessage = "La contraseña debe tener mínimo 6 caracteres, una mayúscula, dos números y un carácter especial";
+const allowedEmail = z.string().trim().toLowerCase().email("Correo inválido").refine(
+  (email) => email.endsWith("@soy.sena.edu.co") || email.endsWith("@gmail.com"),
+  "Solo se permiten correos @soy.sena.edu.co o @gmail.com"
+);
 
 export const registerSchema = z.object({
-  name: z.string().min(2, "El nombre es muy corto").max(100),
-  email: z.string().email("Correo inválido"),
-  password: z.string().regex(passwordRegex, passwordMessage),
+  name: z.string().min(1, "El nombre es obligatorio"),
+  email: allowedEmail,
   captchaToken: z.string().optional()
 });
 
-export const forgotPasswordSchema = z.object({
-  email: z.string().email("Correo inválido")
+export const LoginAdmin = z.object({
+  email: allowedEmail,
+  captchaToken: z.string().optional()
 });
 
-export const resetPasswordSchema = z.object({
-  email: z.string().email("Correo inválido"),
-  code: z.string().length(6, "Código inválido"),
-  newPassword: z.string().regex(passwordRegex, passwordMessage)
-});
 export const loginSchema = z.object({
-  email: z.string().email("Correo inválido"),
-  password: z.string().min(1, "La contraseña es obligatoria"),
+  email: allowedEmail,
+});
+
+export const otpEmailSchema = z.object({
+  email: allowedEmail,
+  captchaToken: z.string().optional(),
+  adminOnly: z.boolean().optional(),
+});
+export const otpVerifySchema = z.object({
+  email: allowedEmail,
+  code: z.string().regex(/^\d{6}$/, "El código debe tener 6 dígitos"),
 });

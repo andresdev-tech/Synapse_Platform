@@ -1,51 +1,59 @@
 import { Response } from "express";
-import { prisma } from "../../config/prisma";
+import { ZodError } from "zod";
+import { UserService } from "./user.service";
+import { updateLayoutSchema } from "./user.schema";
 import { AuthRequest } from "../../middleware/auth.middleware";
 
-
-
-export const updateLayout = async (req: AuthRequest, res: Response): Promise<void> => {
-  const userId = req.user?.id;
-  if (!userId) {
-    res.status(401).json({ error: "No autorizado" });
-    return;
+export class UserController {
+  static async getUsers(_req: AuthRequest, res: Response): Promise<void> {
+    try {
+      const users = await UserService.getAllUsers();
+      res.json(users);
+    } catch (error) {
+      console.error("Error al obtener usuarios:", error);
+      res.status(500).json({ error: "Error al obtener usuarios" });
+    }
   }
-  const { layoutPrefs } = req.body;
-  try {
-    const user = await prisma.user.update({
-      where: { id: userId },
-      data: { layoutPrefs: JSON.stringify(layoutPrefs) },
-    });
-    res.json(user);
-  } catch (error) {
-    res.status(500).json({ error: "Error al actualizar preferencias" });
-  }
-};
 
-export const getLayout = async (req: AuthRequest, res: Response): Promise<void> => {
-  const userId = req.user?.id;
-  if (!userId) {
-    res.status(401).json({ error: "No autorizado" });
-    return;
-  }
-  try {
-    const user = await prisma.user.findUnique({
-      where: { id: userId },
-      select: { layoutPrefs: true }
-    });
-    res.json(user || { layoutPrefs: null });
-  } catch (error) {
-    res.status(500).json({ error: "Error al obtener preferencias" });
-  }
-};
+  static async getLayout(req: AuthRequest, res: Response): Promise<void> {
+    const userId = req.user?.id;
+    if (!userId) {
+      res.status(401).json({ error: "No autorizado" });
+      return;
+    }
 
-export const getUsers = async (req: AuthRequest, res: Response): Promise<void> => {
-  try {
-    const users = await prisma.user.findMany({
-      select: { id: true, name: true, email: true, role: true }
-    });
-    res.json(users);
-  } catch (error) {
-    res.status(500).json({ error: "Error al obtener usuarios" });
+    try {
+      const userLayout = await UserService.getUserLayout(userId);
+      res.json(userLayout);
+    } catch (error) {
+      console.error("Error al obtener preferencias:", error);
+      res.status(500).json({ error: "Error al obtener preferencias" });
+    }
+  }
+
+  static async updateLayout(req: AuthRequest, res: Response): Promise<void> {
+    const userId = req.user?.id;
+    if (!userId) {
+      res.status(401).json({ error: "No autorizado" });
+      return;
+    }
+
+    try {
+      const parsedData = updateLayoutSchema.parse(req.body);
+      const user = await UserService.updateUserLayout(userId, parsedData);
+      res.json(user);
+    } catch (error) {
+      if (error instanceof ZodError) {
+        res.status(400).json({ error: error.issues[0]?.message ?? "Datos inválidos" });
+        return;
+      }
+      console.error("Error al actualizar preferencias:", error);
+      res.status(500).json({ error: "Error al actualizar preferencias" });
+    }
   }
 }
+
+// Backward compatibility exports
+export const getUsers = UserController.getUsers;
+export const getLayout = UserController.getLayout;
+export const updateLayout = UserController.updateLayout;

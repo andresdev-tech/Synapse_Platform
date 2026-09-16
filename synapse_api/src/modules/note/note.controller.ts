@@ -1,148 +1,130 @@
 import { Request, Response } from "express";
-import { prisma } from "../../config/prisma";
-import { any } from "zod";
+import { ZodError } from "zod";
+import { NoteService } from "./note.service";
+import { createNoteSchema, updateNoteSchema } from "./note.schema";
+import { AuthRequest } from "../../middleware/auth.middleware";
 
-
-export const getGlobalNotes = async (req: Request, res: Response): Promise<void> => {
-  try {
-    const notes = await prisma.content.findMany({
-      where: { isGlobal: true },
-      include: { 
-        author: { select: { name: true, role: true } },
-        category: { select: { name: true } }
-      },
-      orderBy: { createdAt: "desc" },
-    });
-    res.json(notes);
-  } catch (error) {
-    res.status(500).json({ error: "Error al obtener las notas globales" });
-  }
-};
-
-export const getPersonalNotes = async (req: Request, res: Response): Promise<void> => {
-  const { userId } = req.params;
-  try {
-    const notes = await prisma.content.findMany({
-      // Se fuerza a string para evitar errores de tipo 'string | string[]'
-      where: { authorId: String(userId), isGlobal: false },
-      orderBy: { createdAt: "desc" },
-    });
-    res.json(notes);
-  } catch (error) {
-    res.status(500).json({ error: "Error al obtener notas personales" });
-  }
-};
-
-export const createNote = async (req: Request, res: Response): Promise<void> => {
-  const { title, body, isGlobal, authorId, imageUrl, published, categoryId, excerpt, seoTitle, seoDescription } = req.body;
-  try {
-    const slug = title.toLowerCase().replace(/ /g, "-").replace(/[^\w-]/g, "");
-    const note = await prisma.content.create({
-      data: { 
-        title, 
-        slug, 
-        body, 
-        excerpt, 
-        isGlobal, 
-        authorId, 
-        seoImage: imageUrl, 
-        seoTitle, 
-        seoDescription,
-        featured: false, 
-        publishedAt: published ? new Date() : null, 
-        categoryId, 
-        type: 'ARTICLE', 
-        status: 'PUBLISHED', 
-        visibility: isGlobal ? 'PUBLIC' : 'PRIVATE' 
-      },
-    });
-    res.status(201).json(note);
-  } catch (error) {
-    console.error("Error creating note:", error);
-    res.status(500).json({ error: "Error al crear la nota" });
-  }
-};
-
-export const updateNote = async (req: Request, res: Response): Promise<void> => {
-  const { id } = req.params;
-  const { title, body, isGlobal, imageUrl, published, categoryId, excerpt, seoTitle, seoDescription } = req.body;
-  try {
-    const updateData: any = {
-      title,
-      body,
-      excerpt,
-      isGlobal,
-      seoImage: imageUrl,
-      seoTitle,
-      seoDescription,
-      categoryId,
-    };
-    
-    if (published !== undefined) {
-      updateData.publishedAt = published ? new Date() : null;
+export class NoteController {
+  static async getGlobal(req: Request, res: Response): Promise<void> {
+    try {
+      const section = req.query.section as string | undefined;
+      const notes = await NoteService.getGlobalNotes(section);
+      res.json(notes);
+    } catch (error) {
+      console.error("Error al obtener notas globales:", error);
+      res.status(500).json({ error: "Error al obtener las notas globales" });
     }
-    
-    const note = await prisma.content.update({
-      where: { id: String(id) },
-      data: updateData,
-    });
-    res.json(note);
-  } catch (error) {
-    console.error("Error updating note:", error);
-    res.status(500).json({ error: "Error al actualizar la nota" });
   }
-};
 
-export const deleteNote = async (req: Request, res: Response): Promise<void> => {
-  const { id } = req.params;
-  try {
-    // Eliminación física (Hard Delete) en lugar de Soft Delete,
-    // ya que 'deletedAt' no existe en el esquema de Prisma para 'Note'.
-    await prisma.content.delete({ 
-      where: { id: String(id) }
-    });
-    res.status(204).send();
-  } catch (error) {
-    res.status(500).json({ error: "Error al eliminar la nota" });
+  static async getPersonal(req: Request, res: Response): Promise<void> {
+    const { userId } = req.params;
+    try {
+      const notes = await NoteService.getPersonalNotes(userId as string);
+      res.json(notes);
+    } catch (error) {
+      console.error("Error al obtener notas personales:", error);
+      res.status(500).json({ error: "Error al obtener notas personales" });
+    }
   }
-};
 
-export const getSuggestions = async (req: Request, res: Response): Promise<void> => {
-  try {
-    const suggestions = await prisma.content.findMany({
-      where: { isGlobal: false },
-      include: { 
-        author: { select: { name: true, email: true } }, 
-        category: { select: { name: true } } 
-      },
-      orderBy: { createdAt: "desc" }
-    });
-    res.json(suggestions);
-  } catch (error) {
-    console.error("Error getting suggestions:", error);
-    res.status(500).json({ error: "Error al obtener sugerencias" });
+  static async getSuggestions(_req: Request, res: Response): Promise<void> {
+    try {
+      const suggestions = await NoteService.getSuggestions();
+      res.json(suggestions);
+    } catch (error) {
+      console.error("Error al obtener sugerencias:", error);
+      res.status(500).json({ error: "Error al obtener sugerencias" });
+    }
   }
-};
 
-export const getNoteById = async (req: Request, res: Response): Promise<void> => {
-  const { id } = req.params;
-  try {
-    const note = await prisma.content.findUnique({
-      where: { id: String(id) },
-      include: { 
-        author: { select: { name: true, email: true } }, 
-        category: { select: { name: true } } 
+  static async getById(req: Request, res: Response): Promise<void> {
+    const { id } = req.params;
+    try {
+      const note = await NoteService.getNoteById(id as string);
+      if (!note) {
+        res.status(404).json({ error: "Nota no encontrada" });
+        return;
       }
-    });
+      res.json(note);
+    } catch (error) {
+      console.error("Error al obtener nota por id:", error);
+      res.status(500).json({ error: "Error al obtener la nota" });
+    }
+  }
+
+  static async create(req: AuthRequest, res: Response): Promise<void> {
+    try {
+      const parsedData = createNoteSchema.parse(req.body);
+      const note = await NoteService.createNote(parsedData, req.user?.id);
+      res.status(201).json(note);
+    } catch (error) {
+      if (error instanceof ZodError) {
+        res.status(400).json({ error: error.issues[0]?.message ?? "Datos inválidos" });
+        return;
+      }
+      console.error("Error al crear nota:", error);
+      res.status(500).json({ error: error instanceof Error ? error.message : "Error al crear la nota" });
+    }
+  }
+
+  static async update(req: Request, res: Response): Promise<void> {
+    const { id } = req.params;
+    try {
+      const parsedData = updateNoteSchema.parse(req.body);
+      const note = await NoteService.updateNote(id as string, parsedData);
+      res.json(note);
+    } catch (error) {
+      if (error instanceof ZodError) {
+        res.status(400).json({ error: error.issues[0]?.message ?? "Datos inválidos" });
+        return;
+      }
+      console.error("Error al actualizar nota:", error);
+      res.status(500).json({ error: "Error al actualizar la nota" });
+    }
+  }
+
+  static async delete(req: Request, res: Response): Promise<void> {
+    const { id } = req.params;
+    try {
+      await NoteService.deleteNote(id as string);
+      res.status(204).send();
+    } catch (error) {
+      console.error("Error al eliminar nota:", error);
+      res.status(500).json({ error: "Error al eliminar la nota" });
+    }
+  }
+
+  static async toggleReaction(req: AuthRequest, res: Response): Promise<void> {
+    const { id } = req.params;
+    const { type = "LIKE" } = req.body;
+    const userId = req.user?.id;
     
-    if (!note) {
-      res.status(404).json({ error: "Nota no encontrada" });
+    if (!userId) {
+      res.status(401).json({ error: "No autorizado" });
       return;
     }
     
-    res.json(note);
-  } catch (error) {
-    console.error("Error getting note by id:", error);
-    res.status(500).json({ error: "Error al obtener la nota" });
+    const validTypes = ["LIKE", "LOVE", "USEFUL", "IMPORTANT"];
+    if (!validTypes.includes(type)) {
+      res.status(400).json({ error: "Tipo de reacción inválido" });
+      return;
+    }
+
+    try {
+      const result = await NoteService.toggleReaction(id, userId, type as any);
+      res.json(result);
+    } catch (error) {
+      console.error("Error al dar reacción:", error);
+      res.status(500).json({ error: "Error al registrar la reacción" });
+    }
   }
-};
+}
+
+// Backward compatibility exports
+export const getGlobalNotes = NoteController.getGlobal;
+export const getPersonalNotes = NoteController.getPersonal;
+export const getSuggestions = NoteController.getSuggestions;
+export const getNoteById = NoteController.getById;
+export const createNote = NoteController.create;
+export const updateNote = NoteController.update;
+export const deleteNote = NoteController.delete;

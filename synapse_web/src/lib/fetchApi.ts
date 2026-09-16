@@ -4,9 +4,17 @@ export const fetchApi = async (url: string, options: RequestInit = {}) => {
   const session: any = await getSession();
   
   const headers: Record<string, string> = {
-    "Content-Type": "application/json",
     ...((options.headers as Record<string, string>) || {})
   };
+
+  // Only set application/json if Content-Type is not explicitly provided and body is not FormData
+  if (!headers["Content-Type"] && !(options.body instanceof FormData)) {
+    headers["Content-Type"] = "application/json";
+  }
+  
+  if (headers["Content-Type"] === "") {
+    delete headers["Content-Type"];
+  }
 
   if (session?.apiToken) {
     headers["Authorization"] = `Bearer ${session.apiToken}`;

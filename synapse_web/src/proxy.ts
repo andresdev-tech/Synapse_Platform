@@ -23,8 +23,7 @@ export default withAuth(
     `;
     
     const contentSecurityPolicyHeaderValue = cspHeader.replace(/\s{2,}/g, ' ').trim();
-
-    response.headers.set('Content-Security-Policy', contentSecurityPolicyHeaderValue);
+    // response.headers.set('Content-Security-Policy', contentSecurityPolicyHeaderValue);
     response.headers.set('X-Content-Type-Options', 'nosniff');
     response.headers.set('X-Frame-Options', 'DENY');
     response.headers.set('X-XSS-Protection', '1; mode=block');
@@ -40,6 +39,11 @@ export default withAuth(
       authorized: ({ token, req }) => {
         const { pathname } = req.nextUrl;
         
+        // Permitir estáticos, CSS, imágenes y scripts para que no se bloqueen si falla el matcher
+        if (pathname.startsWith("/_next/") || pathname.startsWith("/favicon") || pathname.includes(".")) {
+          return true;
+        }
+
         // Todas las llamadas a la API (Proxy y Auth) deben pasar directo; el Backend Express valida los tokens
         if (pathname.startsWith("/api/")) {
           return true;
@@ -49,8 +53,7 @@ export default withAuth(
         if (
           pathname.startsWith("/login") || 
           pathname.startsWith("/register") || 
-          pathname.startsWith("/verify-email") || 
-          pathname.startsWith("/forgot-password")
+          pathname.startsWith("/verify-email")
         ) {
           return true;
         }

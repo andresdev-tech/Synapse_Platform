@@ -2,7 +2,7 @@ import { prisma } from "../../config/prisma";
 
 export class AuthRepository {
   static async findUserByEmail(email: string) {
-    return await prisma.user.findUnique({ where: { email }, include: { role: true } })
+    return await prisma.user.findUnique({ where: { email }, include: { role: { select: { name: true } } } })
   }
 
   static async findRoleByName(name: string) {
@@ -10,46 +10,16 @@ export class AuthRepository {
   }
 
   static async createRole(name: string) {
-    return await prisma.role.create({ data: { name: name as any } })
+    return await prisma.role.create({ data: { name: name as any, updatedAt: new Date() } })
   }
 
   static async createUser(data: any) {
-    return await prisma.user.create({ data })
+    return await prisma.user.create({ data: { ...data, updatedAt: new Date() } })
   }
 
   static async createVerificationCode(email: string, code: string, expiresAt: Date) {
     return await prisma.verificationCode.create({
       data: { email, code, expiresAt }
-    })
-  }
-
-  static async createPasswordResetCode(email: string, code: string, expiresAt: Date) {
-    return await prisma.passwordReset.create({
-      data: { email, code, expiresAt }
-    })
-  }
-
-  static async findValidPasswordResetCode(email: string, code: string) {
-    return await prisma.passwordReset.findFirst({
-      where: {
-        email,
-        code,
-        expiresAt: { gt: new Date() }
-      },
-      orderBy: { createdAt: 'desc' }
-    })
-  }
-
-  static async updateUserPassword(email: string, hashedPassword: string) {
-    return await prisma.user.update({
-      where: { email },
-      data: { password: hashedPassword }
-    })
-  }
-
-  static async deletePasswordResetCodes(email: string) {
-    return await prisma.passwordReset.deleteMany({
-      where: { email }
     })
   }
 
@@ -70,6 +40,47 @@ export class AuthRepository {
   static async deleteVerificationCodes(email: string) {
     return await prisma.verificationCode.deleteMany({
       where: { email }
+    })
+  }
+
+  static async deleteVerificationCodesExceptLatest(email: string) {
+    const latest = await prisma.verificationCode.findFirst({
+      where: { email },
+      orderBy: { createdAt: "desc" },
+    });
+
+    if (!latest) return;
+
+    await prisma.verificationCode.deleteMany({
+      where: { email, id: { not: latest.id } },
+    });
+  }
+
+  static async findAdminByEmail(email: string) {
+    return await prisma.user.findUnique({
+      where: {
+        email,
+        role: {
+          name: {
+            in: ["ADMIN", "SUPER_ADMIN"]
+          }
+        }
+      }
+    })
+  }
+
+  static async createadmin(datas) {
+    return await prisma.user.create({
+      data: {
+        name: datas.name,
+        email: datas.email,
+        emailVerified: new Date(),
+        image: null,
+        status: datas.state,
+        role: {connect: {name: 'ADMIN'}},
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      }
     })
   }
 }

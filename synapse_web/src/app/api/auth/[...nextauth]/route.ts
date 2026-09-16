@@ -7,20 +7,22 @@ export const authOptions: NextAuthOptions = {
       name: "Credentials",
       credentials: {
         email: { label: "Email", type: "text" },
-        password: { label: "Password", type: "password" }
+        otpCode: { label: "OTP", type: "text" },
+        adminOnly: { label: "AdminOnly", type: "text" },
       },
       async authorize(credentials) {
-        if (!credentials?.email || !credentials?.password) {
+        if (!credentials?.email || !credentials.otpCode) {
           return null
         }
         
         try {
-          const res = await fetch("http://127.0.0.1:4000/api/auth/login", {
+          const backendUrl = process.env.API_BACKEND_URL || "http://127.0.0.1:4000/api";
+          const res = await fetch(`${backendUrl}/auth/otp/verify`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ 
-              email: credentials.email, 
-              password: credentials.password 
+              email: credentials.email,
+              code: credentials.otpCode,
             })
           })
           
@@ -31,12 +33,25 @@ export const authOptions: NextAuthOptions = {
           }
           
           if (data.success && data.data?.user) {
+            const user = data.data.user
+            if (credentials.adminOnly === "true") {
+              const role = user.role
+              if (role !== "ADMIN" && role !== "SUPER_ADMIN") {
+                throw new Error("Acceso denegado: Esta sección es exclusiva para Administradores y Super Administradores.")
+              }
+            } else {
+              const role = user.role
+              if (role === "ADMIN" || role === "SUPER_ADMIN") {
+                throw new Error("Esta cuenta pertenece al personal administrativo. Por favor, utiliza el acceso designado para tu perfil.")
+              }
+            }
+
             return {
-              id: data.data.user.id,
-              name: data.data.user.name,
-              email: data.data.user.email,
-              role: data.data.user.role,
-              layoutPrefs: data.data.user.layoutPrefs,
+              id: user.id,
+              name: user.name,
+              email: user.email,
+              role: user.role,
+              layoutPrefs: user.layoutPrefs,
               apiToken: data.data.token
             }
           }

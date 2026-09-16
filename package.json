@@ -4,7 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "concurrently -c \"cyan,magenta\" -n \"backend,frontend\" \"cd synapse_api && pnpm dev\" \"cd synapse_web && pnpm dev\""
+    "dev": "concurrently -c \"cyan,magenta\" -n \"backend,frontend\" \"cd synapse_api && pnpm dev\" \"cd synapse_web && pnpm dev\"",
+    "test": "cd synapse_api && pnpm test",
+    "test:api": "cd synapse_api && pnpm test"
   },
   "keywords": [],
   "author": "",

@@ -3,7 +3,8 @@ import { fetchApi } from "@/lib/fetchApi";
 
 import { useState, useEffect } from "react"
 import { useSession } from "next-auth/react"
-import { Edit2, Trash2, Megaphone, Plus, Users, Image as ImageIcon, Tag, Activity } from "lucide-react"
+import { Edit2, Trash2, Megaphone, Plus, Users, Image as ImageIcon, Tag, Activity, Database } from "lucide-react"
+import RagControlCenter from "./RagControlCenter"
 
 interface Category {
   id: string
@@ -27,6 +28,7 @@ interface Note {
   isGlobal: boolean
   authorId: string
   categoryId?: string
+  section?: string
   category?: { name: string }
   author?: { name: string; role: string }
   createdAt: string
@@ -41,7 +43,16 @@ export function AdminDashboard() {
   const [newTitle, setNewTitle] = useState("")
   const [newContent, setNewContent] = useState("")
   const [newImageUrl, setNewImageUrl] = useState("")
-  const [newCategoryId, setNewCategoryId] = useState(""); const [newAttachments, setNewAttachments] = useState<{type: string, url: string}[]>([]);
+  const [ragName, setRagName] = useState("")
+  const [ragUrl, setRagUrl] = useState("")
+  const [ragMimeType, setRagMimeType] = useState("application/pdf")
+  const [ragSize, setRagSize] = useState("")
+  const [ragContent, setRagContent] = useState("")
+  const [ragFile, setRagFile] = useState<File | null>(null);
+  const [isUploadingRag, setIsUploadingRag] = useState(false);
+  const [newCategoryId, setNewCategoryId] = useState(""); 
+  const [newSection, setNewSection] = useState("");
+  const [newAttachments, setNewAttachments] = useState<{type: string, url: string}[]>([]);
   const [editingId, setEditingId] = useState<string | null>(null)
   const [isFormOpen, setIsFormOpen] = useState(false)
   const [isExtracting, setIsExtracting] = useState(false)
@@ -57,7 +68,7 @@ export function AdminDashboard() {
   const [editingCategoryId, setEditingCategoryId] = useState<string | null>(null)
   const [isCategoryFormOpen, setIsCategoryFormOpen] = useState(false)
   
-  const [activeTab, setActiveTab] = useState<"anuncios" | "sugerencias" | "categorias">("anuncios")
+  const [activeTab, setActiveTab] = useState<"anuncios" | "sugerencias" | "categorias" | "rag">("anuncios")
   const [suggestions, setSuggestions] = useState<Note[]>([])
 
   useEffect(() => {
@@ -76,7 +87,7 @@ export function AdminDashboard() {
     }
   }
 
-  // Efecto mÃ¡gico para extraer imÃ¡genes de links automÃ¡ticamente
+  // Efecto magico para extraer imagenes de links automaticamente
   useEffect(() => {
     const timer = setTimeout(async () => {
       setExtractError(false)
@@ -86,13 +97,13 @@ export function AdminDashboard() {
         return;
       }
 
-      // Si parece una imagen normal, la damos por vÃ¡lida inmediatamente
-      if (newImageUrl.match(/\.(jpeg|jpg|gif|png|webp)(\?.*)?$/i)) {
+      // Si parece una imagen normal, la damos por valida inmediatamente
+      if (newImageUrl.match(/\.(jpeg|jpg|gif|png|webp|svg)(\?.*)?$/i)) {
         setValidImageUrl(newImageUrl)
         return;
       }
 
-      // Si no tiene extensiÃ³n clara (ej. Google Images o link web), verificamos en el servidor
+      // Si no tiene extension clara (ej. Google Images o link web), verificamos en el servidor
       setIsExtracting(true)
       try {
         const res = await fetchApi(`/api/extract-image?url=${encodeURIComponent(newImageUrl)}`)
@@ -136,6 +147,44 @@ export function AdminDashboard() {
     }
   }
 
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>, isAttachment: boolean = false, attachmentIndex: number = -1) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append("file", file);
+
+    try {
+      if (!isAttachment) setIsUploadingRag(true);
+      
+      const res = await fetchApi("/api/upload", {
+        method: "POST",
+        body: formData,
+      });
+      
+      const data = await res.json();
+      
+      if (data.url) {
+        if (!isAttachment) {
+          setRagUrl(data.url);
+          setRagSize(data.size.toString());
+          setRagMimeType(data.mimeType);
+          setRagFile(file);
+        } else if (attachmentIndex >= 0) {
+          const n = [...newAttachments];
+          n[attachmentIndex].url = data.url;
+          n[attachmentIndex].type = file.type.startsWith('image/') ? 'image' : file.type.includes('pdf') ? 'pdf' : 'document';
+          setNewAttachments(n);
+        }
+      }
+    } catch (error) {
+      console.error("Error uploading file:", error);
+      alert("Error al subir el archivo.");
+    } finally {
+      if (!isAttachment) setIsUploadingRag(false);
+    }
+  }
+
   const handleSaveNote = async () => {
     if (!newTitle.trim() || !newContent.trim()) return
 
@@ -146,11 +195,21 @@ export function AdminDashboard() {
       imageUrl: newImageUrl.trim() || null,
       attachments: newAttachments,
       categoryId: newCategoryId || null,
+      section: newSection || null,
       isGlobal: true,
       published: true,
       authorId: session?.user?.id,
       seoTitle: newTitle.trim(),
-      seoDescription: newContent.trim().substring(0, 150)
+      seoDescription: newContent.trim().substring(0, 150),
+      ...(ragName.trim() && ragUrl.trim() && ragContent.trim() ? {
+        ragDocument: {
+          name: ragName.trim(),
+          url: ragUrl.trim(),
+          mimeType: ragMimeType,
+          size: ragSize ? Number(ragSize) : null,
+          content: ragContent.trim(),
+        }
+      } : {})
     }
 
     try {
@@ -171,7 +230,8 @@ export function AdminDashboard() {
       setNewTitle("")
       setNewContent("")
       setNewImageUrl("")
-      setNewCategoryId(""); setNewAttachments([]);
+      setRagName(""); setRagUrl(""); setRagMimeType("application/pdf"); setRagSize(""); setRagContent("")
+      setNewCategoryId(""); setNewSection(""); setNewAttachments([]);
       setEditingId(null)
       setIsFormOpen(false)
       fetchGlobalNotes()
@@ -184,7 +244,10 @@ export function AdminDashboard() {
     setNewTitle(note.title)
     setNewContent(note.body)
     setNewImageUrl(note.seoImage || "")
-    setNewCategoryId(note.categoryId || ""); setNewAttachments(note.attachments || []);
+    setRagName(""); setRagUrl(""); setRagMimeType("application/pdf"); setRagSize(""); setRagContent("")
+    setNewCategoryId(note.categoryId || "");
+    setNewSection(note.section || "");
+    setNewAttachments(note.attachments || []);
     setEditingId(note.id)
     setIsFormOpen(true)
   }
@@ -200,15 +263,15 @@ export function AdminDashboard() {
   }
 
   return (
-    <div className="w-full mx-auto space-y-8 px-4 md:px-8 py-8">
+    <div className="mx-auto w-full min-w-0 space-y-6 overflow-hidden px-3 py-5 sm:space-y-8 sm:px-4 sm:py-8 md:px-8">
       {/* BANNER DE BIENVENIDA */}
-      <div className="bg-gradient-to-r from-sena-600 via-sena-500 to-sena-400 rounded-3xl p-8 text-white shadow-xl relative overflow-hidden">
+      <div className="relative overflow-hidden rounded-3xl bg-linear-to-r from-sena-600 via-sena-500 to-sena-400 p-5 text-white shadow-xl sm:p-8">
         <div className="absolute top-0 right-0 opacity-10">
           <svg width="400" height="400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>
         </div>
         <div className="relative z-10">
-          <h1 className="text-3xl font-extrabold mb-2">Panel de Control General</h1>
-          <p className="text-sena-100 text-lg">Administra los anuncios, notas y recursos de Synapse CTMA.</p>
+          <h1 className="mb-2 text-2xl font-extrabold sm:text-3xl">Panel de Control General</h1>
+          <p className="text-base text-sena-100 sm:text-lg">Administra los anuncios, notas y recursos de Synapse CTMA.</p>
         </div>
       </div>
 
@@ -250,31 +313,40 @@ export function AdminDashboard() {
       </div>
 
       {/* TABS DE NAVEGACION */}
-      <div className="flex space-x-2 border-b border-slate-200 mb-6 px-4">
+      <div className="mb-6 flex flex-wrap gap-1 border-b border-slate-200 px-1 sm:gap-2 sm:px-4">
         <button 
           onClick={() => setActiveTab("anuncios")}
-          className={`pb-4 px-4 font-bold text-sm tracking-wide transition-colors border-b-2 ${activeTab === "anuncios" ? "text-sena-500 border-sena-500" : "text-slate-500 border-transparent hover:text-zinc-700"}`}
+          className={`min-h-12 flex-1 px-2 py-3 text-center text-[11px] font-bold tracking-wide transition-colors border-b-2 sm:flex-none sm:px-4 sm:text-sm ${activeTab === "anuncios" ? "text-sena-500 border-sena-500" : "text-slate-500 border-transparent hover:text-zinc-700"}`}
         >
           ANUNCIOS OFICIALES
         </button>
         <button 
           onClick={() => setActiveTab("categorias")}
-          className={`pb-4 px-4 font-bold text-sm tracking-wide transition-colors border-b-2 ${activeTab === "categorias" ? "text-sena-500 border-sena-500" : "text-slate-500 border-transparent hover:text-zinc-700"}`}
+          className={`min-h-12 flex-1 px-2 py-3 text-center text-[11px] font-bold tracking-wide transition-colors border-b-2 sm:flex-none sm:px-4 sm:text-sm ${activeTab === "categorias" ? "text-sena-500 border-sena-500" : "text-slate-500 border-transparent hover:text-zinc-700"}`}
         >
           ADMINISTRAR CATEGORÍAS
         </button>
         <button 
           onClick={() => setActiveTab("sugerencias")}
-          className={`pb-4 px-4 font-bold text-sm tracking-wide transition-colors border-b-2 flex items-center space-x-2 ${activeTab === "sugerencias" ? "text-sena-500 border-sena-500" : "text-slate-500 border-transparent hover:text-zinc-700"}`}
+          className={`min-h-12 flex-1 items-center justify-center gap-2 px-2 py-3 text-center text-[11px] font-bold tracking-wide transition-colors border-b-2 sm:flex-none sm:px-4 sm:text-sm ${activeTab === "sugerencias" ? "text-sena-500 border-sena-500" : "text-slate-500 border-transparent hover:text-zinc-700"}`}
         >
           <span>BUZÓN DE SUGERENCIAS</span>
           {suggestions.length > 0 && (
             <span className="bg-sena-100 text-sena-600 py-0.5 px-2 rounded-full text-xs">{suggestions.length}</span>
           )}
         </button>
+        <button 
+          onClick={() => setActiveTab("rag")}
+          className={`min-h-12 flex-1 px-2 py-3 text-center text-[11px] font-bold tracking-wide transition-colors border-b-2 sm:flex-none sm:px-4 sm:text-sm flex items-center justify-center gap-2 ${activeTab === "rag" ? "text-sena-500 border-sena-500" : "text-slate-500 border-transparent hover:text-zinc-700"}`}
+        >
+          <Database className="w-4 h-4" />
+          BASE DE CONOCIMIENTO (RAG)
+        </button>
       </div>
 
-            {activeTab === "categorias" ? (
+      {activeTab === "rag" ? (
+        <RagControlCenter />
+      ) : activeTab === "categorias" ? (
         <div className="bg-white p-8 rounded-3xl shadow-lg shadow-sena-100/50 border border-slate-100">
           <div className="flex items-center justify-between mb-8 border-b border-slate-100 pb-5">
             <div>
@@ -298,8 +370,8 @@ export function AdminDashboard() {
           </div>
           
           {/* FORMULARIO DE CATEGORÍA */}
-          <div className={`overflow-hidden transition-all duration-300 ease-in-out ${isCategoryFormOpen ? "max-h-[800px] opacity-100 mb-8" : "max-h-0 opacity-0"}`}>
-            <div className="bg-slate-50/80 p-8 rounded-3xl border border-slate-200 space-y-5">
+          <div className={`overflow-hidden transition-all duration-300 ease-in-out ${isCategoryFormOpen ? "max-h-[1000px] opacity-100 mb-8" : "max-h-0 opacity-0"}`}>
+            <div className="bg-slate-50/80 p-8 rounded-3xl border border-slate-200 space-y-5 overflow-y-auto custom-scrollbar max-h-[75vh]">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                   <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">Nombre de la Categoría</label>
@@ -330,7 +402,7 @@ export function AdminDashboard() {
                 <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">Descripción (Opcional)</label>
                 <textarea 
                   placeholder="Describe brevemente esta categoría..." 
-                  className="w-full p-4 bg-white border border-slate-200 rounded-xl focus:ring-4 focus:ring-sena-500/20 focus:border-sena-500 outline-none min-h-[100px] resize-y text-zinc-800 transition-all font-medium"
+                  className="w-full min-h-25 resize-y rounded-xl border border-slate-200 bg-white p-4 font-medium text-zinc-800 outline-none transition-all focus:border-sena-500 focus:ring-4 focus:ring-sena-500/20"
                   value={newCategoryDescription}
                   onChange={(e) => setNewCategoryDescription(e.target.value)}
                 />
@@ -537,7 +609,7 @@ export function AdminDashboard() {
       ) : (
       /* SECCIÓN PRINCIPAL */
       <div className="bg-white p-8 rounded-3xl shadow-lg shadow-sena-100/50 border border-slate-100">
-        <div className="flex justify-between items-center mb-8 border-b border-slate-100 pb-5">
+        <div className="mb-8 flex flex-col gap-4 border-b border-slate-100 pb-5 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <h2 className="text-2xl font-extrabold text-zinc-900 flex items-center">
               <Megaphone className="w-6 h-6 mr-3 text-sena-500" />
@@ -551,6 +623,7 @@ export function AdminDashboard() {
               setNewTitle("")
               setNewContent("")
               setNewImageUrl("")
+              setRagName(""); setRagUrl(""); setRagMimeType("application/pdf"); setRagSize(""); setRagContent("")
               setNewCategoryId(""); setNewAttachments([]);
               setIsFormOpen(!isFormOpen)
             }}
@@ -561,9 +634,9 @@ export function AdminDashboard() {
         </div>
 
         {/* FORMULARIO */}
-        <div className={`overflow-hidden transition-all duration-300 ease-in-out ${isFormOpen ? "max-h-[800px] opacity-100 mb-8" : "max-h-0 opacity-0"}`}>
-          <div className="bg-slate-50/80 p-8 rounded-3xl border border-slate-200 space-y-5">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className={`overflow-hidden transition-all duration-300 ease-in-out ${isFormOpen ? "max-h-[2000px] opacity-100 mb-8 " : "max-h-0 opacity-0"}`}>
+          <div className="bg-slate-50/80 p-8 rounded-3xl border border-slate-200 space-y-5 overflow-y-auto custom-scrollbar max-h-[75vh]">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div>
                 <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">Titulo del Anuncio</label>
                 <input 
@@ -587,6 +660,43 @@ export function AdminDashboard() {
                   ))}
                 </select>
               </div>
+              <div>
+                <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">Apartado (Sección)</label>
+                <select 
+                  className="w-full p-4 bg-white border border-slate-200 rounded-xl focus:ring-4 focus:ring-sena-500/20 focus:border-sena-500 outline-none text-zinc-800 font-medium transition-all appearance-none"
+                  value={newSection}
+                  onChange={(e) => setNewSection(e.target.value)}
+                >
+                  <option value="">-- Selecciona un apartado --</option>
+                  <optgroup label="Nosotros">
+                    <option value="Misión y Visión">Misión y Visión</option>
+                    <option value="Promesa de Valor">Promesa de Valor</option>
+                    <option value="Organigrama">Organigrama</option>
+                    <option value="Historia">Historia</option>
+                    <option value="Contáctenos">Contáctenos</option>
+                    <option value="SIGA">SIGA</option>
+                  </optgroup>
+                  <optgroup label="Aprendices">
+                    <option value="Bienestar al Aprendiz">Bienestar al Aprendiz</option>
+                    <option value="Etapa Productiva">Etapa Productiva</option>
+                    <option value="Administración Educativa">Administración Educativa</option>
+                    <option value="ICFES Pruebas TYT">ICFES Pruebas TYT</option>
+                    <option value="Biblioteca">Biblioteca</option>
+                    <option value="Cursos presenciales">Cursos presenciales</option>
+                  </optgroup>
+                  <optgroup label="Programas">
+                    <option value="Oferta Educativa">Oferta Educativa</option>
+                    <option value="Portafolio de Servicios">Portafolio de Servicios</option>
+                    <option value="Formación Virtual">Formación Virtual</option>
+                    <option value="Bilingüismo">Bilingüismo</option>
+                    <option value="Inscripciones">Inscripciones</option>
+                  </optgroup>
+                  <optgroup label="Servicios">
+                    <option value="Certificación de Competencias">Certificación de Competencias</option>
+                    <option value="Alturas">Alturas</option>
+                  </optgroup>
+                </select>
+              </div>
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -595,13 +705,29 @@ export function AdminDashboard() {
                   <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">URL de la Imagen (Opcional)</label>
                   <div className="relative">
                     <ImageIcon className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
-                    <input 
-                      type="url" 
-                      placeholder="https://ejemplo.com/imagen.jpg o link del blog..." 
-                      className="w-full pl-12 p-4 bg-white border border-slate-200 rounded-xl focus:ring-4 focus:ring-sena-500/20 focus:border-sena-500 outline-none text-zinc-800 transition-all font-medium"
-                      value={newImageUrl}
-                      onChange={(e) => setNewImageUrl(e.target.value)}
-                    />
+                    <div className="flex w-full gap-2 pl-12 pr-4 bg-white border border-slate-200 rounded-xl focus-within:ring-4 focus-within:ring-sena-500/20 focus-within:border-sena-500 transition-all">
+                      <input 
+                        type="url" 
+                        placeholder="https://ejemplo.com/imagen.jpg o link del blog..." 
+                        className="flex-1 py-4 bg-transparent outline-none text-zinc-800 font-medium"
+                        value={newImageUrl}
+                        onChange={(e) => setNewImageUrl(e.target.value)}
+                      />
+                      <label className="flex my-2 cursor-pointer items-center justify-center rounded-lg bg-slate-100 px-4 text-xs font-bold text-slate-700 hover:bg-slate-200">
+                        Subir
+                        <input type="file" className="hidden" accept="image/*" onChange={async (e) => {
+                          const file = e.target.files?.[0];
+                          if (!file) return;
+                          const formData = new FormData();
+                          formData.append("file", file);
+                          try {
+                            const res = await fetchApi("/api/upload", { method: "POST", body: formData });
+                            const data = await res.json();
+                            if (data.url) setNewImageUrl(data.url);
+                          } catch (error) { alert("Error al subir imagen"); }
+                        }} />
+                      </label>
+                    </div>
                   </div>
                 </div>
                 
@@ -640,8 +766,8 @@ export function AdminDashboard() {
               <div>
                 <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">Contenido Detallado</label>
                 <textarea 
-                  placeholder="Escribe toda la informaciÃ³n relevante aquÃ­..." 
-                  className="w-full p-5 bg-white border border-slate-200 rounded-xl focus:ring-4 focus:ring-sena-500/20 focus:border-sena-500 outline-none min-h-[160px] h-full resize-y text-zinc-800 transition-all font-medium"
+                  placeholder="Escribe toda la información relevante aquí..." 
+                  className="h-full min-h-40 w-full resize-y rounded-xl border border-slate-200 bg-white p-5 font-medium text-zinc-800 outline-none transition-all focus:border-sena-500 focus:ring-4 focus:ring-sena-500/20"
                   value={newContent}
                   onChange={(e) => setNewContent(e.target.value)}
                 />
@@ -666,17 +792,23 @@ export function AdminDashboard() {
                         <option value="pdf">Documento PDF</option>
                         <option value="video">Video (YouTube/Vimeo)</option>
                       </select>
-                      <input 
-                        type="text" 
-                        value={att.url} 
-                        onChange={(e) => {
-                          const n = [...newAttachments];
-                          n[idx].url = e.target.value;
-                          setNewAttachments(n);
-                        }}
-                        placeholder="https://... o pega el código <iframe..."
-                        className="flex-1 p-2 border border-slate-200 rounded-lg text-sm bg-white focus:outline-none focus:border-sena-500"
-                      />
+                      <div className="flex flex-1 gap-2">
+                        <input 
+                          type="text" 
+                          value={att.url} 
+                          onChange={(e) => {
+                            const n = [...newAttachments];
+                            n[idx].url = e.target.value;
+                            setNewAttachments(n);
+                          }}
+                          placeholder="https://... o pega el código <iframe..."
+                          className="flex-1 p-2 border border-slate-200 rounded-lg text-sm bg-white focus:outline-none focus:border-sena-500"
+                        />
+                        <label className="flex cursor-pointer items-center justify-center rounded-lg bg-slate-100 px-3 text-xs font-bold text-slate-700 hover:bg-slate-200" title="Subir a S3">
+                          Subir
+                          <input type="file" className="hidden" onChange={(e) => handleFileUpload(e, true, idx)} />
+                        </label>
+                      </div>
                       <div className="flex flex-col sm:flex-row gap-1">
                         <button 
                           onClick={() => {
@@ -720,8 +852,36 @@ export function AdminDashboard() {
                   </button>
                 </div>
               </div>
-            
-            <div className="flex justify-end pt-4">
+
+            <div className="space-y-5 rounded-2xl border border-sena-200 bg-sena-50/60 p-5">
+              <div>
+                <h3 className="font-extrabold text-sena-900">Indexar esta publicación en el RAG</h3>
+                <p className="mt-1 text-xs leading-5 text-sena-700">Opcional. Completa los tres campos principales para crear el Resource y sus DocumentChunk enlazados a esta publicación.</p>
+              </div>
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                <input value={ragName} onChange={(e) => setRagName(e.target.value)} placeholder="Nombre del documento" className="w-full rounded-xl border border-sena-200 bg-white p-3 text-sm outline-none focus:border-sena-500" />
+                <div className="relative">
+                  {isUploadingRag ? (
+                    <div className="flex w-full items-center justify-center rounded-xl border border-sena-200 bg-slate-50 p-3 text-sm text-slate-500">
+                      Subiendo a AWS S3...
+                    </div>
+                  ) : (
+                    <div className="flex gap-2">
+                      <input type="url" value={ragUrl} onChange={(e) => setRagUrl(e.target.value)} placeholder="URL del documento" className="flex-1 rounded-xl border border-sena-200 bg-white p-3 text-sm outline-none focus:border-sena-500" />
+                      <label className="flex cursor-pointer items-center justify-center rounded-xl bg-slate-100 px-4 text-sm font-bold text-slate-700 hover:bg-slate-200">
+                        Subir
+                        <input type="file" className="hidden" onChange={(e) => handleFileUpload(e, false)} />
+                      </label>
+                    </div>
+                  )}
+                </div>
+                <select value={ragMimeType} onChange={(e) => setRagMimeType(e.target.value)} className="w-full rounded-xl border border-sena-200 bg-white p-3 text-sm outline-none focus:border-sena-500"><option value="application/pdf">PDF</option><option value="text/plain">Texto</option><option value="text/html">HTML</option><option value="application/msword">Documento Word</option></select>
+                <input type="number" min="0" value={ragSize} onChange={(e) => setRagSize(e.target.value)} placeholder="Tamaño en bytes (opcional)" className="w-full rounded-xl border border-sena-200 bg-white p-3 text-sm outline-none focus:border-sena-500" />
+              </div>
+              <textarea rows={5} value={ragContent} onChange={(e) => setRagContent(e.target.value)} placeholder="Pega aquí el contenido que quieres convertir en chunks para el chatbot..." className="w-full resize-y rounded-xl border border-sena-200 bg-white p-3 text-sm leading-6 outline-none focus:border-sena-500" />
+            </div>
+
+            <div className="flex justify-end pt-4 border-t border-slate-100 mt-6 pt-6">
               <button 
                 onClick={handleSaveNote}
                 disabled={!newTitle.trim() || !newContent.trim()}
@@ -764,7 +924,7 @@ export function AdminDashboard() {
                         e.currentTarget.parentElement!.style.display = 'none';
                       }}
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-zinc-900/40 to-transparent"></div>
+                    <div className="absolute inset-0 bg-linear-to-t from-zinc-900/40 to-transparent"></div>
                   </div>
                 )}
                 

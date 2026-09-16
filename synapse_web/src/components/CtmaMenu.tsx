@@ -1,5 +1,8 @@
-import { ChevronDown } from "lucide-react"
+"use client"
+
+import { ChevronDown, Menu, X } from "lucide-react"
 import Link from "next/link"
+import { useState } from "react"
 
 const menuItems = [
   {
@@ -44,36 +47,88 @@ const menuItems = [
 ]
 
 export const CtmaMenu = () => {
+  const [isOpen, setIsOpen] = useState(false);
+  const [openSection, setOpenSection] = useState<string | null>(null);
+
+  const toggleSection = (title: string) => {
+    if (openSection === title) {
+      setOpenSection(null);
+    } else {
+      setOpenSection(title);
+    }
+  }
+
   return (
-    <nav className="hidden md:flex items-center space-x-1 ml-6">
-      {menuItems.map((menu) => (
-        <div key={menu.title} className="relative group">
-          <button className="flex items-center space-x-1 px-3 py-2 text-sm font-medium text-slate-300 hover:text-white hover:bg-zinc-800 rounded-md transition-colors">
-            <span>{menu.title}</span>
-            <ChevronDown className="w-4 h-4 opacity-70 group-hover:opacity-100 transition-opacity" />
-          </button>
-          
-          <div className="absolute top-full left-0 mt-1 w-56 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
-            <div className="py-2 bg-white dark:bg-zinc-800 rounded-xl shadow-xl ring-1 ring-zinc-900/5 overflow-hidden">
-              {menu.links.map((link) => (
-                <Link
-                  key={link.name}
-                  href={link.url}
-                  className="block px-4 py-2 text-sm text-zinc-700 dark:text-slate-300 hover:bg-sena-50 dark:hover:bg-sena-900/30 hover:text-sena-500 dark:hover:text-sena-400 transition-colors"
-                >
-                  {link.name}
-                </Link>
-              ))}
+    <>
+      <nav className="hidden md:flex items-center space-x-1 ml-6">
+        {menuItems.map((menu) => (
+          <div key={menu.title} className="relative group">
+            <button className="flex items-center space-x-1 px-3 py-2 text-sm font-medium text-slate-300 hover:text-white hover:bg-zinc-800 rounded-md transition-colors">
+              <span>{menu.title}</span>
+              <ChevronDown className="w-4 h-4 opacity-70 group-hover:opacity-100 transition-opacity" />
+            </button>
+            
+            <div className="absolute top-full left-0 mt-1 w-56 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+              <div className="py-2 bg-white dark:bg-zinc-800 rounded-xl shadow-xl ring-1 ring-zinc-900/5 overflow-hidden">
+                {menu.links.map((link) => (
+                  <Link
+                    key={link.name}
+                    href={link.url}
+                    prefetch={false}
+                    className="block px-4 py-2 text-sm text-zinc-700 dark:text-slate-300 hover:bg-sena-50 dark:hover:bg-sena-900/30 hover:text-sena-500 dark:hover:text-sena-400 transition-colors"
+                  >
+                    {link.name}
+                  </Link>
+                ))}
+              </div>
             </div>
           </div>
+        ))}
+      </nav>
+
+      <div className="md:hidden flex items-center">
+        <button 
+          onClick={() => setIsOpen(!isOpen)}
+          className="p-2 text-zinc-300 hover:text-white hover:bg-zinc-800 rounded-md transition-colors focus:outline-none"
+          aria-label="Abrir menú"
+        >
+          {isOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+        </button>
+      </div>
+
+      {isOpen && (
+        <div className="absolute top-16 left-0 w-full bg-zinc-900 border-t border-zinc-800 shadow-2xl md:hidden flex flex-col z-50 max-h-[calc(100vh-4rem)] overflow-y-auto">
+          <div className="flex flex-col py-4 px-6 space-y-2">
+            {menuItems.map((menu) => (
+              <div key={menu.title} className="flex flex-col border-b border-zinc-800/50 pb-2 mb-2 last:border-0">
+                <button 
+                  onClick={() => toggleSection(menu.title)}
+                  className="flex justify-between items-center py-3 text-left font-medium text-slate-200 hover:text-white w-full"
+                >
+                  <span className="text-base">{menu.title}</span>
+                  <ChevronDown className={`w-5 h-5 transition-transform duration-200 ${openSection === menu.title ? 'rotate-180 text-sena-400' : 'text-zinc-500'}`} />
+                </button>
+                
+                {openSection === menu.title && (
+                  <div className="flex flex-col pl-4 space-y-1 pb-2 border-l-2 border-zinc-800 ml-2 mt-1">
+                    {menu.links.map((link) => (
+                      <Link
+                        key={link.name}
+                        href={link.url}
+                        prefetch={false}
+                        onClick={() => setIsOpen(false)}
+                        className="text-sm py-2 px-3 rounded-md text-zinc-400 hover:text-white hover:bg-zinc-800/50 transition-colors"
+                      >
+                        {link.name}
+                      </Link>
+                    ))}
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
         </div>
-      ))}
-      <Link 
-        href="/ctma/directorio" 
-        className="px-3 py-2 text-sm font-medium text-slate-300 hover:text-white hover:bg-zinc-800 rounded-md transition-colors"
-      >
-        Directorio
-      </Link>
-    </nav>
+      )}
+    </>
   )
 }
