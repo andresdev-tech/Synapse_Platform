@@ -70,7 +70,7 @@ export default function RagControlCenter() {
 
     try {
       setIsUploading(true);
-      const res = await fetch("/api/proxy/api/upload", {
+      const res = await fetchApi("/api/upload", {
         method: "POST",
         body: formData,
       });
@@ -80,7 +80,7 @@ export default function RagControlCenter() {
           ...form,
           url: data.url,
           mimeType: data.mimeType,
-          size: data.size.toString(),
+          size: data.size?.toString() || "",
         });
       }
     } catch (error) {
