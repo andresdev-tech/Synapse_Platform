@@ -612,13 +612,15 @@ export default async function CtmaPage({ params }: { params: Promise<{ slug: str
                       <div className="p-6 flex flex-col flex-1">
                         <span className="text-xs font-bold text-indigo-500 uppercase tracking-wider mb-2">{note.section}</span>
                         <h3 className="text-xl font-bold text-slate-800 dark:text-white mb-3 leading-snug group-hover:text-indigo-600 transition-colors">{note.title}</h3>
-                        <p className="text-slate-600 dark:text-slate-300 text-sm mb-6 line-clamp-3 leading-relaxed">{note.excerpt || note.body}</p>
+                        <p className="text-slate-600 dark:text-slate-300 text-sm mb-6 line-clamp-3 leading-relaxed">
+                          {note.excerpt || note.body.substring(0, 150) + '...'}
+                        </p>
                         <div className="mt-auto flex items-center justify-between border-t border-slate-100 dark:border-slate-700 pt-4">
                           <span className="text-xs font-medium text-slate-400 flex items-center">
                             <span className="w-2 h-2 rounded-full bg-emerald-400 mr-2"></span>
                             {new Date(note.createdAt).toLocaleDateString()}
                           </span>
-                          <Link href={`/blogs/${note.slug}`} className="text-sm font-bold text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 flex items-center">
+                          <Link href={`/blogs/${note.id}`} className="text-sm font-bold text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 flex items-center">
                             Leer más <ExternalLink className="w-4 h-4 ml-1" />
                           </Link>
                         </div>
