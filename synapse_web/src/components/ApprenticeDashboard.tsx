@@ -229,7 +229,6 @@ export function ApprenticeDashboard({ initialNotes = [], initialCategories = [] 
 
   // Modals State
   const [isSuggestionOpen, setIsSuggestionOpen] = useState(false)
-  const [isResourcesOpen, setIsResourcesOpen] = useState(false)
 
   // Suggestion Form State
   const [newTitle, setNewTitle] = useState("")
@@ -459,13 +458,6 @@ export function ApprenticeDashboard({ initialNotes = [], initialCategories = [] 
             >
               <MessageSquarePlus className="w-5 h-5 text-sena-500 dark:text-sena-200 group-hover:rotate-12 transition-transform" />
               <span>Enviar Sugerencia</span>
-            </button>
-            <button
-              onClick={() => setIsResourcesOpen(true)}
-              className="w-full px-6 py-4 bg-sena-800/50 dark:bg-zinc-800 backdrop-blur-sm border border-sena-500/30 dark:border-zinc-700 text-sena-50 dark:text-slate-200 font-extrabold rounded-2xl hover:bg-sena-600/50 dark:hover:bg-zinc-700 hover:scale-105 transition-all duration-300 flex items-center justify-center space-x-3"
-            >
-              <BookOpen className="w-5 h-5 text-sena-300" />
-              <span>Recursos y Trámites</span>
             </button>
           </div>
         </div>
@@ -777,50 +769,6 @@ export function ApprenticeDashboard({ initialNotes = [], initialCategories = [] 
             <p>© {new Date().getFullYear()} SENA CTMA. Proyecto formativo. Todos los derechos reservados.</p>
           </div>
         </footer>
-
-        {/* MODAL BIBLIOTECA DE RECURSOS */}
-        {isResourcesOpen && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-zinc-900/60 backdrop-blur-sm">
-            <div className="bg-white dark:bg-zinc-900 rounded-3xl shadow-2xl w-full max-w-2xl overflow-hidden flex flex-col max-h-[90vh] border border-slate-100 dark:border-zinc-700">
-              <div className="flex shrink-0 flex-col items-start justify-between gap-3 bg-linear-to-r from-sena-600 to-sena-500 p-5 text-white sm:flex-row sm:items-center sm:p-6">
-                <div className="flex items-center space-x-3">
-                  <BookOpen className="w-6 h-6 text-sena-100" />
-                  <h3 className="text-xl font-black">Biblioteca de Recursos Oficiales</h3>
-                </div>
-                <button aria-label="Cerrar modal" onClick={() => setIsResourcesOpen(false)} className="text-sena-200 hover:text-white transition-colors">
-                  <X className="w-6 h-6" />
-                </button>
-              </div>
-
-              <div className="p-6 overflow-y-auto">
-                <p className="text-sm text-slate-500 dark:text-slate-400 mb-6">
-                  Descarga o consulta los reglamentos, guías y formatos oficiales del CTMA directamente desde aquí sin tener que navegar por múltiples páginas.
-                </p>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  {officialResources.map((res, i) => (
-                    <a
-                      key={i}
-                      href={res.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-start p-4 rounded-xl border border-slate-200 dark:border-zinc-700 bg-slate-50 dark:bg-zinc-800 hover:bg-sena-50 dark:hover:bg-zinc-700 hover:border-sena-200 dark:hover:border-sena-500/50 transition-all group"
-                    >
-                      <div className="p-2 bg-white dark:bg-zinc-900 rounded-lg shadow-sm group-hover:bg-sena-500 group-hover:text-white text-slate-400 transition-colors mr-3 shrink-0">
-                        <FileText className="w-5 h-5" />
-                      </div>
-                      <div>
-                        <h4 className="font-bold text-zinc-700 dark:text-slate-200 text-sm group-hover:text-sena-600 dark:group-hover:text-sena-300">{res.title}</h4>
-                        <span className="text-[10px] text-slate-400 font-bold uppercase mt-1 flex items-center">
-                          Ver Documento <Download className="w-3 h-3 ml-1" />
-                        </span>
-                      </div>
-                    </a>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
 
         {/* MODAL BUZON DE SUGERENCIAS */}
         {isSuggestionOpen && (
