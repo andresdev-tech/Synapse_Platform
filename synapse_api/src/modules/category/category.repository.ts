@@ -5,11 +5,11 @@ export class CategoryRepository {
   static async findAll() {
     return await prisma.category.findMany({
       include: {
-        Category: {
+        parent: {
           select: { name: true },
         },
         _count: {
-          select: { Content: true },
+          select: { contents: true },
         },
       },
     });
@@ -19,13 +19,13 @@ export class CategoryRepository {
     const category = await prisma.category.findUnique({
       where: { id: String(id) },
       include: {
-        Category: {
+        parent: {
           select: { name: true },
         },
-        other_Category: {
+        children: {
           select: { name: true, id: true },
         },
-        Content: {
+        contents: {
           select: { title: true, id: true },
         },
       },
@@ -33,11 +33,7 @@ export class CategoryRepository {
 
     if (!category) return null;
 
-    return {
-      ...category,
-      children: category.other_Category,
-      contents: category.Content,
-    };
+    return category;
   }
 
   static async findBySlug(slug: string) {

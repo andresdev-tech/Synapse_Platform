@@ -14,14 +14,14 @@ export class RagRepository {
     const resources = await prisma.resource.findMany({
       where: { type: "DOCUMENT" },
       orderBy: { createdAt: "desc" },
-      include: { _count: { select: { DocumentChunk: true } } },
+      include: { _count: { select: { documentChunks: true } } },
     });
 
     return resources.map((resource) => ({
       ...resource,
       size: resource.size ? Number(resource.size) : null,
-      chunks: resource._count.DocumentChunk,
-      indexed: resource._count.DocumentChunk > 0,
+      chunks: resource._count.documentChunks,
+      indexed: resource._count.documentChunks > 0,
       _count: undefined,
     }));
   }

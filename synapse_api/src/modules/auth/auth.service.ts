@@ -1,5 +1,5 @@
 import { AuthRepository } from "./auth.repository";
-import { RegisterDTO, LoginDTO, ForgotPasswordDTO, ResetPasswordDTO, AuthResponse, OtpEmailDTO, OtpVerifyDTO, LoginAdminDTO } from "./auth.types";
+import { RegisterDTO, LoginDTO, AuthResponse, OtpEmailDTO, OtpVerifyDTO, LoginAdminDTO } from "./auth.types";
 import bcrypt from "bcryptjs";
 import nodemailer from "nodemailer";
 import jwt from "jsonwebtoken";
@@ -32,11 +32,8 @@ export class AuthService {
 
   static async createadmin (data) {
 
-    console.log('datos: ', data);
-    
     try {
       const emailExist = await AuthRepository.findUserByEmail(data.email);
-      console.log('emailExist', emailExist)
       if (emailExist) {
         return { success: false, error: "El correo ya está en uso" };
       }
@@ -59,8 +56,6 @@ export class AuthService {
       return { success: false, error: "El correo ya está en uso" };
     }
 
-    const hashedPassword = await bcrypt.hash(data.password, 10);
-
     let userRole = await AuthRepository.findRoleByName(RoleNames.USER);
     if (!userRole) {
       userRole = await AuthRepository.createRole(RoleNames.USER);
@@ -69,7 +64,6 @@ export class AuthService {
     const newUser = await AuthRepository.createUser({
       name: data.name,
       email: data.email,
-      password: hashedPassword,
       roleId: userRole.id,
       emailVerified: null
     });
@@ -93,17 +87,12 @@ export class AuthService {
 
   static async loginUser(credentials: LoginDTO): Promise<AuthResponse> {
     const user = await AuthRepository.findUserByEmail(credentials.email);
-    if (!user || !user.password) {
+    if (!user) {
       return { success: false, error: "Credenciales incorrectas" };
     }
 
     if (!user.emailVerified) {
       return { success: false, error: "unverified_email" }; // Special string required by frontend
-    }
-
-    const isMatch = await bcrypt.compare(credentials.password, user.password);
-    if (!isMatch) {
-      return { success: false, error: "Credenciales incorrectas" };
     }
 
     const role = user.role?.name || RoleNames.USER;
@@ -133,7 +122,6 @@ export class AuthService {
       await AuthRepository.createUser({
         name: email.split("@")[0],
         email,
-        password: null,
         roleId: userRole.id,
         emailVerified: null,
       });
@@ -179,42 +167,6 @@ export class AuthService {
     } else {
       console.log(`\n[MOCK EMAIL] Para: ${email} | Código OTP: ${code}\n`);
     }
-  }
-
-  static async requestPasswordReset(data: ForgotPasswordDTO): Promise<AuthResponse> {
-    const user = await AuthRepository.findUserByEmail(data.email);
-    if (!user) {
-      return { success: true };
-    }
-
-    const code = Math.floor(100000 + Math.random() * 900000).toString();
-    await AuthRepository.createPasswordResetCode(data.email, code, new Date(Date.now() + 15 * 60 * 1000));
-
-    if (process.env.EMAIL_USER && process.env.EMAIL_PASS) {
-      await this.getTransporter().sendMail({
-        from: '"Synapse CTMA" <no-reply@synapse.edu.co>',
-        to: data.email,
-        subject: "Recuperación de Contraseña - Synapse",
-        html: `<p>Tu código para recuperar la contraseña es: <b>${code}</b></p>`,
-      });
-    } else {
-      console.log(`\n[MOCK EMAIL] Recuperación para: ${data.email} | Código: ${code}\n`);
-    }
-
-    return { success: true };
-  }
-
-  static async resetPassword(data: ResetPasswordDTO): Promise<AuthResponse> {
-    const validReset = await AuthRepository.findValidPasswordResetCode(data.email, data.code);
-    if (!validReset) {
-      return { success: false, error: "Código inválido o expirado" };
-    }
-
-    const hashedPassword = await bcrypt.hash(data.newPassword, 10);
-    await AuthRepository.updateUserPassword(data.email, hashedPassword);
-    await AuthRepository.deletePasswordResetCodes(data.email);
-
-    return { success: true };
   }
 
   static async loginAdmin(credentials: LoginAdminDTO): Promise<AuthResponse> {

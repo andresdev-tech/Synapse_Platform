@@ -19,8 +19,8 @@ export class NoteRepository {
     return await prisma.content.findMany({
       where: whereClause,
       include: {
-        User: { select: { name: true, role: true } },
-        Category: { select: { name: true } },
+        author: { select: { name: true, role: true } },
+        category: { select: { name: true } },
       },
       orderBy: { createdAt: "desc" },
     });
@@ -37,8 +37,8 @@ export class NoteRepository {
     return await prisma.content.findMany({
       where: { isGlobal: false },
       include: {
-        User: { select: { name: true, email: true } },
-        Category: { select: { name: true } },
+        author: { select: { name: true, email: true } },
+        category: { select: { name: true } },
       },
       orderBy: { createdAt: "desc" },
     });
@@ -48,8 +48,8 @@ export class NoteRepository {
     return await prisma.content.findUnique({
       where: { id: String(id) },
       include: {
-        User: { select: { name: true, email: true } },
-        Category: { select: { name: true } },
+        author: { select: { name: true, email: true } },
+        category: { select: { name: true } },
       },
     });
   }
@@ -74,7 +74,7 @@ export class NoteRepository {
           featured: false,
           publishedAt: data.published ? new Date() : null,
           categoryId: data.categoryId,
-          type: "ARTICLE",
+          type: "INFORMATION",
           status: "PUBLISHED",
           visibility: data.isGlobal ? "PUBLIC" : "PRIVATE",
           section: data.section,

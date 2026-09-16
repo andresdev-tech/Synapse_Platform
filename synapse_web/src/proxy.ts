@@ -53,8 +53,7 @@ export default withAuth(
         if (
           pathname.startsWith("/login") || 
           pathname.startsWith("/register") || 
-          pathname.startsWith("/verify-email") || 
-          pathname.startsWith("/forgot-password")
+          pathname.startsWith("/verify-email")
         ) {
           return true;
         }

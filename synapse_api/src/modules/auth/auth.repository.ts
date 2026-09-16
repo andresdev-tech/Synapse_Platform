@@ -23,36 +23,6 @@ export class AuthRepository {
     })
   }
 
-  static async createPasswordResetCode(email: string, code: string, expiresAt: Date) {
-    return await prisma.passwordReset.create({
-      data: { email, code, expiresAt }
-    })
-  }
-
-  static async findValidPasswordResetCode(email: string, code: string) {
-    return await prisma.passwordReset.findFirst({
-      where: {
-        email,
-        code,
-        expiresAt: { gt: new Date() }
-      },
-      orderBy: { createdAt: 'desc' }
-    })
-  }
-
-  static async updateUserPassword(email: string, hashedPassword: string) {
-    return await prisma.user.update({
-      where: { email },
-      data: { password: hashedPassword }
-    })
-  }
-
-  static async deletePasswordResetCodes(email: string) {
-    return await prisma.passwordReset.deleteMany({
-      where: { email }
-    })
-  }
-
   static async findVerificationCode(email: string, code: string) {
     return await prisma.verificationCode.findFirst({
       where: { email, code, expiresAt: { gt: new Date() } },
@@ -105,7 +75,6 @@ export class AuthRepository {
         name: datas.name,
         email: datas.email,
         emailVerified: new Date(),
-        password: null,
         image: null,
         status: datas.state,
         role: {connect: {name: 'ADMIN'}},

@@ -23,7 +23,7 @@ const router = Router();
  *         application/json:
  *           schema:
  *             type: object
- *             required: [name, email, password]
+ *             required: [name, email]
  *             properties:
  *               name:
  *                 type: string
@@ -56,7 +56,7 @@ router.post('/createadmin', AuthController.CreateAdmin);
  *         application/json:
  *           schema:
  *             type: object
- *             required: [email, password]
+ *             required: [email]
  *             properties:
  *               email:
  *                 type: string
@@ -73,59 +73,6 @@ router.post("/login", AuthController.login);
 router.post("/otp/request", AuthController.requestOtp);
 router.post("/otp/verify", AuthController.verifyOtp);
 
-/**
- * @swagger
- * /api/auth/forgot-password:
- *   post:
- *     summary: Solicitar recuperación de contraseña
- *     tags: [Auth]
- *     security: []
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             required: [email]
- *             properties:
- *               email:
- *                 type: string
- *     responses:
- *       200:
- *         description: Correo de recuperación enviado
- *       404:
- *         description: Usuario no encontrado
- */
-router.post("/forgot-password", AuthController.forgotPassword);
-
-/**
- * @swagger
- * /api/auth/reset-password:
- *   post:
- *     summary: Restablecer contraseña con código
- *     tags: [Auth]
- *     security: []
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             required: [email, code, newPassword]
- *             properties:
- *               email:
- *                 type: string
- *               code:
- *                 type: string
- *               newPassword:
- *                 type: string
- *     responses:
- *       200:
- *         description: Contraseña restablecida exitosamente
- *       400:
- *         description: Código inválido
- */
-router.post("/reset-password", AuthController.resetPassword);
 
 /**
  * @swagger

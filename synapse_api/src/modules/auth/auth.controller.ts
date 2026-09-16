@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { AuthService } from "./auth.service";
 import { AuthRepository } from "./auth.repository";
-import { registerSchema, loginSchema, forgotPasswordSchema, resetPasswordSchema, otpEmailSchema, otpVerifySchema, LoginAdmin } from "./auth.schema";
+import { registerSchema, loginSchema, otpEmailSchema, otpVerifySchema, LoginAdmin } from "./auth.schema";
 import { ZodError } from "zod";
 
 
@@ -122,38 +122,6 @@ export class AuthController {
       }
       console.error("[OTP Verify Error]", error);
       res.status(500).json({ error: "No se pudo verificar el código." });
-    }
-  }
-
-  static async forgotPassword(req: Request, res: Response): Promise<void> {
-    try {
-      const parsedData = forgotPasswordSchema.parse(req.body);
-      await AuthService.requestPasswordReset(parsedData);
-      res.status(200).json({ success: true });
-    } catch (error) {
-      if (error instanceof ZodError) {
-        res.status(400).json({ error: error.issues[0].message });
-        return;
-      }
-      console.error('[Login Error]', error); res.status(500).json({ error: "Error en el servidor" });
-    }
-  }
-
-  static async resetPassword(req: Request, res: Response): Promise<void> {
-    try {
-      const parsedData = resetPasswordSchema.parse(req.body);
-      const result = await AuthService.resetPassword(parsedData);
-      if (!result.success) {
-        res.status(400).json({ error: result.error });
-        return;
-      }
-      res.status(200).json({ success: true });
-    } catch (error) {
-      if (error instanceof ZodError) {
-        res.status(400).json({ error: error.issues[0].message });
-        return;
-      }
-      console.error('[Login Error]', error); res.status(500).json({ error: "Error en el servidor" });
     }
   }
 
