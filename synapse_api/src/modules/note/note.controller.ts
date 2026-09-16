@@ -93,6 +93,31 @@ export class NoteController {
       res.status(500).json({ error: "Error al eliminar la nota" });
     }
   }
+
+  static async toggleReaction(req: AuthRequest, res: Response): Promise<void> {
+    const { id } = req.params;
+    const { type = "LIKE" } = req.body;
+    const userId = req.user?.id;
+    
+    if (!userId) {
+      res.status(401).json({ error: "No autorizado" });
+      return;
+    }
+    
+    const validTypes = ["LIKE", "LOVE", "USEFUL", "IMPORTANT"];
+    if (!validTypes.includes(type)) {
+      res.status(400).json({ error: "Tipo de reacción inválido" });
+      return;
+    }
+
+    try {
+      const result = await NoteService.toggleReaction(id, userId, type as any);
+      res.json(result);
+    } catch (error) {
+      console.error("Error al dar reacción:", error);
+      res.status(500).json({ error: "Error al registrar la reacción" });
+    }
+  }
 }
 
 // Backward compatibility exports

@@ -21,6 +21,7 @@ export class NoteRepository {
       include: {
         author: { select: { name: true, role: true } },
         category: { select: { name: true } },
+        reactions: { select: { userId: true, type: true } },
       },
       orderBy: { createdAt: "desc" },
     });
@@ -50,6 +51,7 @@ export class NoteRepository {
       include: {
         author: { select: { name: true, email: true } },
         category: { select: { name: true } },
+        reactions: { select: { userId: true, type: true } },
       },
     });
   }
@@ -150,5 +152,32 @@ export class NoteRepository {
     return await prisma.content.delete({
       where: { id: String(id) },
     });
+  }
+
+  static async toggleReaction(contentId: string, userId: string, type: "LIKE" | "LOVE" | "USEFUL" | "IMPORTANT") {
+    const existing = await prisma.reaction.findFirst({
+      where: { contentId, userId },
+    });
+
+    if (existing) {
+      if (existing.type === type) {
+        // Eliminar si es la misma
+        await prisma.reaction.delete({ where: { id: existing.id } });
+        return { action: "removed", type: null };
+      } else {
+        // Actualizar si es diferente
+        await prisma.reaction.update({
+          where: { id: existing.id },
+          data: { type },
+        });
+        return { action: "updated", type };
+      }
+    } else {
+      // Crear nueva
+      await prisma.reaction.create({
+        data: { contentId, userId, type },
+      });
+      return { action: "created", type };
+    }
   }
 }
