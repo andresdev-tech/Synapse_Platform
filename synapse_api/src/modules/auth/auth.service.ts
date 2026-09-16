@@ -160,6 +160,13 @@ export class AuthService {
           error: "Acceso denegado: Este correo no cuenta con permisos de Administrador o Super Administrador.",
         };
       }
+    } else {
+      if (user && (user.role?.name === RoleNames.ADMIN || user.role?.name === RoleNames.SUPER_ADMIN)) {
+        return {
+          success: false,
+          error: "Esta cuenta pertenece al personal administrativo. Por favor, utiliza el acceso designado para tu perfil.",
+        };
+      }
     }
 
     if (!user) {

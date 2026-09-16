@@ -370,7 +370,7 @@ export function ApprenticeDashboard({ initialNotes = [], initialCategories = [] 
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           title: newTitle.trim(),
-          content: newContent.trim(),
+          body: newContent.trim(),
           isGlobal: false,
           authorId: session.user.id,
           categoryId: newCategoryId || null,
