@@ -3,9 +3,52 @@ import { RegisterDTO, LoginDTO, AuthResponse, OtpEmailDTO, OtpVerifyDTO, LoginAd
 import bcrypt from "bcryptjs";
 import nodemailer from "nodemailer";
 import jwt from "jsonwebtoken";
-import { RoleNames } from "../../config/prisma";
+import { RoleNames, prisma } from "../../config/prisma";
+import { SessionRepository } from "../session/session.repository";
+import { AuditLogService } from "../audit-log/audit-log.service";
+import { AuditAction } from "../../../generated/prisma/client";
 
 export class AuthService {
+  private static async recordUserLogin(user: { id: string; email: string }, token: string, role: string, loginType: string) {
+    const expires = new Date(Date.now() + 24 * 60 * 60 * 1000);
+    let session = null;
+    try {
+      session = await SessionRepository.createSession({
+        sessionToken: token,
+        userId: user.id,
+        expires,
+      });
+    } catch (err) {
+      console.error("[AuthService] Error al guardar la sesión en DB:", err);
+    }
+
+    try {
+      await prisma.user.update({
+        where: { id: user.id },
+        data: { lastLoginAt: new Date() },
+      });
+    } catch (err) {
+      console.error("[AuthService] Error al actualizar lastLoginAt:", err);
+    }
+
+    try {
+      await AuditLogService.logEvent({
+        actorId: user.id,
+        action: AuditAction.LOGIN,
+        entity: "Session",
+        entityId: session?.id || null,
+        metadata: {
+          email: user.email,
+          role,
+          loginType,
+          expiresAt: expires,
+        },
+      });
+    } catch (err) {
+      console.error("[AuthService] Error al guardar audit log de inicio de sesión:", err);
+    }
+  }
+
   private static createJwt(user: { id: string; email: string; name?: string | null; layoutPrefs?: unknown }, role: string) {
     const secret = process.env.JWT_SECRET || "default_dev_secret_for_synapse";
     const token = jwt.sign(
@@ -98,6 +141,8 @@ export class AuthService {
     const role = user.role?.name || RoleNames.USER;
     const jwtData = this.createJwt(user, role);
 
+    await this.recordUserLogin(user, jwtData.token, role, "password");
+
     return { 
       success: true, 
       data: jwtData,
@@ -153,7 +198,13 @@ export class AuthService {
 
     await AuthRepository.updateUserEmailVerified(email);
     await AuthRepository.deleteVerificationCodes(email);
-    return { success: true, data: this.createJwt(user, user.role?.name || RoleNames.USER) };
+
+    const role = user.role?.name || RoleNames.USER;
+    const jwtData = this.createJwt(user, role);
+
+    await this.recordUserLogin(user, jwtData.token, role, "otp");
+
+    return { success: true, data: jwtData };
   }
 
   private static async sendCode(email: string, code: string, subject: string) {
@@ -189,6 +240,8 @@ export class AuthService {
 
     const role = user.role.name;
     const jwtData = this.createJwt(user, role);
+
+    await this.recordUserLogin(user, jwtData.token, role, "admin_password");
 
     return { success: true, data: jwtData };
   }
