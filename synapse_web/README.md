@@ -14,6 +14,14 @@ Aplicación frontend y panel principal para la plataforma **Synapse**, desarroll
 
 ---
 
+## 🎨 Diseño y UI (Mockups)
+
+Si eres un desarrollador trabajando en los componentes visuales o en TailwindCSS, asegúrate de revisar el **Sistema de Diseño (Colores y Tipografías)** y las pantallas de referencia aquí:
+
+👉 **[Ver Mockups y Sistema de Diseño](../docs/mockups/README.md)**
+
+---
+
 ## 📁 Estructura del Proyecto
 
 La arquitectura del proyecto sigue los estándares de Next.js utilizando el directorio `src`:
