@@ -4,8 +4,12 @@ import { useSession } from "next-auth/react"
 import { useSearchParams } from "next/navigation"
 import dynamic from "next/dynamic"
 import { Suspense } from "react"
-import { ApprenticeDashboard } from "./ApprenticeDashboard"
-import { LandingPage } from "./LandingPage"
+const ApprenticeDashboard = dynamic(() => import("./ApprenticeDashboard").then(mod => mod.ApprenticeDashboard), { 
+  loading: () => <div className="flex items-center justify-center min-h-[50vh] text-slate-500">Cargando tu panel...</div> 
+})
+const LandingPage = dynamic(() => import("./LandingPage").then(mod => mod.LandingPage), { 
+  loading: () => <div className="flex items-center justify-center min-h-[50vh] text-slate-500">Cargando inicio...</div> 
+})
 
 const AdminDashboard = dynamic(() => import("./AdminDashboard").then(mod => mod.AdminDashboard), { 
   loading: () => <div className="flex items-center justify-center min-h-[50vh] text-slate-500">Cargando Admin...</div> 
