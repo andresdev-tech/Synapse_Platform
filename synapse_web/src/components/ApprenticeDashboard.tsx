@@ -253,7 +253,9 @@ export function ApprenticeDashboard({ initialNotes = [], initialCategories = [] 
       document.documentElement.classList.remove("dark")
     }
 
-    if (initialNotes.length === 0) fetchGlobalNotes()
+    // Siempre obtener las últimas notas en el cliente para saltar el caché del servidor
+    fetchGlobalNotes()
+    
     if (initialCategories.length === 0) fetchCategories()
   }, [])
 
@@ -278,8 +280,8 @@ export function ApprenticeDashboard({ initialNotes = [], initialCategories = [] 
                     const indexA = prefs.indexOf(a.id)
                     const indexB = prefs.indexOf(b.id)
                     if (indexA === -1 && indexB === -1) return 0
-                    if (indexA === -1) return 1
-                    if (indexB === -1) return -1
+                    if (indexA === -1) return -1
+                    if (indexB === -1) return 1
                     return indexA - indexB
                   })
                 } else {
@@ -289,8 +291,8 @@ export function ApprenticeDashboard({ initialNotes = [], initialCategories = [] 
                       const indexA = prefs.order.indexOf(a.id)
                       const indexB = prefs.order.indexOf(b.id)
                       if (indexA === -1 && indexB === -1) return 0
-                      if (indexA === -1) return 1
-                      if (indexB === -1) return -1
+                      if (indexA === -1) return -1
+                      if (indexB === -1) return 1
                       return indexA - indexB
                     })
                   }

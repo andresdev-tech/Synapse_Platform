@@ -124,6 +124,9 @@ export class NoteRepository {
       }
 
       return createdNote;
+    }, {
+      maxWait: 10000,
+      timeout: 60000,
     });
   }
 

@@ -7,6 +7,7 @@ import { RoleNames, prisma } from "../../config/prisma";
 import { SessionRepository } from "../session/session.repository";
 import { AuditLogService } from "../audit-log/audit-log.service";
 import { AuditAction } from "../../../generated/prisma/client";
+import crypto from "crypto";
 
 export class AuthService {
   private static async recordUserLogin(user: { id: string; email: string }, token: string, role: string, loginType: string) {
@@ -14,7 +15,7 @@ export class AuthService {
     let session = null;
     try {
       session = await SessionRepository.createSession({
-        sessionToken: token,
+        sessionToken: crypto.randomUUID(),
         userId: user.id,
         expires,
       });
