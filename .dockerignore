@@ -1,0 +1,8 @@
+node_modules
+.git
+.github
+Docs
+*.md
+.npmrc
+temp_admin.tsx
+test_regex.js

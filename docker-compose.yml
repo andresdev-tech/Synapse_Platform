@@ -3,31 +3,37 @@ services:
     build:
       context: ./Synapse_api
       dockerfile: Dockerfile
-      args:
-        DATABASE_URL: ${DATABASE_URL:-""}
     container_name: synapse_api
+    restart: unless-stopped
     ports:
       - "4000:4000"
     env_file:
       - ./Synapse_api/.env
-    volumes:
-      - ./Synapse_api/src:/app/src
-      - ./Synapse_api/prisma:/app/prisma
-      - ./Synapse_api/tsconfig.json:/app/tsconfig.json
-    restart: unless-stopped
+    environment:
+      - NODE_ENV=production
+      - PORT=4000
+    networks:
+      - synapse_network
 
   frontend:
     build:
       context: ./synapse_web
       dockerfile: Dockerfile
     container_name: synapse_web
+    restart: unless-stopped
     ports:
       - "3000:3000"
     env_file:
       - ./synapse_web/.env
     environment:
+      - NODE_ENV=production
       - PORT=3000
       - API_BACKEND_URL=http://backend:4000/api
     depends_on:
       - backend
-    restart: unless-stopped
+    networks:
+      - synapse_network
+
+networks:
+  synapse_network:
+    driver: bridge
