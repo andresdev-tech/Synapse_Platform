@@ -1,24 +1,46 @@
-FROM node:22-alpine
-
+# 1. Dependencias
+FROM node:22-alpine AS deps
 WORKDIR /app
 
-# Habilitar corepack e instalar pnpm
-RUN corepack enable && corepack prepare pnpm@latest --activate
+RUN corepack enable && corepack prepare pnpm@11.22.0 --activate
 
-# Copiar archivos de dependencias
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
-
-# Instalar dependencias
 RUN pnpm install
 
-# Copiar el proyecto
+# 2. Builder (Compilación de Next.js)
+FROM node:22-alpine AS builder
+WORKDIR /app
+
+RUN corepack enable && corepack prepare pnpm@11.22.0 --activate
+
+COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
-# Construir Next.js
-# RUN npm run build
+ENV NEXT_TELEMETRY_DISABLED=1
+ENV NODE_ENV=production
 
-# Puerto de Next.js
+# Compilar Next.js para producción
+RUN pnpm build
+
+# 3. Runner (Servidor de producción ligero)
+FROM node:22-alpine AS runner
+WORKDIR /app
+
+ENV NODE_ENV=production
+ENV PORT=3000
+ENV NEXT_TELEMETRY_DISABLED=1
+
+RUN corepack enable && corepack prepare pnpm@11.22.0 --activate
+
+COPY --from=builder /app/package.json ./
+COPY --from=builder /app/pnpm-lock.yaml ./
+COPY --from=builder /app/pnpm-workspace.yaml ./
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/next.config.ts ./
+COPY --from=builder /app/tsconfig.json ./
+COPY --from=builder /app/.next ./.next
+COPY --from=builder /app/public ./public
+
 EXPOSE 3000
 
-# Iniciar aplicación
-CMD ["pnpm", "dev"]
+CMD ["pnpm", "start"]
