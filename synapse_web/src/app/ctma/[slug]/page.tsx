@@ -24,7 +24,7 @@ const pageContent: Record<string, { title: string, content: React.ReactNode }> =
     title: "Promesa de Valor",
     content: (
       <div className="flex justify-center my-6 relative group">
-        <div className="absolute -inset-1 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-2xl blur opacity-25 group-hover:opacity-75 transition duration-1000 group-hover:duration-200"></div>
+        <div className="absolute -inset-1 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-2xl opacity-0 group-hover:opacity-100 shadow-[0_0_20px_currentColor] transition duration-1000 group-hover:duration-200"></div>
         <ImageZoom 
           src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgP1V5c2lsk-WXnlrf_YCS0qHh6BN_2V2_3pnVbCq6cOBwiXlZk0wFfoW3EPGIl5rCHIY9Vs5htiCw1YEdfR_ter4BAGmaQq89hq8zo315Cbx8Tihh2qWCIV1dApseYw6599iwVlCjmSDbd/s1200/2.+Promesa+de+valor-01.png" 
           alt="Promesa de Valor CTMA"
@@ -40,7 +40,7 @@ const pageContent: Record<string, { title: string, content: React.ReactNode }> =
     title: "Organigrama del CTMA",
     content: (
       <div className="flex justify-center my-6 relative group">
-        <div className="absolute -inset-1 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-2xl blur opacity-25 group-hover:opacity-75 transition duration-1000 group-hover:duration-200"></div>
+        <div className="absolute -inset-1 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-2xl opacity-0 group-hover:opacity-100 shadow-[0_0_20px_currentColor] transition duration-1000 group-hover:duration-200"></div>
         <ImageZoom 
           src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhFHPfanPZjm2uUK0Bki55SD0TQ9oN_ORD9ZAfyR7JrazHwaysqzO6ximuQygQEvVGYXTeqTe1QdZQflzZ_1jtSDmW-FAjDUweB52fXsvsd8tbpOcDUyiufKha2_nnbhHZiA-oFP042Qv7V/s1200/3.+Organigrama-01.png" 
           alt="Organigrama CTMA"
@@ -106,7 +106,7 @@ const pageContent: Record<string, { title: string, content: React.ReactNode }> =
         </p>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="relative group">
-            <div className="absolute -inset-1 bg-gradient-to-r from-emerald-500 to-teal-600 rounded-2xl blur opacity-20 group-hover:opacity-60 transition duration-500"></div>
+            <div className="absolute -inset-1 bg-gradient-to-r from-emerald-500 to-teal-600 rounded-2xl opacity-0 group-hover:opacity-100 shadow-[0_0_20px_currentColor] transition duration-500"></div>
             <ImageZoom 
               src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiqIsZA6JQ-ULIRJUpCrvOQ1EoCQOUY4YyIO8j6uOTJTvmKJFOHuVvnO-TzyOZAiSEb-FDLw0O_LSz7LCOzb9er6RbL_KFzPYG0_lnDNrGZjhwn4WyhNSUncv3LUZSMnmLhDtdSIxPVXuij7GdvddcImR6extb18_b8KyX4gbAbGPElDNkFi89av9J4Jhcx/s800/Politica_SST.png" 
               alt="Política SST"
@@ -115,7 +115,7 @@ const pageContent: Record<string, { title: string, content: React.ReactNode }> =
             />
           </div>
           <div className="relative group">
-            <div className="absolute -inset-1 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-2xl blur opacity-20 group-hover:opacity-60 transition duration-500"></div>
+            <div className="absolute -inset-1 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-2xl opacity-0 group-hover:opacity-100 shadow-[0_0_20px_currentColor] transition duration-500"></div>
             <ImageZoom 
               src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgHrRoULLJOOUqiF45k7kKpGDEIhWaYKa56crrgcwr_2FvcOYiaX1wP5uED7v8yDHLB21SweDXPuVtdIIbp4N12AZyb6Oe0xLF-iKPOx15ahmSaxxZFqyrPmpcAsUzSqISgFxsjf7bwvadUPDtJiYxvcJDb2VR3HXWfuM5nS-3tTdQwZESUs5QNMtXSIbVf/s800/Politica_Seguridad_de_la_Info.png" 
               alt="Política Seguridad de la Información"
@@ -124,7 +124,7 @@ const pageContent: Record<string, { title: string, content: React.ReactNode }> =
             />
           </div>
           <div className="relative group">
-            <div className="absolute -inset-1 bg-gradient-to-r from-orange-500 to-amber-500 rounded-2xl blur opacity-20 group-hover:opacity-60 transition duration-500"></div>
+            <div className="absolute -inset-1 bg-gradient-to-r from-orange-500 to-amber-500 rounded-2xl opacity-0 group-hover:opacity-100 shadow-[0_0_20px_currentColor] transition duration-500"></div>
             <ImageZoom 
               src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhCk5mDxb_mSwNhELFMuiTwIWheta7c3IYDXVKsnhR3k29D2Nb8wa6EqRYJc3hOFAUnpjiR6AxclpPFl7fUXzYEpe5bTSMURPTsICmco1DWtfsrs_Sq0WKFLZRP8C_7E7xS_NAP6CLFE2qmVEJdAbxE_SSfxSXInRojTnsMzLrsp6uXWe0K21fKaYeUHt05/s800/Politica_Gestion_de_Calidad.png" 
               alt="Política de Gestión de Calidad"
@@ -133,7 +133,7 @@ const pageContent: Record<string, { title: string, content: React.ReactNode }> =
             />
           </div>
           <div className="relative group">
-            <div className="absolute -inset-1 bg-gradient-to-r from-purple-500 to-pink-500 rounded-2xl blur opacity-20 group-hover:opacity-60 transition duration-500"></div>
+            <div className="absolute -inset-1 bg-gradient-to-r from-purple-500 to-pink-500 rounded-2xl opacity-0 group-hover:opacity-100 shadow-[0_0_20px_currentColor] transition duration-500"></div>
             <ImageZoom 
               src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjxLUJkJ6MecCvEs38Aa4FolA1mFzmEDPOUMlQBAMsgTvKE8T5fa3yu40JS_pEIjF5rQDZwNGxXch86eyC8fdaxA36VeMpo80Bs0mOAoGN-fkfS5XTF1Ak1tYmLVJ2X9THA7jCFsYxcNFvfefuaWE6o2d3bQ3pB1Y9ZXaiqIAXMfy26FvomwnDZvzmxvP5t/s800/Politica_control_interno.png" 
               alt="Política de Control Interno"
@@ -178,11 +178,12 @@ const pageContent: Record<string, { title: string, content: React.ReactNode }> =
             className="block relative group transition-transform duration-500 hover:scale-[1.02] cursor-pointer mt-auto"
           >
             <div className="absolute -inset-1 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-2xl blur opacity-30 group-hover:opacity-100 transition duration-500"></div>
-            <img 
+            <ImageZoom 
               src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEikW5WdWtsVh4MRdYi_t5XprXRfQfVrB1UjODpJWpPXaEM2VET-bUPRtEOVsvmDupdN1TSb8ZImjNjlID2O7rSfUFFE2-iWxh3Mk9qVHkO7GcCiQJQkgt53fMS2xItmoJn06w4SidSYY-Hsi5koWtUpiPnhyUf7_gdPTyU8tQnY7jnJzUelv9YJNLggqBjf/s800/%C2%BFQu%C3%A9%20es%20la%20Etapa%20Productiva.jpg" 
               alt="Entrar a reunión de Teams"
+              width={800}
+              height={450}
               className="relative rounded-xl shadow-lg w-full object-cover bg-white p-2"
-              style={{ aspectRatio: "16/9" }}
               loading="lazy"
             />
             <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-black/40 rounded-xl">
@@ -276,11 +277,12 @@ const pageContent: Record<string, { title: string, content: React.ReactNode }> =
             className="block relative group cursor-pointer w-full mx-auto mt-auto"
           >
             <div className="absolute -inset-1 bg-gradient-to-r from-pink-500 to-purple-500 rounded-2xl blur opacity-30 group-hover:opacity-100 transition duration-500"></div>
-            <img 
+            <ImageZoom 
               src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjh7lHv0sRXyh122YogsRbaUkftzYpFdugGNjDA0df1Xv1D_NOBNck4G7Ea79y7n-uvPUqG0qgC4tm6nayPqw0aYWZH-j7xiSoyDwZKF9R4pFsLEFAsGItdAIsDsshVCBl8awIY4DACYT2_dVpBf1-Ojgb9Bm8uLtCSQKEKEiRLqP7XY0HKKPaaeGNqhgnD/s800/%C2%BFQu%C3%A9%20es%20la%20Etapa%20Productiva(4).jpg" 
               alt="Documentos de Interés" 
+              width={800}
+              height={450}
               className="relative rounded-xl shadow-lg w-full object-cover bg-white p-2" 
-              style={{ aspectRatio: "16/9" }}
               loading="lazy" 
             />
             <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-black/40 rounded-xl">
@@ -542,10 +544,10 @@ export default async function CtmaPage({ params }: { params: Promise<{ slug: str
         {/* Patrón de puntos (Grid Pattern) más oscuro y visible */}
         <div className="absolute inset-0 bg-[radial-gradient(#94a3b8_2px,transparent_2px)] dark:bg-[radial-gradient(#475569_2px,transparent_2px)] [background-size:32px_32px] opacity-100 dark:opacity-80"></div>
         
-        {/* Gradientes ambientales gigantes y coloridos (Mesh Gradient) */}
-        <div className="absolute top-[-10%] left-[-10%] w-[60%] h-[60%] bg-indigo-500/40 dark:bg-indigo-600/30 rounded-full blur-[150px] mix-blend-multiply dark:mix-blend-screen animate-pulse"></div>
-        <div className="absolute bottom-[-10%] right-[-10%] w-[60%] h-[60%] bg-blue-400/40 dark:bg-blue-600/30 rounded-full blur-[150px] mix-blend-multiply dark:mix-blend-screen"></div>
-        <div className="absolute top-[20%] right-[20%] w-[40%] h-[40%] bg-purple-400/30 dark:bg-purple-600/20 rounded-full blur-[120px] mix-blend-multiply dark:mix-blend-screen"></div>
+          {/* Gradientes ambientales gigantes optimizados sin blur ni animaciones pesadas */}
+          <div className="absolute top-[-10%] left-[-10%] w-[60%] h-[60%] bg-[radial-gradient(circle,rgba(99,102,241,0.25)_0%,transparent_60%)] dark:bg-[radial-gradient(circle,rgba(79,70,229,0.2)_0%,transparent_60%)]"></div>
+          <div className="absolute bottom-[-10%] right-[-10%] w-[60%] h-[60%] bg-[radial-gradient(circle,rgba(96,165,250,0.25)_0%,transparent_60%)] dark:bg-[radial-gradient(circle,rgba(37,99,235,0.2)_0%,transparent_60%)]"></div>
+          <div className="absolute top-[20%] right-[20%] w-[40%] h-[40%] bg-[radial-gradient(circle,rgba(192,132,252,0.2)_0%,transparent_60%)] dark:bg-[radial-gradient(circle,rgba(147,51,234,0.15)_0%,transparent_60%)]"></div>
       </div>
 
       <div className="w-full relative z-10">
@@ -565,9 +567,9 @@ export default async function CtmaPage({ params }: { params: Promise<{ slug: str
             {/* Patrón CSS Puro (Líneas Diagonales) Muy Visible */}
             <div className="absolute inset-0 opacity-30 mix-blend-overlay" style={{ backgroundImage: 'repeating-linear-gradient(45deg, #ffffff 0, #ffffff 2px, transparent 0, transparent 50%)', backgroundSize: '24px 24px' }}></div>
             
-            {/* Figuras geométricas brillantes para darle más vida */}
-            <div className="absolute -top-32 -right-32 bg-cyan-400/40 w-96 h-96 rounded-full blur-[80px] group-hover:scale-125 transition-transform duration-1000"></div>
-            <div className="absolute -bottom-32 -left-32 bg-purple-500/40 w-96 h-96 rounded-full blur-[80px] group-hover:scale-125 transition-transform duration-1000 delay-100"></div>
+            {/* Figuras geométricas brillantes optimizadas */}
+            <div className="absolute -top-32 -right-32 bg-[radial-gradient(circle,rgba(34,211,238,0.4)_0%,transparent_60%)] w-96 h-96 rounded-full group-hover:scale-125 transition-transform duration-1000"></div>
+            <div className="absolute -bottom-32 -left-32 bg-[radial-gradient(circle,rgba(168,85,247,0.4)_0%,transparent_60%)] w-96 h-96 rounded-full group-hover:scale-125 transition-transform duration-1000 delay-100"></div>
             
             <div className="absolute top-8 right-12 opacity-20 transform group-hover:rotate-12 group-hover:scale-110 transition-all duration-700">
               <Info className="w-40 h-40" />

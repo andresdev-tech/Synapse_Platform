@@ -111,7 +111,7 @@ export class NoteController {
     }
 
     try {
-      const result = await NoteService.toggleReaction(id, userId, type as any);
+      const result = await NoteService.toggleReaction(id as string, userId, type as any);
       res.json(result);
     } catch (error) {
       console.error("Error al dar reacción:", error);

@@ -16,8 +16,17 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Synapse",
-  description: "Plataforma de notas",
+  title: "Synapse - SENA CTMA",
+  description: "Plataforma oficial de aprendizaje, notas y anuncios para aprendices del Centro de Tecnología de la Manufactura Avanzada - SENA.",
+  keywords: ["SENA", "CTMA", "Aprendices", "Educación", "Synapse"],
+  authors: [{ name: "SENA CTMA" }],
+  openGraph: {
+    title: "Synapse - SENA CTMA",
+    description: "Plataforma centralizada para aprendices del SENA CTMA.",
+    siteName: "Synapse",
+    locale: "es_CO",
+    type: "website",
+  },
 };
 
 export const viewport: Viewport = {

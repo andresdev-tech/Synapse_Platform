@@ -15,7 +15,7 @@ function VerifyEmailForm() {
     return (
       <div className="text-center">
         <p className="text-slate-600 mb-4">No se encontró un correo para verificar.</p>
-        <button onClick={() => router.push("/register")} className="text-indigo-600 font-semibold hover:underline">Volver al registro</button>
+        <button onClick={() => router.push("/login")} className="text-indigo-600 font-semibold hover:underline">Volver al inicio de sesión</button>
       </div>
     )
   }
