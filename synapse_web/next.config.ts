@@ -5,23 +5,33 @@ const nextConfig: NextConfig = {
     remotePatterns: [
       {
         protocol: "https",
+        hostname: "*.neon.tech",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
         hostname: "**.neon.tech",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname: "*.amazonaws.com",
+        pathname: "/**",
       },
       {
         protocol: "https",
         hostname: "**.amazonaws.com",
+        pathname: "/**",
       },
       {
         protocol: "https",
         hostname: "**.googleusercontent.com",
+        pathname: "/**",
       },
       {
         protocol: "https",
         hostname: "images.unsplash.com",
-      },
-      {
-        protocol: "https",
-        hostname: "**", // Permite cargar imágenes de cualquier almacenamiento seguro HTTPS
+        pathname: "/**",
       },
     ],
   },
