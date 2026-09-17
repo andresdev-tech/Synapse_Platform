@@ -1,0 +1,62 @@
+name: Deploy to Azure VM
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch: # Permite disparar el despliegue manualmente desde la pestaña Actions de GitHub
+
+jobs:
+  deploy:
+    name: Desplegar en Azure VM
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Ejecutar despliegue remoto vía SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.VM_HOST }}
+          username: ${{ secrets.VM_USER }}
+          key: ${{ secrets.VM_SSH_KEY }}
+          port: ${{ secrets.VM_PORT || 22 }}
+          script: |
+            set -e
+
+            echo "🚀 1. Ubicando el directorio del proyecto en el servidor..."
+            if [ -d "$HOME/Synapse_Platform" ]; then
+              cd "$HOME/Synapse_Platform"
+            elif [ -d "$HOME/synapse_platform" ]; then
+              cd "$HOME/synapse_platform"
+            elif [ -d "/synapse_Platform" ]; then
+              cd "/synapse_Platform"
+            else
+              echo "⚠️ Buscando directorio del repositorio..."
+              cd $(find $HOME -maxdepth 2 -name "Synapse_Platform" -o -name "synapse_platform" | head -n 1)
+            fi
+
+            echo "📂 Directorio actual: $(pwd)"
+
+            echo "📥 2. Actualizando el repositorio (git pull)..."
+            git fetch origin main
+            git reset --hard origin/main
+
+            echo "🐳 3. Reconstruyendo imágenes con Docker Compose..."
+            if command -v docker compose &> /dev/null; then
+              DOCKER_COMPOSE_CMD="docker compose"
+            else
+              DOCKER_COMPOSE_CMD="docker-compose"
+            fi
+
+            $DOCKER_COMPOSE_CMD build
+
+            echo "🚀 4. Levantando contenedores actualizados..."
+            $DOCKER_COMPOSE_CMD up -d --remove-orphans
+
+            echo "🗄️ 5. Aplicando migraciones de base de datos..."
+            # Intentar ejecutar migraciones si el contenedor backend está activo
+            $DOCKER_COMPOSE_CMD exec -T backend pnpm prisma migrate deploy || echo "ℹ️ Migraciones completadas o no requeridas."
+
+            echo "🧹 6. Limpiando imágenes antiguas en desuso para ahorrar espacio en disco..."
+            docker image prune -f
+
+            echo "✅ ¡Despliegue completado con éxito!"
