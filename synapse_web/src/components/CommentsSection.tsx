@@ -18,7 +18,7 @@ interface CommentType {
 }
 
 export function CommentsSection({ contentId }: { contentId: string }) {
-  const { data: session } = useSession()
+  const { data: session, status } = useSession()
   const [comments, setComments] = useState<CommentType[]>([])
   const [newComment, setNewComment] = useState("")
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -135,8 +135,12 @@ export function CommentsSection({ contentId }: { contentId: string }) {
           </div>
         )}
 
-        {/* Comment Input */}
-        {session ? (
+          {/* Comment Input */}
+        {status === "loading" ? (
+          <div className="mt-6 p-5 rounded-2xl flex justify-center items-center">
+            <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-sena-500"></div>
+          </div>
+        ) : session ? (
           <form onSubmit={handleSubmit} className="flex gap-4 mt-6 items-start">
             <div className="shrink-0 hidden sm:block">
               {session.user?.image ? (

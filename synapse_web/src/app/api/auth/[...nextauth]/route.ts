@@ -39,6 +39,11 @@ export const authOptions: NextAuthOptions = {
               if (role !== "ADMIN" && role !== "SUPER_ADMIN") {
                 throw new Error("Acceso denegado: Esta sección es exclusiva para Administradores y Super Administradores.")
               }
+            } else {
+              const role = user.role
+              if (role === "ADMIN" || role === "SUPER_ADMIN") {
+                throw new Error("Esta cuenta pertenece al personal administrativo. Por favor, utiliza el acceso designado para tu perfil.")
+              }
             }
 
             return {

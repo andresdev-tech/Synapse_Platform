@@ -84,13 +84,6 @@ export const CtmaMenu = () => {
             </div>
           </div>
         ))}
-        <Link 
-          href="/ctma/directorio" 
-          prefetch={false}
-          className="px-3 py-2 text-sm font-medium text-slate-300 hover:text-white hover:bg-zinc-800 rounded-md transition-colors"
-        >
-          Directorio
-        </Link>
       </nav>
 
       <div className="md:hidden flex items-center">
@@ -133,14 +126,6 @@ export const CtmaMenu = () => {
                 )}
               </div>
             ))}
-            <Link 
-              href="/ctma/directorio" 
-              prefetch={false}
-              onClick={() => setIsOpen(false)}
-              className="py-3 px-2 text-left font-medium text-slate-200 hover:text-white border-t border-zinc-800 mt-2"
-            >
-              Directorio
-            </Link>
           </div>
         </div>
       )}

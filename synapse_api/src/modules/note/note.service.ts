@@ -7,11 +7,12 @@ export class NoteService {
   private static CHUNK_SIZE = 1200;
 
   static generateSlug(title: string): string {
+    const randomSuffix = Math.random().toString(36).substring(2, 6);
     return title
       .toLowerCase()
       .trim()
       .replace(/ /g, "-")
-      .replace(/[^\w-]/g, "");
+      .replace(/[^\w-]/g, "") + "-" + randomSuffix;
   }
 
   static splitIntoChunks(text: string): string[] {
@@ -60,11 +61,15 @@ export class NoteService {
     let chunks: string[] = [];
     let embeddings: number[][] = [];
 
-    if (hasRag && data.ragDocument) {
+      if (hasRag && data.ragDocument) {
       chunks = this.splitIntoChunks(data.ragDocument.content);
-      embeddings = await Promise.all(
-        chunks.map((chunk) => this.embeddingService.generateEmbedding(chunk))
-      );
+      embeddings = [];
+      
+      // Procesar secuencialmente para evitar Rate Limits (429 Too Many Requests) de la API
+      for (const chunk of chunks) {
+        const embedding = await this.embeddingService.generateEmbedding(chunk);
+        embeddings.push(embedding);
+      }
 
       if (embeddings.some((embedding) => embedding.length !== 1024)) {
         throw new Error("El modelo de embeddings no devolvió vectores de 1024 dimensiones.");
