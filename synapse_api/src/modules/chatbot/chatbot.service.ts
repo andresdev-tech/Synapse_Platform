@@ -1,7 +1,7 @@
-import { ChatbotProvider } from "./chatbot.provider";
 import { ChatbotRepository } from "./chatbot.repository";
-import { EmbeddingService } from "./embedding.service";
 import { chatbotScraper } from "./tools/chatbot.scraper";
+import { ProviderFactory } from "./providers/provider.factory";
+import { AIProvider } from "./providers/ai-provider.interface";
 
 export interface ChatbotMessage {
   userId: string;
@@ -45,11 +45,13 @@ function endSession(userId: string) {
 }
 
 export class ChatbotService {
+  private readonly provider: AIProvider;
+
   constructor(
-    private readonly embeddingService: EmbeddingService,
-    private readonly repository: ChatbotRepository,
-    private readonly provider: ChatbotProvider
-  ) {}
+    private readonly repository: ChatbotRepository
+  ) {
+    this.provider = ProviderFactory.getProvider();
+  }
 
   async *processMessage(
     data: ChatbotMessage
@@ -161,7 +163,7 @@ export class ChatbotService {
     // ===============================
     // FLUJO NORMAL RAG
     // ===============================
-    const embedding = await this.embeddingService.generateEmbedding(normalizedMessage);
+    const embedding = await this.provider.generateEmbedding!(normalizedMessage);
     const chunks = await this.repository.searchSimilarChunks(embedding, 5);
     const context = chunks
       .map((chunk) => `Título: ${chunk.title ?? "Sin título"}\nContenido: ${chunk.content}`)
