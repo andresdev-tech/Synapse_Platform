@@ -14,11 +14,28 @@ jobs:
     steps:
       - name: Ejecutar despliegue remoto vía SSH
         uses: appleboy/ssh-action@v1.0.3
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ secrets.AWS_REGION }}
+          AWS_ENDPOINT_URL_S3: ${{ secrets.AWS_ENDPOINT_URL_S3 }}
+          EMAIL_USER: ${{ secrets.EMAIL_USER }}
+          EMAIL_PASS: ${{ secrets.EMAIL_PASS }}
+          QWEN_API_KEY: ${{ secrets.QWEN_API_KEY }}
+          QWEN_BASE_URL: ${{ secrets.QWEN_BASE_URL }}
+          QWEN_EMBEDDING_MODEL: ${{ secrets.QWEN_EMBEDDING_MODEL }}
+          NEXTAUTH_URL: ${{ secrets.NEXTAUTH_URL }}
+          NEXTAUTH_SECRET: ${{ secrets.NEXTAUTH_SECRET }}
+          NEXT_PUBLIC_RECAPTCHA_SITE_KEY: ${{ secrets.NEXT_PUBLIC_RECAPTCHA_SITE_KEY }}
+          RECAPTCHA_SECRET_KEY: ${{ secrets.RECAPTCHA_SECRET_KEY }}
         with:
           host: ${{ secrets.VM_HOST }}
           username: ${{ secrets.VM_USER }}
           key: ${{ secrets.VM_SSH_KEY }}
           port: ${{ secrets.VM_PORT || 22 }}
+          envs: DATABASE_URL,JWT_SECRET,AWS_ACCESS_KEY_ID,AWS_SECRET_ACCESS_KEY,AWS_REGION,AWS_ENDPOINT_URL_S3,EMAIL_USER,EMAIL_PASS,QWEN_API_KEY,QWEN_BASE_URL,QWEN_EMBEDDING_MODEL,NEXTAUTH_URL,NEXTAUTH_SECRET,NEXT_PUBLIC_RECAPTCHA_SITE_KEY,RECAPTCHA_SECRET_KEY
           script: |
             set -e
 
@@ -40,7 +57,35 @@ jobs:
             git fetch origin main
             git reset --hard origin/main
 
-            echo "🐳 3. Reconstruyendo imágenes con Docker Compose..."
+            echo "🔐 3. Generando archivos .env desde GitHub Secrets..."
+            cat <<EOF > Synapse_api/.env
+DATABASE_URL="$DATABASE_URL"
+JWT_SECRET="$JWT_SECRET"
+AWS_ACCESS_KEY_ID="$AWS_ACCESS_KEY_ID"
+AWS_SECRET_ACCESS_KEY="$AWS_SECRET_ACCESS_KEY"
+AWS_REGION="$AWS_REGION"
+AWS_ENDPOINT_URL_S3="$AWS_ENDPOINT_URL_S3"
+EMAIL_USER="$EMAIL_USER"
+EMAIL_PASS="$EMAIL_PASS"
+QWEN_API_KEY="$QWEN_API_KEY"
+QWEN_BASE_URL="$QWEN_BASE_URL"
+QWEN_EMBEDDING_MODEL="$QWEN_EMBEDDING_MODEL"
+PORT=4000
+EOF
+
+            cat <<EOF > synapse_web/.env
+DATABASE_URL="$DATABASE_URL"
+NEXTAUTH_URL="$NEXTAUTH_URL"
+NEXTAUTH_SECRET="$NEXTAUTH_SECRET"
+NEXT_PUBLIC_RECAPTCHA_SITE_KEY="$NEXT_PUBLIC_RECAPTCHA_SITE_KEY"
+RECAPTCHA_SECRET_KEY="$RECAPTCHA_SECRET_KEY"
+EMAIL_USER="$EMAIL_USER"
+EMAIL_PASS="$EMAIL_PASS"
+JWT_SECRET="$JWT_SECRET"
+PORT=3000
+EOF
+
+            echo "🐳 4. Reconstruyendo imágenes con Docker Compose..."
             if command -v docker compose &> /dev/null; then
               DOCKER_COMPOSE_CMD="docker compose"
             else
@@ -49,13 +94,13 @@ jobs:
 
             $DOCKER_COMPOSE_CMD build
 
-            echo "🚀 4. Levantando contenedores actualizados..."
+            echo "🚀 5. Levantando contenedores actualizados..."
             $DOCKER_COMPOSE_CMD up -d --remove-orphans
 
-            echo "🗄️ 5. Aplicando migraciones de base de datos..."
+            echo "🗄️ 6. Aplicando migraciones de base de datos..."
             $DOCKER_COMPOSE_CMD exec -T backend pnpm prisma migrate deploy || echo "ℹ️ Migraciones completadas o no requeridas."
 
-            echo "🧹 6. Limpiando imágenes antiguas en desuso..."
+            echo "🧹 7. Limpiando imágenes antiguas en desuso..."
             docker image prune -f
 
             echo "✅ ¡Despliegue completado con éxito!"
