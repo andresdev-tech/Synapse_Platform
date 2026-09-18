@@ -58,7 +58,7 @@ jobs:
             git reset --hard origin/main
 
             echo "🔐 3. Generando archivos .env desde GitHub Secrets..."
-            cat <<EOF > Synapse_api/.env
+            cat <<EOF > synapse_api/.env
             DATABASE_URL="$DATABASE_URL"
             JWT_SECRET="$JWT_SECRET"
             AWS_ACCESS_KEY_ID="$AWS_ACCESS_KEY_ID"
