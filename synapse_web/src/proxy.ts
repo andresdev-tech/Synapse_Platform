@@ -58,8 +58,8 @@ export default withAuth(
           return true;
         }
 
-        // Permitir acceso público a la raíz (tablón/dashboard) y a las rutas simuladas del CTMA
-        if (pathname === "/" || pathname.startsWith("/ctma")) {
+        // Permitir acceso público a la raíz (tablón/dashboard), blogs y a las rutas simuladas del CTMA
+        if (pathname === "/" || pathname.startsWith("/ctma") || pathname.startsWith("/blogs")) {
           return true;
         }
 

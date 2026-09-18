@@ -43,8 +43,9 @@ export class AuthController {
           headers: { "Content-Type": "application/x-www-form-urlencoded" },
           body: `secret=${encodeURIComponent(process.env.RECAPTCHA_SECRET_KEY)}&response=${encodeURIComponent(parsedData.captchaToken)}`,
         });
-        const captchaData = await captchaRes.json() as { success?: boolean };
+        const captchaData = await captchaRes.json() as { success?: boolean; 'error-codes'?: string[] };
         if (!captchaData.success) {
+          console.error("[reCAPTCHA Verification Failed]", captchaData);
           res.status(400).json({ error: "Error al validar el reCAPTCHA" });
           return;
         }
@@ -127,8 +128,9 @@ export class AuthController {
           headers: { "Content-Type": "application/x-www-form-urlencoded" },
           body: `secret=${encodeURIComponent(process.env.RECAPTCHA_SECRET_KEY)}&response=${encodeURIComponent(parsedData.captchaToken)}`,
         });
-        const captchaData = await captchaRes.json() as { success?: boolean };
+        const captchaData = await captchaRes.json() as { success?: boolean; 'error-codes'?: string[] };
         if (!captchaData.success) {
+          console.error("[reCAPTCHA Verification Failed (Admin)]", captchaData);
           res.status(400).json({ error: "Error al validar el reCAPTCHA" });
           return;
         }
