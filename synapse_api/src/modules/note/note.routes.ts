@@ -51,7 +51,6 @@ router.get("/", NoteController.getGlobal);
  *       200:
  *         description: Lista de notas globales
  */
-router.get("/global", NoteController.getGlobal);
 
 /**
  * @swagger
@@ -75,7 +74,6 @@ router.get("/global", NoteController.getGlobal);
  *       401:
  *         description: No autenticado
  */
-router.get("/apprentice/:userId", verifyToken, NoteController.getPersonal);
 
 /**
  * @swagger

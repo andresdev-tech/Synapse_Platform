@@ -12,38 +12,6 @@ const router = Router();
 
 /**
  * @swagger
- * /api/auth/register:
- *   post:
- *     summary: Registrar un nuevo aprendiz o usuario institucional
- *     tags: [Auth]
- *     security: []
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             required: [name, email]
- *             properties:
- *               name:
- *                 type: string
- *                 example: "Juan Pérez"
- *               email:
- *                 type: string
- *                 example: "jperez@soy.sena.edu.co"
- *               captchaToken:
- *                 type: string
- *                 description: Token de verificación de Google reCAPTCHA
- *     responses:
- *       201:
- *         description: Usuario registrado exitosamente. Se envía código de verificación.
- *       400:
- *         description: Correo no permitido, datos inválidos o usuario existente.
- */
-router.post("/register", AuthController.register);
-
-/**
- * @swagger
  * /api/auth/createadmin:
  *   post:
  *     summary: Registrar un nuevo administrador institucional

@@ -6,43 +6,7 @@ import { ZodError } from "zod";
 
 
 export class AuthController {
-  static async register(req: Request, res: Response): Promise<void> {
-    try {
-      const parsedData = registerSchema.parse(req.body);
-      // ReCaptcha validation
-      if (process.env.RECAPTCHA_SECRET_KEY && process.env.RECAPTCHA_SECRET_KEY !== "dummy") {
-        if (!parsedData.captchaToken) {
-          res.status(400).json({ error: "Por favor, completa el reCAPTCHA" });
-          return;
-        }
-        
-        const captchaRes = await fetch("https://www.google.com/recaptcha/api/siteverify", {
-          method: "POST",
-          headers: { "Content-Type": "application/x-www-form-urlencoded" },
-          body: `secret=${process.env.RECAPTCHA_SECRET_KEY}&response=${parsedData.captchaToken}`
-        });
-        const captchaData: any = await captchaRes.json();
-        if (!captchaData.success) {
-          res.status(400).json({ error: "Error al validar el reCAPTCHA" });
-          return;
-        }
-      }
 
-      const result = await AuthService.registerUser(parsedData);
-      if (!result.success) {
-        res.status(400).json({ error: result.error });
-        return;
-      }
-
-      res.status(201).json({ success: true, data: result.data });
-    } catch (error) {
-      if (error instanceof ZodError) {
-        res.status(400).json({ error: error.issues[0].message });
-        return;
-      }
-      console.error('[Login Error]', error); res.status(500).json({ error: "Error en el servidor" });
-    }
-  }
 
   static async login(req: Request, res: Response): Promise<void> {
     try {

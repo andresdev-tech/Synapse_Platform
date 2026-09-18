@@ -74,7 +74,7 @@ export class AuthService {
     });
   }
 
-  static async createadmin (data) {
+  static async createadmin (data: any) {
 
     try {
       const emailExist = await AuthRepository.findUserByEmail(data.email);
@@ -94,40 +94,7 @@ export class AuthService {
     }
   }
 
-  static async registerUser(data: RegisterDTO): Promise<AuthResponse> {
-    const existingUser = await AuthRepository.findUserByEmail(data.email);
-    if (existingUser) {
-      return { success: false, error: "El correo ya está en uso" };
-    }
 
-    let userRole = await AuthRepository.findRoleByName(RoleNames.USER);
-    if (!userRole) {
-      userRole = await AuthRepository.createRole(RoleNames.USER);
-    }
-
-    const newUser = await AuthRepository.createUser({
-      name: data.name,
-      email: data.email,
-      roleId: userRole.id,
-      emailVerified: null
-    });
-
-    const code = Math.floor(100000 + Math.random() * 900000).toString();
-    await AuthRepository.createVerificationCode(data.email, code, new Date(Date.now() + 15 * 60 * 1000));
-
-    if (process.env.EMAIL_USER && process.env.EMAIL_PASS) {
-      await this.getTransporter().sendMail({
-        from: '"Synapse CTMA" <no-reply@synapse.edu.co>',
-        to: data.email,
-        subject: "Código de Verificación - Synapse",
-        html: `<h1>Bienvenido a Synapse</h1><p>Tu código de verificación es: <b>${code}</b></p>`,
-      });
-    } else {
-      console.log(`\n[MOCK EMAIL] Para: ${data.email} | Código de verificación: ${code}\n`);
-    }
-
-    return { success: true, data: { id: newUser.id, email: newUser.email } };
-  }
 
   static async loginUser(credentials: LoginDTO): Promise<AuthResponse> {
     const user = await AuthRepository.findUserByEmail(credentials.email);
@@ -246,7 +213,7 @@ export class AuthService {
       return { success: false, error: "unauthorized" };
     }
 
-    const role = user.role.name;
+    const role = user.role?.name || "GUEST";
     const jwtData = this.createJwt(user, role);
 
     await this.recordUserLogin(user, jwtData.token, role, "admin_password");

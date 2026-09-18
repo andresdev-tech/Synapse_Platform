@@ -87,7 +87,7 @@ const officialResources = [
 
 import NextLink from "next/link"
 
-const SortableNoteItem = memo(function SortableNoteItem({ note }: { note: Note }) {
+const SortableNoteItem = memo(function SortableNoteItem({ note, priority }: { note: Note, priority?: boolean }) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: note.id })
 
   const style = {
@@ -119,6 +119,7 @@ const SortableNoteItem = memo(function SortableNoteItem({ note }: { note: Note }
             src={note.seoImage}
             alt={note.title}
             fill
+            priority={priority}
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
             className="object-cover group-hover:scale-110 transition-transform duration-700 ease-in-out"
             onError={(e) => { e.currentTarget.style.display = 'none'; }}
@@ -493,16 +494,16 @@ export function ApprenticeDashboard({ initialNotes = [], initialCategories = [] 
                 <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
                   <SortableContext items={filteredNotes.map(n => n.id)} strategy={rectSortingStrategy}>
                     <div className="columns-1 md:columns-2 gap-8">
-                      {filteredNotes.map(n => (
-                        <SortableNoteItem key={n.id} note={n} />
-                      ))}
-                    </div>
+                    {filteredNotes.map((n, index) => (
+                      <SortableNoteItem key={n.id} note={n} priority={index === 0} />
+                    ))}
+                  </div>
                   </SortableContext>
                 </DndContext>
               ) : (
                 <div className="columns-1 md:columns-2 gap-8">
-                  {filteredNotes.map(n => (
-                    <SortableNoteItem key={n.id} note={n} />
+                  {filteredNotes.map((n, index) => (
+                    <SortableNoteItem key={n.id} note={n} priority={index === 0} />
                   ))}
                 </div>
               )

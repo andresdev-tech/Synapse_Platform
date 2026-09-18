@@ -69,7 +69,7 @@ export class AuthRepository {
     })
   }
 
-  static async createadmin(datas) {
+  static async createadmin(datas: any) {
     return await prisma.user.create({
       data: {
         name: datas.name,

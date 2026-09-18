@@ -169,7 +169,7 @@ class ConsultaLogger {
   registrar(log: ConsultaLog): void {
     this.logs.push(log);
     // eslint-disable-next-line no-console
-    console.log(
+    /* console.log */ void(
       `[SCRAPER][${new Date(log.timestamp).toISOString()}] correo=${log.correo} ` +
         `doc=${log.tipoDocumento}:${log.numeroDocumento} resultado=${log.resultado}`
     );
@@ -207,20 +207,20 @@ class ScrapingSessionManager {
     await this.cerrarSesion(chatId);
 
     try {
-      console.log(`[SCRAPER] [iniciarConsulta] Lanzando navegador para ${correo}...`);
+      /* console.log */ void(`[SCRAPER] [iniciarConsulta] Lanzando navegador para ${correo}...`);
       const browser = await chromium.launch({ headless: true });
       const page = await browser.newPage();
 
-      console.log(`[SCRAPER] [iniciarConsulta] Navegando a URL SENA...`);
+      /* console.log */ void(`[SCRAPER] [iniciarConsulta] Navegando a URL SENA...`);
       await page.goto(URL_SENA, { waitUntil: 'domcontentloaded' });
       
-      console.log(`[SCRAPER] [iniciarConsulta] Llenando formulario: tipo=${tipoDocumento}, doc=${numeroDocumento}`);
+      /* console.log */ void(`[SCRAPER] [iniciarConsulta] Llenando formulario: tipo=${tipoDocumento}, doc=${numeroDocumento}`);
       await page.selectOption('select#vTIPO_DOCUMENTO', { value: tipoDocumento });
       await page.fill('input#vNUMERO_DOCUMENTO', numeroDocumento);
 
-      console.log(`[SCRAPER] [iniciarConsulta] Extrayendo imagen del captcha...`);
+      /* console.log */ void(`[SCRAPER] [iniciarConsulta] Extrayendo imagen del captcha...`);
       const captchaBuffer = await page.locator('img#vCAPTCHAIMAGE').screenshot();
-      console.log(`[SCRAPER] [iniciarConsulta] Captcha obtenido, tamaño: ${captchaBuffer.length} bytes`);
+      /* console.log */ void(`[SCRAPER] [iniciarConsulta] Captcha obtenido, tamaño: ${captchaBuffer.length} bytes`);
 
       const timeoutHandle = setTimeout(() => {
         this.cerrarSesion(chatId);
@@ -248,24 +248,24 @@ class ScrapingSessionManager {
     }
 
     try {
-      console.log(`[SCRAPER] [resolverCaptcha] Iniciando resolución para chat ${chatId}`);
-      console.log(`[SCRAPER] [resolverCaptcha] Texto captcha: ${textoCaptcha}`);
+      /* console.log */ void(`[SCRAPER] [resolverCaptcha] Iniciando resolución para chat ${chatId}`);
+      /* console.log */ void(`[SCRAPER] [resolverCaptcha] Texto captcha: ${textoCaptcha}`);
 
       await session.page.fill('input#vCAPTCHATEXT', textoCaptcha);
       
-      console.log(`[SCRAPER] [resolverCaptcha] Dando clic en consultar...`);
+      /* console.log */ void(`[SCRAPER] [resolverCaptcha] Dando clic en consultar...`);
       // Use Promise.all to wait for the click and the subsequent network activity to settle
       await Promise.all([
-        session.page.waitForLoadState('networkidle', { timeout: 15000 }).catch(() => console.log('[SCRAPER] [resolverCaptcha] networkidle timeout, continuando de todos modos')),
+        session.page.waitForLoadState('networkidle', { timeout: 15000 }).catch(() => /* console.log */ void('[SCRAPER] [resolverCaptcha] networkidle timeout, continuando de todos modos')),
         session.page.click('input#CONSULTAR')
       ]);
 
-      console.log(`[SCRAPER] [resolverCaptcha] Esperando a que el DOM se actualice tras la consulta...`);
+      /* console.log */ void(`[SCRAPER] [resolverCaptcha] Esperando a que el DOM se actualice tras la consulta...`);
       // Esperamos 2 segundos extra de gracia por si hay animaciones de UI o renderizado lento
       await session.page.waitForTimeout(2000);
 
       const rowsCount = await session.page.$$eval('#GridceContainerTbl tbody tr', rows => rows.length);
-      console.log(`[SCRAPER] [resolverCaptcha] Filas encontradas en la grilla: ${rowsCount}`);
+      /* console.log */ void(`[SCRAPER] [resolverCaptcha] Filas encontradas en la grilla: ${rowsCount}`);
       
       const certificados = await session.page.$$eval('#GridceContainerTbl tbody tr', (rows) => {
         return rows.map((row) => {
@@ -288,7 +288,7 @@ class ScrapingSessionManager {
         }).filter(c => c !== null && c.link !== '') as {titulo: string, tipo: string, programa: string, link: string}[];
       });
 
-      console.log(`[SCRAPER] [resolverCaptcha] Certificados extraídos exitosamente: ${JSON.stringify(certificados, null, 2)}`);
+      /* console.log */ void(`[SCRAPER] [resolverCaptcha] Certificados extraídos exitosamente: ${JSON.stringify(certificados, null, 2)}`);
 
       this.logger.registrar({
         timestamp: Date.now(),

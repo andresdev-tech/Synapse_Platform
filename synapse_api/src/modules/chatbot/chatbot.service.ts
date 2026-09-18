@@ -100,7 +100,7 @@ export class ChatbotService {
       const result = await chatbotScraper.iniciarConsulta({
         chatId: userId,
         correo: correo,
-        tipoDocumento: tipoDocumento, // Already "CC", "TI", "CE", "PEP"
+        tipoDocumento: tipoDocumento || "CC", // Already "CC", "TI", "CE", "PEP"
         numeroDocumento: numeroDoc
       });
 
