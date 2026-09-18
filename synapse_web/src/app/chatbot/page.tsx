@@ -5,6 +5,8 @@ import { useRouter } from 'next/navigation'
 import { Send, Bot, User, X } from 'lucide-react'
 import { fetchApi } from '@/lib/fetchApi'
 
+import { useSession } from "next-auth/react"
+
 interface Message {
   id: string
   content: string
@@ -14,6 +16,13 @@ interface Message {
 
 export default function ChatbotPage() {
   const router = useRouter()
+  const { status } = useSession()
+
+  useEffect(() => {
+    if (status === 'unauthenticated') {
+      router.push('/login')
+    }
+  }, [status, router])
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',
@@ -112,6 +121,10 @@ export default function ChatbotPage() {
     } finally {
       setIsTyping(false)
     }
+  }
+
+  if (status !== 'authenticated') {
+    return null
   }
 
   return (

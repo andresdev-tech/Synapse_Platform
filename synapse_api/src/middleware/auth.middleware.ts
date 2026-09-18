@@ -27,6 +27,20 @@ export const verifyToken = (req: AuthRequest, res: Response, next: NextFunction)
   }
 };
 
+export const optionalAuth = (req: AuthRequest, res: Response, next: NextFunction) => {
+  try {
+    const authHeader = req.headers.authorization;
+    if (authHeader && authHeader.startsWith("Bearer ")) {
+      const token = authHeader.split(" ")[1];
+      const secret = process.env.JWT_SECRET || "default_dev_secret_for_synapse";
+      req.user = jwt.verify(token, secret);
+    }
+  } catch (error) {
+    // Ignore invalid token
+  }
+  next();
+};
+
 export const requireAdmin = (req: AuthRequest, res: Response, next: NextFunction) => {
   if (req.user && (req.user.role === "ADMIN" || req.user.role === "SUPER_ADMIN")) {
     next();
