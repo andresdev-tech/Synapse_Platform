@@ -1,9 +1,9 @@
 import { RagRepository } from "./rag.repository";
 import { CreateRagResourceDTO } from "./rag.types";
-import { EmbeddingService } from "../chatbot/embedding.service";
+import { ProviderFactory } from "../chatbot/providers/provider.factory";
 
 export class RagService {
-  private static embeddingService = new EmbeddingService();
+  private static provider = ProviderFactory.getProvider();
   private static CHUNK_SIZE = 1200;
 
   static splitIntoChunks(text: string): string[] {
@@ -25,7 +25,7 @@ export class RagService {
   static async createResource(data: CreateRagResourceDTO, userId: string) {
     const chunks = this.splitIntoChunks(data.content);
     const embeddings = await Promise.all(
-      chunks.map((chunk) => this.embeddingService.generateEmbedding(chunk))
+      chunks.map((chunk) => this.provider.generateEmbedding!(chunk))
     );
 
     if (embeddings.some((embedding) => embedding.length !== 1024)) {
