@@ -1,7 +1,7 @@
 services:
   backend:
     build:
-      context: ./Synapse_api
+      context: ./synapse_api
       dockerfile: Dockerfile
     container_name: synapse_api
     restart: unless-stopped
