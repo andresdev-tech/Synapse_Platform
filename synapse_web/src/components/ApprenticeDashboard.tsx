@@ -666,7 +666,7 @@ export function ApprenticeDashboard({ initialNotes = [], initialCategories = [] 
               </div>
             )}
 
-            <div className="bg-white dark:bg-zinc-800 rounded-3xl p-6 shadow-sm border border-slate-100 dark:border-zinc-700 sticky top-8">
+            <div className="bg-white dark:bg-zinc-800 rounded-3xl p-6 shadow-sm border border-slate-100 dark:border-zinc-700 sticky top-8 max-h-[calc(100vh-4rem)] overflow-y-auto custom-scrollbar">
               <h3 className="font-black text-zinc-800 dark:text-slate-200 mb-5 flex items-center text-lg">
                 <LinkIcon className="w-5 h-5 mr-2 text-sena-500" />
                 Enlaces Rápidos
@@ -745,11 +745,17 @@ export function ApprenticeDashboard({ initialNotes = [], initialCategories = [] 
                 </div>
 
                 {/* LOGIN / LOGOUT BUTTON */}
-                {session && (
+                {session ? (
                   <div className="mt-6">
                     <button onClick={() => signOut()} className="w-full py-3 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 font-bold rounded-xl hover:bg-red-100 dark:hover:bg-red-900/40 transition-colors">
                       Cerrar Sesión
                     </button>
+                  </div>
+                ) : (
+                  <div className="mt-6">
+                    <a href="/login" className="block text-center w-full py-3 bg-sena-500 text-white font-bold rounded-xl hover:bg-sena-600 transition-colors">
+                      Iniciar Sesión
+                    </a>
                   </div>
                 )}
               </div>

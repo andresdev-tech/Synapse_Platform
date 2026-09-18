@@ -190,11 +190,27 @@ export function CommentsSection({ contentId }: { contentId: string }) {
             </div>
           </form>
         ) : (
-          <div className="mt-6 p-5 bg-sena-50 dark:bg-sena-900/10 rounded-2xl border border-sena-100 dark:border-sena-900/30 text-center flex flex-col sm:flex-row items-center justify-between gap-4">
-            <p className="text-sena-800 dark:text-sena-200 text-sm font-medium">Inicia sesión para participar en la conversación.</p>
-            <a href="/login" className="px-6 py-2 bg-sena-500 hover:bg-sena-600 text-white font-bold rounded-xl transition-colors text-sm shrink-0 shadow-sm">
-              Iniciar Sesión
-            </a>
+          <div className="flex gap-4 mt-6 items-start cursor-pointer group" onClick={() => window.location.href = '/login'}>
+            <div className="shrink-0 hidden sm:block">
+              <div className="w-10 h-10 rounded-full bg-slate-200 dark:bg-zinc-700 flex items-center justify-center text-slate-500 dark:text-slate-400 group-hover:bg-sena-100 group-hover:text-sena-500 transition-colors">
+                <User className="w-5 h-5" />
+              </div>
+            </div>
+            <div className="flex-1 relative">
+              <textarea
+                readOnly
+                placeholder="Escribe un comentario..."
+                className="w-full bg-white dark:bg-zinc-900 border border-slate-300 dark:border-zinc-700 text-zinc-800 dark:text-slate-200 text-sm rounded-2xl p-4 pr-14 min-h-[50px] resize-none outline-none transition-all placeholder:text-slate-400 cursor-pointer group-hover:border-sena-400 group-hover:ring-1 group-hover:ring-sena-400"
+                rows={1}
+              />
+              <button
+                type="button"
+                className="absolute right-2 top-2 p-2 bg-slate-200 dark:bg-zinc-700 text-slate-400 dark:text-slate-500 rounded-xl transition-colors group-hover:bg-sena-500 group-hover:text-white"
+                title="Publicar comentario"
+              >
+                <Send className="w-4 h-4" />
+              </button>
+            </div>
           </div>
         )}
       </div>

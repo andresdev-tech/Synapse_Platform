@@ -35,10 +35,6 @@ function DashboardContent({ initialNotes, initialCategories }: { initialNotes?: 
     return <SuperAdminDashboard />
   }
 
-  if (!session && !isGuest) {
-    return <LandingPage />
-  }
-
   return <ApprenticeDashboard initialNotes={initialNotes} initialCategories={initialCategories} />
 }
 
