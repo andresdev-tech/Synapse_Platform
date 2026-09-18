@@ -19,6 +19,8 @@ services:
     build:
       context: ./synapse_web
       dockerfile: Dockerfile
+      args:
+        NEXT_PUBLIC_RECAPTCHA_SITE_KEY: ${NEXT_PUBLIC_RECAPTCHA_SITE_KEY:-""}
     container_name: synapse_web
     restart: unless-stopped
     ports:
@@ -28,6 +30,7 @@ services:
     environment:
       - NODE_ENV=production
       - PORT=3000
+      - NEXT_PUBLIC_RECAPTCHA_SITE_KEY=${NEXT_PUBLIC_RECAPTCHA_SITE_KEY:-""}
       - API_BACKEND_URL=http://backend:4000/api
     depends_on:
       - backend
