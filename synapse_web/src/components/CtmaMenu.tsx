@@ -63,7 +63,7 @@ export const CtmaMenu = () => {
       <nav className="hidden md:flex items-center space-x-1 ml-6">
         {menuItems.map((menu) => (
           <div key={menu.title} className="relative group">
-            <button className="flex items-center space-x-1 px-3 py-2 text-sm font-medium text-slate-300 hover:text-white hover:bg-zinc-800 rounded-md transition-colors">
+            <button className="flex items-center space-x-1 px-3 py-2 text-sm font-medium text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-zinc-800 rounded-md transition-colors">
               <span>{menu.title}</span>
               <ChevronDown className="w-4 h-4 opacity-70 group-hover:opacity-100 transition-opacity" />
             </button>
@@ -89,7 +89,7 @@ export const CtmaMenu = () => {
       <div className="md:hidden flex items-center">
         <button 
           onClick={() => setIsOpen(!isOpen)}
-          className="p-2 text-zinc-300 hover:text-white hover:bg-zinc-800 rounded-md transition-colors focus:outline-none"
+          className="p-2 text-slate-700 dark:text-zinc-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-zinc-800 rounded-md transition-colors focus:outline-none"
           aria-label="Abrir menú"
         >
           {isOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
@@ -97,13 +97,13 @@ export const CtmaMenu = () => {
       </div>
 
       {isOpen && (
-        <div className="absolute top-16 left-0 w-full bg-zinc-900 border-t border-zinc-800 shadow-2xl md:hidden flex flex-col z-50 max-h-[calc(100vh-4rem)] overflow-y-auto">
+        <div className="absolute top-16 left-0 w-full bg-white/95 dark:bg-zinc-900/95 backdrop-blur-md border-t border-slate-200 dark:border-zinc-800 shadow-2xl md:hidden flex flex-col z-50 max-h-[calc(100vh-4rem)] overflow-y-auto">
           <div className="flex flex-col py-4 px-6 space-y-2">
             {menuItems.map((menu) => (
               <div key={menu.title} className="flex flex-col border-b border-zinc-800/50 pb-2 mb-2 last:border-0">
                 <button 
                   onClick={() => toggleSection(menu.title)}
-                  className="flex justify-between items-center py-3 text-left font-medium text-slate-200 hover:text-white w-full"
+                  className="flex justify-between items-center py-3 text-left font-medium text-slate-800 dark:text-slate-200 hover:text-sena-600 dark:hover:text-white w-full"
                 >
                   <span className="text-base">{menu.title}</span>
                   <ChevronDown className={`w-5 h-5 transition-transform duration-200 ${openSection === menu.title ? 'rotate-180 text-sena-400' : 'text-zinc-500'}`} />
@@ -117,7 +117,7 @@ export const CtmaMenu = () => {
                         href={link.url}
                         prefetch={false}
                         onClick={() => setIsOpen(false)}
-                        className="text-sm py-2 px-3 rounded-md text-zinc-400 hover:text-white hover:bg-zinc-800/50 transition-colors"
+                        className="text-sm py-2 px-3 rounded-md text-slate-600 dark:text-zinc-400 hover:text-sena-600 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-zinc-800/50 transition-colors"
                       >
                         {link.name}
                       </Link>
