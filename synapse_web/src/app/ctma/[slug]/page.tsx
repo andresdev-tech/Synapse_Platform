@@ -632,7 +632,7 @@ const pageContent: Record<string, { title: string, content: React.ReactNode }> =
 async function getNotesBySection(section: string) {
   try {
     const backendUrl = process.env.API_BACKEND_URL || "http://127.0.0.1:4000/api";
-    const res = await fetch(`${backendUrl}/notes?section=${encodeURIComponent(section)}`, { next: { revalidate: 30 } });
+    const res = await fetch(`${backendUrl}/notes?section=${encodeURIComponent(section)}`, { cache: "no-store" });
     if (!res.ok) return [];
     return await res.json();
   } catch (err) {

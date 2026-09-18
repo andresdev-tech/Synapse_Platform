@@ -148,7 +148,7 @@ export default function BlogDetailPage({ params }: PageProps) {
   return (
     <div className="min-h-screen bg-white dark:bg-zinc-900 text-zinc-900 dark:text-slate-100 transition-colors duration-300">
       {/* Navbar Minimalista (Estilo SENA) */}
-      <nav className="bg-sena-500 text-white shadow-md sticky top-0 z-50">
+      <nav className="bg-sena-500 text-white shadow-md sticky top-0 z-30">
         <div className="w-full px-4 sm:px-8 md:px-16 lg:px-24 h-16 flex items-center justify-between">
           <button 
             onClick={() => router.back()} 
@@ -190,34 +190,101 @@ export default function BlogDetailPage({ params }: PageProps) {
             </div>
           </div>
 
-          {/* Imagen Principal (Edge to Edge) */}
+          {/* Imagen Principal */}
           {note.seoImage && (
-            <div className="w-full flex justify-center border-y border-slate-100 dark:border-zinc-800 bg-white dark:bg-zinc-900 py-6 relative aspect-video max-h-[85vh]">
-              <Image 
-                src={note.seoImage} 
-                alt={note.title} 
-                fill
-                sizes="(max-width: 1920px) 100vw, 1920px"
-                className="object-contain"
-                onError={(e) => { e.currentTarget.style.display = 'none'; }}
-              />
+            <div className="w-full flex justify-start bg-white dark:bg-zinc-900 px-6 md:px-10 py-6">
+              <div className="relative w-full max-w-2xl aspect-video rounded-2xl overflow-hidden border border-slate-200 dark:border-zinc-700 shadow-sm">
+                <Image 
+                  src={note.seoImage} 
+                  alt={note.title} 
+                  fill
+                  sizes="(max-width: 768px) 100vw, 768px"
+                  className="object-contain"
+                  onError={(e) => { e.currentTarget.style.display = 'none'; }}
+                />
+              </div>
             </div>
           )}
 
           <div className="p-6 md:p-8 lg:p-10">
             {/* Contenido */}
             <div className="text-lg text-slate-700 dark:text-slate-300 leading-normal">
-              {/* Si el backend envía HTML (listas, negritas), usamos dangerouslySetInnerHTML,
-                  de lo contrario (texto con guiones/puntos), respetamos los saltos de línea con whitespace-pre-wrap */}
-              {(note.content || '000').includes('<') && (note.content || 'hola1').includes('>') ? (
-                <div className="prose prose-lg dark:prose-invert max-w-none" dangerouslySetInnerHTML={{ __html: note.content || 'hola2' }} />
-              ) : (
-                <div className="space-y-4">
-                  {(note.body || note.content || '').split('\n').map((line, i) => (
-                    line.trim() ? <p key={i}>{line}</p> : null
-                  ))}
-                </div>
-              )}
+              {(() => {
+                const bodyStr = note.body || note.content || '';
+                
+                try {
+                  if (bodyStr.trim().startsWith('[') && bodyStr.trim().endsWith(']')) {
+                    const blocks = JSON.parse(bodyStr);
+                    if (Array.isArray(blocks)) {
+                      return (
+                        <div className="space-y-6">
+                          {blocks.map((block: any, idx: number) => {
+                            if (block.type === 'text') {
+                              return <div key={idx} className="whitespace-pre-wrap leading-relaxed">{block.content}</div>;
+                            }
+                            if (block.type === 'image' && block.url) {
+                              return (
+                                <div key={idx} className="rounded-2xl overflow-hidden shadow-sm my-4 border border-slate-200 dark:border-zinc-700 bg-slate-100 dark:bg-zinc-800 max-w-2xl">
+                                  <img src={block.url} alt="Imagen del anuncio" className="w-full h-auto object-cover" />
+                                </div>
+                              );
+                            }
+                            if (block.type === 'pdf' && block.url) {
+                              return (
+                                <a key={idx} href={block.url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-4 p-4 my-4 bg-slate-50 dark:bg-zinc-800/50 text-slate-700 dark:text-slate-300 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 transition-colors border border-slate-200 dark:border-zinc-700 font-bold group">
+                                  <div className="w-12 h-12 shrink-0 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center text-red-600 dark:text-red-400 group-hover:scale-110 transition-transform">
+                                    <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
+                                  </div>
+                                  <div className="flex flex-col">
+                                    <span>Descargar Documento Adjunto</span>
+                                    {block.name && <span className="text-xs font-normal text-slate-500">{block.name}</span>}
+                                  </div>
+                                </a>
+                              );
+                            }
+                            if (block.type === 'video' && block.url) {
+                              const ytMatch = block.url.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))([^&?"']+)/);
+                              const videoId = ytMatch ? ytMatch[1] : "";
+                              
+                              if (videoId) {
+                                return (
+                                  <div key={idx} className="rounded-2xl overflow-hidden border border-slate-200 dark:border-zinc-700 shadow-sm aspect-video relative bg-black my-4 max-w-2xl">
+                                    <iframe 
+                                      src={`https://www.youtube-nocookie.com/embed/${videoId}`}
+                                      className="absolute inset-0 w-full h-full"
+                                      title="YouTube video player"
+                                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                                      allowFullScreen
+                                    ></iframe>
+                                  </div>
+                                );
+                              }
+                              return (
+                                <a key={idx} href={block.url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center px-4 py-3 bg-blue-50 text-blue-600 rounded-xl font-bold text-sm border border-blue-100 hover:bg-blue-100 transition-colors my-4">
+                                  Ver Video Externo
+                                </a>
+                              );
+                            }
+                            return null;
+                          })}
+                        </div>
+                      );
+                    }
+                  }
+                } catch (e) {}
+
+                if (bodyStr.includes('<') && bodyStr.includes('>')) {
+                  return <div className="prose prose-lg dark:prose-invert max-w-none" dangerouslySetInnerHTML={{ __html: bodyStr }} />;
+                }
+
+                return (
+                  <div className="space-y-4">
+                    {bodyStr.split('\n').map((line: string, i: number) => (
+                      line.trim() ? <p key={i}>{line}</p> : null
+                    ))}
+                  </div>
+                );
+              })()}
             </div>
 
           {/* Adjuntos y Multimedia */}
@@ -230,7 +297,7 @@ export default function BlogDetailPage({ params }: PageProps) {
                 {note.attachments.map((att, idx) => {
                   if (att.type === 'image') {
                     return (
-                      <div key={idx} className="rounded-xl overflow-hidden border border-slate-200 dark:border-zinc-700 shadow-sm relative aspect-video">
+                      <div key={idx} className="rounded-xl overflow-hidden border border-slate-200 dark:border-zinc-700 shadow-sm relative aspect-video sm:col-span-2 max-w-2xl mx-auto w-full">
                         <Image src={att.url} alt="Adjunto" fill className="object-cover" />
                       </div>
                     );
@@ -250,7 +317,7 @@ export default function BlogDetailPage({ params }: PageProps) {
 
                     if (videoId) {
                       return (
-                        <div key={idx} className="rounded-xl overflow-hidden border border-slate-200 dark:border-zinc-700 shadow-sm aspect-video relative bg-black sm:col-span-2">
+                        <div key={idx} className="rounded-xl overflow-hidden border border-slate-200 dark:border-zinc-700 shadow-sm aspect-video relative bg-black sm:col-span-2 max-w-2xl mx-auto w-full">
                           <iframe 
                             src={`https://www.youtube-nocookie.com/embed/${videoId}`}
                             className="absolute inset-0 w-full h-full"
