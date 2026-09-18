@@ -115,10 +115,11 @@ export default function ChatbotPage() {
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex flex-col bg-sena-50">
-      {/* Header */}
-      <header className="bg-sena-600 text-white shadow-lg">
-        <div className="mx-auto flex w-full items-center justify-between gap-3 px-3 py-3 sm:px-4 sm:py-4 md:px-12 lg:px-24">
+    <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4 sm:p-6">
+      <div className="w-full h-full sm:w-[420px] sm:h-[700px] sm:max-h-[85vh] flex flex-col bg-sena-50 sm:rounded-3xl shadow-2xl overflow-hidden border border-slate-200">
+        {/* Header */}
+        <header className="bg-sena-600 text-white shadow-md shrink-0">
+          <div className="flex w-full items-center justify-between gap-3 px-4 py-4">
           <div className="flex items-center gap-3">
             <div className="rounded-lg bg-white/20 p-2">
               <Bot className="w-6 h-6" />
@@ -139,7 +140,7 @@ export default function ChatbotPage() {
       </header>
 
       {/* Messages Area */}
-      <main className="flex-1 overflow-y-auto p-4 md:px-12 lg:px-24">
+      <main className="flex-1 overflow-y-auto p-4 sm:p-5">
         <div className="w-full space-y-4">
           {messages.map((message) => (
             <div
@@ -196,31 +197,32 @@ export default function ChatbotPage() {
         </div>
       </main>
 
-      {/* Input Area */}
-      <footer className="border-t border-sena-200 bg-white p-3 sm:p-4 md:px-12 lg:px-24">
-        <div className="w-full">
-          <form onSubmit={handleSendMessage} className="flex gap-2 sm:gap-3">
-            <input
-              type="text"
-              value={inputValue}
-              onChange={(e) => setInputValue(e.target.value)}
-              placeholder="Escribe tu mensaje..."
-              className="flex-1 px-4 py-3 bg-sena-50 border border-sena-300 rounded-full focus:outline-none focus:ring-2 focus:ring-sena-500 focus:border-transparent transition-all text-gray-800 placeholder-gray-400"
-            />
-            <button
-              type="submit"
-              disabled={!inputValue.trim() || isTyping}
-              className="bg-sena-600 hover:bg-sena-700 disabled:bg-sena-300 disabled:cursor-not-allowed text-white px-6 py-3 rounded-full font-medium transition-all flex items-center gap-2 shadow-md hover:shadow-lg"
-            >
-              <Send className="w-4 h-4" />
-              <span className="hidden sm:inline">Enviar</span>
-            </button>
-          </form>
-          <p className="text-xs text-gray-400 text-center mt-2">
-            SYNAPSE - Asistente virtual inteligente
-          </p>
-        </div>
-      </footer>
+        {/* Input Area */}
+        <footer className="border-t border-sena-200 bg-white p-3 sm:p-4 shrink-0">
+          <div className="w-full">
+            <form onSubmit={handleSendMessage} className="flex gap-2 sm:gap-3">
+              <input
+                type="text"
+                value={inputValue}
+                onChange={(e) => setInputValue(e.target.value)}
+                placeholder="Escribe tu mensaje..."
+                className="flex-1 px-4 py-3 bg-sena-50 border border-sena-300 rounded-full focus:outline-none focus:ring-2 focus:ring-sena-500 focus:border-transparent transition-all text-gray-800 placeholder-gray-400"
+              />
+              <button
+                type="submit"
+                disabled={!inputValue.trim() || isTyping}
+                className="bg-sena-600 hover:bg-sena-700 disabled:bg-sena-300 disabled:cursor-not-allowed text-white px-6 py-3 rounded-full font-medium transition-all flex items-center gap-2 shadow-md hover:shadow-lg"
+              >
+                <Send className="w-4 h-4" />
+                <span className="hidden sm:inline">Enviar</span>
+              </button>
+            </form>
+            <p className="text-xs text-gray-400 text-center mt-2">
+              SYNAPSE - Asistente virtual inteligente
+            </p>
+          </div>
+        </footer>
+      </div>
     </div>
   )
 }
