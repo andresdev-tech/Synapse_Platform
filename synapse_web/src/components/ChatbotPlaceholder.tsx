@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from 'react'
 import { usePathname, useRouter } from 'next/navigation'
 import { Send, Bot, User, X, MessageCircle } from 'lucide-react'
 import { fetchApi } from '@/lib/fetchApi'
+import { useSession } from "next-auth/react"
 
 type Message = {
   id: string
@@ -15,6 +16,7 @@ type Message = {
 export function ChatbotPlaceholder() {
   const pathname = usePathname()
   const router = useRouter()
+  const { data: session, status } = useSession()
   
   const [isOpen, setIsOpen] = useState(false)
 
@@ -120,6 +122,16 @@ export function ChatbotPlaceholder() {
     return null
   }
 
+  const handleOpenChat = () => {
+    if (status === 'unauthenticated') {
+      router.push('/login')
+      return
+    }
+    if (status === 'authenticated') {
+      setIsOpen(true)
+    }
+  }
+
   return (
     <>
       {/* Botón flotante */}
@@ -129,7 +141,7 @@ export function ChatbotPlaceholder() {
             className="bg-sena-500 hover:bg-sena-600 text-white p-4 rounded-full shadow-2xl flex items-center gap-2 group transition-all hover:scale-110"
             title="Abrir Chatbot"
             type="button"
-            onClick={() => setIsOpen(true)}
+            onClick={handleOpenChat}
           >
             <MessageCircle className="w-7 h-7" />
           </button>
@@ -137,7 +149,7 @@ export function ChatbotPlaceholder() {
       )}
 
       {/* Interfaz del Chatbot modal */}
-      {isOpen && (
+      {isOpen && status === 'authenticated' && (
         <div className="fixed inset-0 z-[10000] flex items-end justify-end p-4 sm:p-6 bg-slate-900/40 backdrop-blur-[2px] transition-all">
           <div className="w-full h-full sm:w-[420px] sm:h-[650px] sm:max-h-[85vh] flex flex-col bg-sena-50 rounded-2xl shadow-2xl overflow-hidden border border-slate-200 animate-in slide-in-from-bottom-10 fade-in duration-300">
             {/* Header */}

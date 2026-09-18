@@ -115,15 +115,34 @@ export function CommentsSection({ contentId }: { contentId: string }) {
                     </div>
                   )}
                 </div>
-                <div className="flex-1">
+                <div className="flex-1 relative">
                   <div className="bg-slate-50 dark:bg-zinc-800/80 p-4 rounded-2xl rounded-tl-none border border-slate-100 dark:border-zinc-700/50">
                     <div className="flex items-baseline justify-between mb-1">
                       <span className="font-bold text-zinc-900 dark:text-slate-200 text-sm">
                         {comment.author.name || comment.author.email.split('@')[0]}
                       </span>
-                      <span className="text-[11px] font-medium text-slate-500 dark:text-slate-400">
-                        {formatTimeAgo(comment.createdAt)}
-                      </span>
+                      <div className="flex items-center gap-3">
+                        <span className="text-[11px] font-medium text-slate-500 dark:text-slate-400">
+                          {formatTimeAgo(comment.createdAt)}
+                        </span>
+                        {session?.user && (session.user.role === 'ADMIN' || session.user.role === 'SUPER_ADMIN') && (
+                          <button 
+                            onClick={async () => {
+                              if (!confirm('¿Estás seguro de eliminar este comentario?')) return;
+                              try {
+                                const res = await fetchApi(`/api/comments/${comment.id}`, { method: 'DELETE' });
+                                if (res.ok) setComments(prev => prev.filter(c => c.id !== comment.id));
+                              } catch (e) {
+                                console.error('Error eliminando comentario:', e);
+                              }
+                            }}
+                            className="opacity-0 group-hover:opacity-100 transition-opacity text-red-500 hover:text-red-700 p-1"
+                            title="Eliminar comentario"
+                          >
+                            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                          </button>
+                        )}
+                      </div>
                     </div>
                     <p className="text-slate-700 dark:text-slate-300 text-sm leading-relaxed whitespace-pre-wrap">
                       {comment.content}
