@@ -8,12 +8,12 @@ const allowedEmail = z.string().trim().toLowerCase().email("Correo inválido").r
 export const registerSchema = z.object({
   name: z.string().min(1, "El nombre es obligatorio"),
   email: allowedEmail,
-  captchaToken: z.string().optional()
+  captchaToken: z.string().nullable().optional()
 });
 
 export const LoginAdmin = z.object({
   email: allowedEmail,
-  captchaToken: z.string().optional()
+  captchaToken: z.string().nullable().optional()
 });
 
 export const loginSchema = z.object({
@@ -22,7 +22,7 @@ export const loginSchema = z.object({
 
 export const otpEmailSchema = z.object({
   email: allowedEmail,
-  captchaToken: z.string().optional(),
+  captchaToken: z.string().nullable().optional(),
   adminOnly: z.boolean().optional(),
 });
 export const otpVerifySchema = z.object({
