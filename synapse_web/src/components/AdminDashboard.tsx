@@ -35,13 +35,22 @@ interface Note {
   deletedAt?: string | null
 }
 
+
+interface ContentBlock {
+  id: string;
+  type: 'text' | 'image' | 'pdf' | 'video';
+  content?: string;
+  url?: string;
+  name?: string;
+}
+
 export function AdminDashboard() {
   const { data: session } = useSession()
   const [globalNotes, setGlobalNotes] = useState<Note[]>([])
   const [categories, setCategories] = useState<Category[]>([])
   
   const [newTitle, setNewTitle] = useState("")
-  const [newContent, setNewContent] = useState("")
+  const [contentBlocks, setContentBlocks] = useState<ContentBlock[]>([{ id: Math.random().toString(36).substr(2, 9), type: "text", content: "" }])
   const [newImageUrl, setNewImageUrl] = useState("")
   const [ragName, setRagName] = useState("")
   const [ragUrl, setRagUrl] = useState("")
@@ -186,12 +195,12 @@ export function AdminDashboard() {
   }
 
   const handleSaveNote = async () => {
-    if (!newTitle.trim() || !newContent.trim()) return
+    if (!newTitle.trim() || contentBlocks.length === 0) return
 
     const payload = {
       title: newTitle.trim(),
-      body: newContent.trim(),
-      excerpt: newContent.trim().substring(0, 200),
+      body: JSON.stringify(contentBlocks),
+      excerpt: (contentBlocks.find(b => b.type === "text")?.content || "").substring(0, 200),
       imageUrl: newImageUrl.trim() || null,
       attachments: newAttachments,
       categoryId: newCategoryId || null,
@@ -200,7 +209,7 @@ export function AdminDashboard() {
       published: true,
       authorId: session?.user?.id,
       seoTitle: newTitle.trim(),
-      seoDescription: newContent.trim().substring(0, 150),
+      seoDescription: (contentBlocks.find(b => b.type === "text")?.content || "").substring(0, 150),
       ...(ragName.trim() && ragUrl.trim() && ragContent.trim() ? {
         ragDocument: {
           name: ragName.trim(),
@@ -228,7 +237,7 @@ export function AdminDashboard() {
       }
       
       setNewTitle("")
-      setNewContent("")
+      setContentBlocks([{ id: Math.random().toString(36).substr(2, 9), type: "text", content: "" }])
       setNewImageUrl("")
       setRagName(""); setRagUrl(""); setRagMimeType("application/pdf"); setRagSize(""); setRagContent("")
       setNewCategoryId(""); setNewSection(""); setNewAttachments([]);
@@ -242,7 +251,17 @@ export function AdminDashboard() {
 
   const handleEdit = (note: Note) => {
     setNewTitle(note.title)
-    setNewContent(note.body)
+    
+    try {
+      if (note.body && note.body.trim().startsWith('[') && note.body.trim().endsWith(']')) {
+        setContentBlocks(JSON.parse(note.body));
+      } else {
+        setContentBlocks([{ id: Math.random().toString(36).substr(2, 9), type: "text", content: note.body || "" }]);
+      }
+    } catch (e) {
+      setContentBlocks([{ id: Math.random().toString(36).substr(2, 9), type: "text", content: note.body || "" }]);
+    }
+
     setNewImageUrl(note.seoImage || "")
     setRagName(""); setRagUrl(""); setRagMimeType("application/pdf"); setRagSize(""); setRagContent("")
     setNewCategoryId(note.categoryId || "");
@@ -621,7 +640,7 @@ export function AdminDashboard() {
             onClick={() => {
               setEditingId(null)
               setNewTitle("")
-              setNewContent("")
+              setContentBlocks([{ id: Math.random().toString(36).substr(2, 9), type: "text", content: "" }])
               setNewImageUrl("")
               setRagName(""); setRagUrl(""); setRagMimeType("application/pdf"); setRagSize(""); setRagContent("")
               setNewCategoryId(""); setNewAttachments([]);
@@ -763,100 +782,153 @@ export function AdminDashboard() {
                 ) : null}
               </div>
 
-              <div>
-                <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">Contenido Detallado</label>
-                <textarea 
-                  placeholder="Escribe toda la información relevante aquí..." 
-                  className="h-full min-h-40 w-full resize-y rounded-xl border border-slate-200 bg-white p-5 font-medium text-zinc-800 outline-none transition-all focus:border-sena-500 focus:ring-4 focus:ring-sena-500/20"
-                  value={newContent}
-                  onChange={(e) => setNewContent(e.target.value)}
-                />
+              {/* CONSTRUCTOR DE BLOQUES */}
+              <div className="md:col-span-2 space-y-4">
+                <div className="flex justify-between items-center border-b border-slate-100 pb-2">
+                  <h3 className="font-extrabold text-slate-800 text-sm tracking-wider uppercase">Contenido Estructurado</h3>
+                  <div className="flex gap-2">
+                    <button onClick={() => setContentBlocks([...contentBlocks, { id: Math.random().toString(36).substr(2, 9), type: "text", content: "" }])} className="text-xs font-bold bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-1.5 rounded-lg transition-colors">+ Texto</button>
+                    <button onClick={() => setContentBlocks([...contentBlocks, { id: Math.random().toString(36).substr(2, 9), type: "image", url: "" }])} className="text-xs font-bold bg-sena-50 hover:bg-sena-100 text-sena-700 px-3 py-1.5 rounded-lg transition-colors">+ Imagen</button>
+                    <button onClick={() => setContentBlocks([...contentBlocks, { id: Math.random().toString(36).substr(2, 9), type: "pdf", url: "", name: "" }])} className="text-xs font-bold bg-red-50 hover:bg-red-100 text-red-700 px-3 py-1.5 rounded-lg transition-colors">+ PDF</button>
+                    <button onClick={() => setContentBlocks([...contentBlocks, { id: Math.random().toString(36).substr(2, 9), type: "video", url: "" }])} className="text-xs font-bold bg-blue-50 hover:bg-blue-100 text-blue-700 px-3 py-1.5 rounded-lg transition-colors">+ Video</button>
+                  </div>
+                </div>
+
+                <div className="space-y-4">
+                  {contentBlocks.map((block, index) => (
+                    <div key={block.id} className="relative bg-white border border-slate-200 rounded-xl p-4 shadow-sm group">
+                      <div className="absolute -left-4 top-1/2 -translate-y-1/2 flex flex-col gap-1 opacity-0 group-hover:opacity-100 transition-opacity z-10">
+                        <button onClick={() => {
+                          if (index === 0) return;
+                          const newBlocks = [...contentBlocks];
+                          const temp = newBlocks[index - 1];
+                          newBlocks[index - 1] = newBlocks[index];
+                          newBlocks[index] = temp;
+                          setContentBlocks(newBlocks);
+                        }} disabled={index === 0} className="w-8 h-8 flex items-center justify-center bg-slate-800 text-white rounded-full shadow-md hover:bg-slate-700 disabled:opacity-30 disabled:cursor-not-allowed">
+                          ↑
+                        </button>
+                        <button onClick={() => {
+                          if (index === contentBlocks.length - 1) return;
+                          const newBlocks = [...contentBlocks];
+                          const temp = newBlocks[index + 1];
+                          newBlocks[index + 1] = newBlocks[index];
+                          newBlocks[index] = temp;
+                          setContentBlocks(newBlocks);
+                        }} disabled={index === contentBlocks.length - 1} className="w-8 h-8 flex items-center justify-center bg-slate-800 text-white rounded-full shadow-md hover:bg-slate-700 disabled:opacity-30 disabled:cursor-not-allowed">
+                          ↓
+                        </button>
+                      </div>
+
+                      <div className="flex justify-between items-center mb-3">
+                        <span className="text-xs font-bold text-slate-400 uppercase tracking-wider bg-slate-50 px-3 py-1 rounded-full border border-slate-100">
+                          Bloque: {block.type}
+                        </span>
+                        <button onClick={() => {
+                          setContentBlocks(contentBlocks.filter(b => b.id !== block.id));
+                        }} className="text-red-500 hover:text-red-700 p-1.5 bg-red-50 rounded-lg text-xs font-bold transition-colors">Eliminar</button>
+                      </div>
+
+                      {block.type === 'text' && (
+                        <textarea
+                          placeholder="Escribe el texto aquí..."
+                          className="w-full min-h-[120px] p-4 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-sena-500 transition-colors"
+                          value={block.content || ''}
+                          onChange={(e) => {
+                            const newBlocks = [...contentBlocks];
+                            newBlocks[index].content = e.target.value;
+                            setContentBlocks(newBlocks);
+                          }}
+                        />
+                      )}
+
+                      {(block.type === 'image' || block.type === 'pdf') && (
+                        <div className="space-y-3 bg-slate-50 p-4 rounded-xl border border-slate-100">
+                          <div className="flex flex-col sm:flex-row gap-3">
+                            <input
+                              type="url"
+                              placeholder="URL del archivo o enlace..."
+                              className="flex-1 p-3 bg-white border border-slate-200 rounded-xl outline-none focus:border-sena-500 text-sm transition-colors"
+                              value={block.url || ''}
+                              onChange={(e) => {
+                                const newBlocks = [...contentBlocks];
+                                newBlocks[index].url = e.target.value;
+                                setContentBlocks(newBlocks);
+                              }}
+                            />
+                            <label className="flex cursor-pointer items-center justify-center rounded-xl bg-sena-600 px-6 py-3 text-sm font-bold text-white hover:bg-sena-700 transition-colors shadow-sm">
+                              Subir Archivo
+                              <input type="file" className="hidden" accept={block.type === 'image' ? "image/*" : ".pdf"} onChange={async (e) => {
+                                const file = e.target.files?.[0];
+                                if (!file) return;
+                                const formData = new FormData();
+                                formData.append("file", file);
+                                try {
+                                  const res = await fetchApi("/api/upload", { method: "POST", body: formData });
+                                  const data = await res.json();
+                                  if (data.url) {
+                                    const newBlocks = [...contentBlocks];
+                                    newBlocks[index].url = data.url;
+                                    setContentBlocks(newBlocks);
+                                  }
+                                } catch (error) { alert("Error al subir el archivo."); }
+                              }} />
+                            </label>
+                          </div>
+                          {block.type === 'pdf' && (
+                            <input
+                              type="text"
+                              placeholder="Nombre del documento (Ej: Circular 001)..."
+                              className="w-full p-3 bg-white border border-slate-200 rounded-xl outline-none focus:border-sena-500 text-sm transition-colors"
+                              value={block.name || ''}
+                              onChange={(e) => {
+                                const newBlocks = [...contentBlocks];
+                                newBlocks[index].name = e.target.value;
+                                setContentBlocks(newBlocks);
+                              }}
+                            />
+                          )}
+                          {block.type === 'image' && block.url && (
+                            <div className="h-48 bg-slate-100 rounded-xl overflow-hidden mt-4 border border-slate-200 shadow-inner relative">
+                              <img src={block.url} alt="Vista previa" className="w-full h-full object-contain" />
+                            </div>
+                          )}
+                        </div>
+                      )}
+
+                      {block.type === 'video' && (
+                        <div className="space-y-3 bg-slate-50 p-4 rounded-xl border border-slate-100">
+                          <input
+                            type="url"
+                            placeholder="Enlace de YouTube (Ej: https://youtube.com/watch?v=...)"
+                            className="w-full p-3 bg-white border border-slate-200 rounded-xl outline-none focus:border-sena-500 text-sm transition-colors"
+                            value={block.url || ''}
+                            onChange={(e) => {
+                              const newBlocks = [...contentBlocks];
+                              newBlocks[index].url = e.target.value;
+                              setContentBlocks(newBlocks);
+                            }}
+                          />
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                  {contentBlocks.length === 0 && (
+                    <div className="text-center py-12 bg-slate-50 border border-dashed border-slate-300 rounded-2xl text-slate-500 font-medium flex flex-col items-center justify-center">
+                      <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-sm border border-slate-200 mb-3">
+                        <span className="text-2xl opacity-50">📑</span>
+                      </div>
+                      No has agregado ningún bloque de contenido. Usa los botones de arriba.
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
 
-            <div className="pt-2">
-                <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-3">Multimedias y Enlaces Adjuntos (Videos, PDFs, Más imágenes)</label>
-                <div className="space-y-3">
-                  {newAttachments.map((att, idx) => (
-                    <div key={idx} className="flex gap-2">
-                      <select 
-                        value={att.type} 
-                        onChange={(e) => {
-                          const n = [...newAttachments];
-                          n[idx].type = e.target.value;
-                          setNewAttachments(n);
-                        }} 
-                        className="p-2 border border-slate-200 rounded-lg text-sm bg-white focus:outline-none focus:border-sena-500"
-                      >
-                        <option value="image">Imagen</option>
-                        <option value="pdf">Documento PDF</option>
-                        <option value="video">Video (YouTube/Vimeo)</option>
-                      </select>
-                      <div className="flex flex-1 gap-2">
-                        <input 
-                          type="text" 
-                          value={att.url} 
-                          onChange={(e) => {
-                            const n = [...newAttachments];
-                            n[idx].url = e.target.value;
-                            setNewAttachments(n);
-                          }}
-                          placeholder="https://... o pega el código <iframe..."
-                          className="flex-1 p-2 border border-slate-200 rounded-lg text-sm bg-white focus:outline-none focus:border-sena-500"
-                        />
-                        <label className="flex cursor-pointer items-center justify-center rounded-lg bg-slate-100 px-3 text-xs font-bold text-slate-700 hover:bg-slate-200" title="Subir a S3">
-                          Subir
-                          <input type="file" className="hidden" onChange={(e) => handleFileUpload(e, true, idx)} />
-                        </label>
-                      </div>
-                      <div className="flex flex-col sm:flex-row gap-1">
-                        <button 
-                          onClick={() => {
-                            if (idx === 0) return;
-                            const n = [...newAttachments];
-                            [n[idx - 1], n[idx]] = [n[idx], n[idx - 1]];
-                            setNewAttachments(n);
-                          }} 
-                          disabled={idx === 0}
-                          className="p-2 text-slate-500 hover:bg-slate-100 rounded-lg disabled:opacity-30 disabled:cursor-not-allowed"
-                          title="Mover Arriba"
-                        >
-                          ↑
-                        </button>
-                        <button 
-                          onClick={() => {
-                            if (idx === newAttachments.length - 1) return;
-                            const n = [...newAttachments];
-                            [n[idx], n[idx + 1]] = [n[idx + 1], n[idx]];
-                            setNewAttachments(n);
-                          }} 
-                          disabled={idx === newAttachments.length - 1}
-                          className="p-2 text-slate-500 hover:bg-slate-100 rounded-lg disabled:opacity-30 disabled:cursor-not-allowed"
-                          title="Mover Abajo"
-                        >
-                          ↓
-                        </button>
-                        <button onClick={() => {
-                          const n = [...newAttachments];
-                          n.splice(idx, 1);
-                          setNewAttachments(n);
-                        }} className="p-2 text-red-500 hover:bg-red-50 rounded-lg" title="Eliminar">X</button>
-                      </div>
-                    </div>
-                  ))}
-                  <button 
-                    onClick={() => setNewAttachments([...newAttachments, { type: "image", url: "" }])}
-                    className="text-sm font-bold text-sena-600 hover:text-sena-700 bg-sena-50 px-4 py-2 rounded-lg transition-colors border border-sena-200 border-dashed w-full md:w-auto"
-                  >
-                    + Agregar Archivo o Enlace Adjunto
-                  </button>
-                </div>
-              </div>
-
             <div className="space-y-5 rounded-2xl border border-sena-200 bg-sena-50/60 p-5">
               <div>
-                <h3 className="font-extrabold text-sena-900">Indexar esta publicación en el RAG</h3>
-                <p className="mt-1 text-xs leading-5 text-sena-700">Opcional. Completa los tres campos principales para crear el Resource y sus DocumentChunk enlazados a esta publicación.</p>
+                <h3 className="font-extrabold text-sena-900">Enseñar esta publicación al Chatbot Inteligente (RAG)</h3>
+                <p className="mt-1 text-xs leading-5 text-sena-700">Opcional. Completa estos campos si quieres que el Chatbot con Inteligencia Artificial memorice esta información para poder responderle preguntas a los aprendices basándose en este documento (Generación Aumentada por Recuperación).</p>
               </div>
               <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                 <input value={ragName} onChange={(e) => setRagName(e.target.value)} placeholder="Nombre del documento" className="w-full rounded-xl border border-sena-200 bg-white p-3 text-sm outline-none focus:border-sena-500" />
@@ -878,13 +950,13 @@ export function AdminDashboard() {
                 <select value={ragMimeType} onChange={(e) => setRagMimeType(e.target.value)} className="w-full rounded-xl border border-sena-200 bg-white p-3 text-sm outline-none focus:border-sena-500"><option value="application/pdf">PDF</option><option value="text/plain">Texto</option><option value="text/html">HTML</option><option value="application/msword">Documento Word</option></select>
                 <input type="number" min="0" value={ragSize} onChange={(e) => setRagSize(e.target.value)} placeholder="Tamaño en bytes (opcional)" className="w-full rounded-xl border border-sena-200 bg-white p-3 text-sm outline-none focus:border-sena-500" />
               </div>
-              <textarea rows={5} value={ragContent} onChange={(e) => setRagContent(e.target.value)} placeholder="Pega aquí el contenido que quieres convertir en chunks para el chatbot..." className="w-full resize-y rounded-xl border border-sena-200 bg-white p-3 text-sm leading-6 outline-none focus:border-sena-500" />
+              <textarea rows={5} value={ragContent} onChange={(e) => setRagContent(e.target.value)} placeholder="Pega aquí el contenido que quieres convertir en conocimiento para el chatbot..." className="w-full resize-y rounded-xl border border-sena-200 bg-white p-3 text-sm leading-6 outline-none focus:border-sena-500" />
             </div>
 
             <div className="flex justify-end pt-4 border-t border-slate-100 mt-6 pt-6">
               <button 
                 onClick={handleSaveNote}
-                disabled={!newTitle.trim() || !newContent.trim()}
+                disabled={!newTitle.trim() || contentBlocks.length === 0}
                 className="bg-sena-900 text-white px-8 py-4 rounded-xl font-bold hover:bg-sena-800 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-xl shadow-sena-900/20 hover:-translate-y-0.5"
               >
                 {editingId ? "Actualizar Anuncio" : "Publicar Anuncio Ahora"}
@@ -935,7 +1007,7 @@ export function AdminDashboard() {
                     </span>
                   )}
                   <h3 className="font-extrabold text-zinc-900 text-xl mb-3 leading-tight">{note.title}</h3>
-                  <p className="text-slate-600 text-sm line-clamp-3 mb-4 leading-relaxed">{note.body}</p>
+                  <p className="text-slate-600 text-sm line-clamp-3 mb-4 leading-relaxed">{note.body && note.body.startsWith("[") ? "Contenido estructurado..." : note.body}</p>
                 </div>
                 
                 <div className="flex items-center justify-between mt-auto pt-5 border-t border-slate-100/80">

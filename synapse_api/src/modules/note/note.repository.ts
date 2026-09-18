@@ -23,14 +23,14 @@ export class NoteRepository {
         category: { select: { name: true } },
         reactions: { select: { userId: true, type: true } },
       },
-      orderBy: { createdAt: "desc" },
+      orderBy: { updatedAt: "desc" },
     });
   }
 
   static async findPersonal(userId: string) {
     return await prisma.content.findMany({
       where: { authorId: String(userId), isGlobal: false },
-      orderBy: { createdAt: "desc" },
+      orderBy: { updatedAt: "desc" },
     });
   }
 
@@ -41,7 +41,7 @@ export class NoteRepository {
         author: { select: { name: true, email: true } },
         category: { select: { name: true } },
       },
-      orderBy: { createdAt: "desc" },
+      orderBy: { updatedAt: "desc" },
     });
   }
 
