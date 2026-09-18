@@ -34,7 +34,7 @@ export function GalleryTrigger({
   return (
     <>
       <div className="relative group cursor-pointer w-full max-w-4xl mx-auto mt-10" onClick={() => setIsOpen(true)}>
-        <div className="absolute -inset-1 bg-gradient-to-r from-pink-500 to-purple-500 rounded-2xl blur opacity-30 group-hover:opacity-100 transition duration-500"></div>
+        <div className="absolute -inset-1 bg-gradient-to-r from-sena-500 to-emerald-500 rounded-2xl blur opacity-30 group-hover:opacity-100 transition duration-500"></div>
         <img 
           src={coverImage} 
           alt={title} 
@@ -42,7 +42,7 @@ export function GalleryTrigger({
           loading="lazy" 
         />
         <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-black/40 rounded-xl">
-          <div className="bg-pink-600 text-white px-8 py-4 rounded-full font-bold shadow-xl flex items-center transform translate-y-4 group-hover:translate-y-0 transition-all duration-300">
+          <div className="bg-sena-600 text-white px-8 py-4 rounded-full font-bold shadow-xl flex items-center transform translate-y-4 group-hover:translate-y-0 transition-all duration-300">
             <Images className="w-6 h-6 mr-3" />
             {buttonText || `Ver ${images.length} ${images.length === 1 ? 'Actividad' : 'Actividades'}`}
           </div>
@@ -61,7 +61,7 @@ export function GalleryTrigger({
           >
             <div className="relative flex justify-between items-center p-4 sm:p-6 border-b border-slate-800 rounded-t-2xl">
               <h3 className="text-xl sm:text-2xl font-bold text-white flex items-center">
-                <Images className="w-6 h-6 mr-3 text-pink-500" />
+                <Images className="w-6 h-6 mr-3 text-sena-500" />
                 {title}
               </h3>
               <button 
@@ -80,7 +80,7 @@ export function GalleryTrigger({
                     <ImageZoom 
                       src={img} 
                       alt={`Imagen ${i+1}`} 
-                      className="w-full h-auto object-cover rounded-xl shadow-lg border border-slate-700 hover:border-pink-500/50 transition-colors bg-white/5" 
+                      className="w-full h-auto object-cover rounded-xl shadow-lg border border-slate-700 hover:border-sena-500/50 transition-colors bg-white/5" 
                     />
                   </div>
                 ))}

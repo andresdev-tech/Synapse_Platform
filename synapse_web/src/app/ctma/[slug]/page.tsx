@@ -24,7 +24,7 @@ const pageContent: Record<string, { title: string, content: React.ReactNode }> =
     title: "Promesa de Valor",
     content: (
       <div className="flex justify-center my-6 relative group">
-        <div className="absolute -inset-1 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-2xl opacity-0 group-hover:opacity-100 shadow-[0_0_20px_currentColor] transition duration-1000 group-hover:duration-200"></div>
+        <div className="absolute -inset-1 bg-gradient-to-r from-sena-500 to-teal-600 rounded-2xl opacity-0 group-hover:opacity-100 shadow-[0_0_20px_currentColor] transition duration-1000 group-hover:duration-200"></div>
         <ImageZoom 
           src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgP1V5c2lsk-WXnlrf_YCS0qHh6BN_2V2_3pnVbCq6cOBwiXlZk0wFfoW3EPGIl5rCHIY9Vs5htiCw1YEdfR_ter4BAGmaQq89hq8zo315Cbx8Tihh2qWCIV1dApseYw6599iwVlCjmSDbd/s1200/2.+Promesa+de+valor-01.png" 
           alt="Promesa de Valor CTMA"
@@ -77,18 +77,18 @@ const pageContent: Record<string, { title: string, content: React.ReactNode }> =
           />
         </div>
 
-        <div className="bg-indigo-50 dark:bg-indigo-900/20 p-8 rounded-2xl border border-indigo-100 dark:border-indigo-800 text-center shadow-sm">
-          <h4 className="text-2xl font-bold text-indigo-800 dark:text-indigo-300 mb-4">
+        <div className="bg-sena-50 dark:bg-sena-900/20 p-8 rounded-2xl border border-sena-100 dark:border-sena-800 text-center shadow-sm">
+          <h4 className="text-2xl font-bold text-sena-800 dark:text-sena-300 mb-4">
             Directorio Telefónico Institucional
           </h4>
-          <p className="text-indigo-600 dark:text-indigo-200 mb-6 max-w-xl mx-auto">
+          <p className="text-sena-600 dark:text-sena-200 mb-6 max-w-xl mx-auto">
             Consulta el directorio completo de extensiones y correos de las diferentes áreas, coordinaciones y dependencias del Centro de Tecnología de la Manufactura Avanzada.
           </p>
           <a 
             href="https://docs.google.com/spreadsheets/d/18v6ufbi_YUbVBCqa1mf0eJCA6FWG8IlN/edit?usp=sharing" 
             target="_blank" 
             rel="noopener noreferrer"
-            className="inline-flex items-center px-8 py-4 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl shadow-lg hover:shadow-indigo-500/30 transition-all duration-300 hover:-translate-y-1"
+            className="inline-flex items-center px-8 py-4 bg-sena-600 hover:bg-sena-700 text-white font-bold rounded-xl shadow-lg hover:shadow-sena-500/30 transition-all duration-300 hover:-translate-y-1"
           >
             <ExternalLink className="w-5 h-5 mr-3" />
             Abrir Directorio en Excel
@@ -115,7 +115,7 @@ const pageContent: Record<string, { title: string, content: React.ReactNode }> =
             />
           </div>
           <div className="relative group">
-            <div className="absolute -inset-1 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-2xl opacity-0 group-hover:opacity-100 shadow-[0_0_20px_currentColor] transition duration-500"></div>
+            <div className="absolute -inset-1 bg-gradient-to-r from-blue-500 to-sena-600 rounded-2xl opacity-0 group-hover:opacity-100 shadow-[0_0_20px_currentColor] transition duration-500"></div>
             <ImageZoom 
               src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgHrRoULLJOOUqiF45k7kKpGDEIhWaYKa56crrgcwr_2FvcOYiaX1wP5uED7v8yDHLB21SweDXPuVtdIIbp4N12AZyb6Oe0xLF-iKPOx15ahmSaxxZFqyrPmpcAsUzSqISgFxsjf7bwvadUPDtJiYxvcJDb2VR3HXWfuM5nS-3tTdQwZESUs5QNMtXSIbVf/s800/Politica_Seguridad_de_la_Info.png" 
               alt="Política Seguridad de la Información"
@@ -133,7 +133,7 @@ const pageContent: Record<string, { title: string, content: React.ReactNode }> =
             />
           </div>
           <div className="relative group">
-            <div className="absolute -inset-1 bg-gradient-to-r from-purple-500 to-pink-500 rounded-2xl opacity-0 group-hover:opacity-100 shadow-[0_0_20px_currentColor] transition duration-500"></div>
+            <div className="absolute -inset-1 bg-gradient-to-r from-teal-500 to-sena-500 rounded-2xl opacity-0 group-hover:opacity-100 shadow-[0_0_20px_currentColor] transition duration-500"></div>
             <ImageZoom 
               src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjxLUJkJ6MecCvEs38Aa4FolA1mFzmEDPOUMlQBAMsgTvKE8T5fa3yu40JS_pEIjF5rQDZwNGxXch86eyC8fdaxA36VeMpo80Bs0mOAoGN-fkfS5XTF1Ak1tYmLVJ2X9THA7jCFsYxcNFvfefuaWE6o2d3bQ3pB1Y9ZXaiqIAXMfy26FvomwnDZvzmxvP5t/s800/Politica_control_interno.png" 
               alt="Política de Control Interno"
@@ -177,7 +177,7 @@ const pageContent: Record<string, { title: string, content: React.ReactNode }> =
             rel="noopener noreferrer"
             className="block relative group transition-transform duration-500 hover:scale-[1.02] cursor-pointer mt-auto"
           >
-            <div className="absolute -inset-1 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-2xl blur opacity-30 group-hover:opacity-100 transition duration-500"></div>
+            <div className="absolute -inset-1 bg-gradient-to-r from-blue-500 to-sena-500 rounded-2xl blur opacity-30 group-hover:opacity-100 transition duration-500"></div>
             <ImageZoom 
               src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEikW5WdWtsVh4MRdYi_t5XprXRfQfVrB1UjODpJWpPXaEM2VET-bUPRtEOVsvmDupdN1TSb8ZImjNjlID2O7rSfUFFE2-iWxh3Mk9qVHkO7GcCiQJQkgt53fMS2xItmoJn06w4SidSYY-Hsi5koWtUpiPnhyUf7_gdPTyU8tQnY7jnJzUelv9YJNLggqBjf/s800/%C2%BFQu%C3%A9%20es%20la%20Etapa%20Productiva.jpg" 
               alt="Entrar a reunión de Teams"
@@ -255,7 +255,7 @@ const pageContent: Record<string, { title: string, content: React.ReactNode }> =
                   href="https://drive.google.com/file/d/1tBg5wR9WrlJ4wjP8tacVoz9Mm2lsDZ5c/view"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center px-8 py-3 bg-pink-600 hover:bg-pink-500 text-white rounded-full font-bold shadow-lg transition-all duration-300 transform hover:-translate-y-1 hover:shadow-xl"
+                  className="flex items-center px-8 py-3 bg-sena-600 hover:bg-sena-500 text-white rounded-full font-bold shadow-lg transition-all duration-300 transform hover:-translate-y-1 hover:shadow-xl"
                 >
                   <ExternalLink className="w-5 h-5 mr-3" />
                   Ver Documento Completo de la Póliza (PDF)
@@ -276,7 +276,7 @@ const pageContent: Record<string, { title: string, content: React.ReactNode }> =
             rel="noopener noreferrer" 
             className="block relative group cursor-pointer w-full mx-auto mt-auto"
           >
-            <div className="absolute -inset-1 bg-gradient-to-r from-pink-500 to-purple-500 rounded-2xl blur opacity-30 group-hover:opacity-100 transition duration-500"></div>
+            <div className="absolute -inset-1 bg-gradient-to-r from-sena-500 to-teal-500 rounded-2xl blur opacity-30 group-hover:opacity-100 transition duration-500"></div>
             <ImageZoom 
               src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjh7lHv0sRXyh122YogsRbaUkftzYpFdugGNjDA0df1Xv1D_NOBNck4G7Ea79y7n-uvPUqG0qgC4tm6nayPqw0aYWZH-j7xiSoyDwZKF9R4pFsLEFAsGItdAIsDsshVCBl8awIY4DACYT2_dVpBf1-Ojgb9Bm8uLtCSQKEKEiRLqP7XY0HKKPaaeGNqhgnD/s800/%C2%BFQu%C3%A9%20es%20la%20Etapa%20Productiva(4).jpg" 
               alt="Documentos de Interés" 
@@ -286,7 +286,7 @@ const pageContent: Record<string, { title: string, content: React.ReactNode }> =
               loading="lazy" 
             />
             <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-black/40 rounded-xl">
-              <div className="bg-pink-600 text-white px-4 py-2 rounded-full font-bold shadow-xl flex items-center transform translate-y-4 group-hover:translate-y-0 transition-all duration-300 text-sm text-center">
+              <div className="bg-sena-600 text-white px-4 py-2 rounded-full font-bold shadow-xl flex items-center transform translate-y-4 group-hover:translate-y-0 transition-all duration-300 text-sm text-center">
                 <ExternalLink className="w-4 h-4 mr-2" />
                 Abrir Documento
               </div>
@@ -459,9 +459,9 @@ const pageContent: Record<string, { title: string, content: React.ReactNode }> =
         <p className="text-slate-600 dark:text-slate-300 leading-relaxed mb-4">
           El Sistema de Bibliotecas SENA (SBS) brinda los recursos bibliográficos, el talento humano y la infraestructura física y tecnológica necesarios para apoyar el desarrollo de los programas de formación.
         </p>
-        <div className="bg-indigo-50 dark:bg-indigo-900/20 p-4 rounded-xl border border-indigo-100 dark:border-indigo-800">
-          <h4 className="font-bold text-indigo-800 dark:text-indigo-300 mb-2">Servicios Ofertados:</h4>
-          <ul className="list-disc pl-5 space-y-1 text-indigo-700 dark:text-indigo-200 text-sm">
+        <div className="bg-sena-50 dark:bg-sena-900/20 p-4 rounded-xl border border-sena-100 dark:border-sena-800">
+          <h4 className="font-bold text-sena-800 dark:text-sena-300 mb-2">Servicios Ofertados:</h4>
+          <ul className="list-disc pl-5 space-y-1 text-sena-700 dark:text-sena-200 text-sm">
             <li>Préstamo externo e interno de libros físicos.</li>
             <li>Bases de datos digitales especializadas (e-books, revistas, artículos).</li>
             <li>Orientación y capacitación en el uso de herramientas de búsqueda.</li>
@@ -470,10 +470,140 @@ const pageContent: Record<string, { title: string, content: React.ReactNode }> =
         </div>
       </>
     )
+  },
+  "cursos-presenciales": {
+    title: "Cursos Presenciales",
+    content: (
+      <div className="py-6">
+        <p className="text-slate-600 dark:text-slate-300 leading-relaxed mb-4 text-lg">
+          El Centro de Tecnología de la Manufactura Avanzada (CTMA) ofrece una amplia variedad de programas de formación presencial diseñados para responder a las necesidades reales de la industria y el sector productivo. 
+        </p>
+        <p className="text-slate-600 dark:text-slate-300 leading-relaxed">
+          Nuestros aprendices cuentan con ambientes de aprendizaje especializados, talleres y laboratorios de última tecnología, donde desarrollan competencias técnicas y habilidades blandas bajo el modelo de formación por proyectos, garantizando una preparación integral para el mundo laboral.
+        </p>
+      </div>
+    )
+  },
+  "oferta-educativa": {
+    title: "Oferta Educativa",
+    content: (
+      <div className="py-6">
+        <p className="text-slate-600 dark:text-slate-300 leading-relaxed mb-4 text-lg">
+          Descubre todos los programas de formación técnica y tecnológica que el SENA tiene para ti. Nuestra oferta educativa se renueva periódicamente para estar a la vanguardia de las tecnologías de la manufactura y la industria 4.0.
+        </p>
+        <p className="text-slate-600 dark:text-slate-300 leading-relaxed">
+          Aquí encontrarás toda la información sobre las carreras disponibles, perfiles de egreso y los requisitos necesarios para iniciar tu camino profesional con nosotros. Formamos talento humano altamente cualificado para construir el futuro del país.
+        </p>
+      </div>
+    )
+  },
+  "portafolio-de-servicios": {
+    title: "Portafolio de Servicios",
+    content: (
+      <div className="py-6">
+        <p className="text-slate-600 dark:text-slate-300 leading-relaxed mb-4 text-lg">
+          El SENA y el CTMA no solo forman aprendices, también somos un aliado estratégico para las empresas e instituciones a través de nuestro Portafolio de Servicios Tecnológicos.
+        </p>
+        <p className="text-slate-600 dark:text-slate-300 leading-relaxed">
+          Brindamos asesoría, asistencia técnica, evaluación y certificación de competencias laborales, investigación aplicada y desarrollo de proyectos conjuntos. Trabajamos de la mano con el sector productivo para fortalecer la competitividad, la innovación y el progreso tecnológico de la región.
+        </p>
+      </div>
+    )
+  },
+  "formacion-virtual": {
+    title: "Formación Virtual",
+    content: (
+      <div className="py-6">
+        <p className="text-slate-600 dark:text-slate-300 leading-relaxed mb-4 text-lg">
+          La formación virtual del SENA te permite acceder a educación de alta calidad desde cualquier lugar, adaptándose a tu ritmo y disponibilidad de tiempo, haciendo uso de las Tecnologías de la Información y la Comunicación.
+        </p>
+        <p className="text-slate-600 dark:text-slate-300 leading-relaxed">
+          A través de plataformas interactivas y recursos digitales innovadores, desarrollamos competencias técnicas y transversales que te preparan para los retos del mercado laboral actual, conectándote con el conocimiento sin fronteras ni horarios rígidos.
+        </p>
+      </div>
+    )
+  },
+  "bilinguismo": {
+    title: "Bilingüismo",
+    content: (
+      <div className="py-6">
+        <p className="text-slate-600 dark:text-slate-300 leading-relaxed mb-4 text-lg">
+          El dominio de un segundo idioma es una competencia fundamental en el mundo globalizado actual. Desde el Programa de Bilingüismo del CTMA, potenciamos las habilidades comunicativas de nuestros aprendices en lenguas extranjeras, con especial énfasis en el idioma inglés.
+        </p>
+        <p className="text-slate-600 dark:text-slate-300 leading-relaxed">
+          A través de metodologías inmersivas, instructores especializados y recursos tecnológicos, fomentamos el aprendizaje dinámico y práctico, abriendo nuevas puertas profesionales, académicas y culturales para nuestra comunidad SENA.
+        </p>
+      </div>
+    )
+  },
+  "inscripciones": {
+    title: "Inscripciones",
+    content: (
+      <div className="py-6">
+        <p className="text-slate-600 dark:text-slate-300 leading-relaxed mb-4 text-lg">
+          ¡Inicia tu proceso de formación con el SENA! Aquí podrás enterarte de las fechas de convocatorias, los cronogramas oficiales y el paso a paso para realizar tu proceso de inscripción en la plataforma SOFIA Plus.
+        </p>
+        <p className="text-slate-600 dark:text-slate-300 leading-relaxed">
+          Todos los servicios del SENA, incluyendo el proceso de inscripción y matrícula, son gratuitos y no requieren de intermediarios. Prepárate para las pruebas de selección y conviértete en parte de la institución más querida por los colombianos.
+        </p>
+      </div>
+    )
+  },
+  "certificacion-competencias": {
+    title: "Certificación de Competencias Laborales",
+    content: (
+      <div className="py-6">
+        <p className="text-slate-600 dark:text-slate-300 leading-relaxed mb-4 text-lg">
+          El proceso de Evaluación y Certificación de Competencias Laborales es un servicio gratuito que el SENA ofrece a los trabajadores colombianos, mediante el cual se reconoce oficialmente la experiencia y el saber hacer adquirido a lo largo de la vida, independientemente de cómo se haya aprendido.
+        </p>
+        <p className="text-slate-600 dark:text-slate-300 leading-relaxed">
+          Con esta certificación, impulsamos la empleabilidad, facilitamos la movilidad laboral y aportamos al mejoramiento de la productividad en las empresas, validando que el talento humano cumple con los estándares de calidad que exige el mercado.
+        </p>
+      </div>
+    )
+  },
+  "alturas": {
+    title: "Trabajo Seguro en Alturas",
+    content: (
+      <div className="py-6">
+        <p className="text-slate-600 dark:text-slate-300 leading-relaxed mb-4 text-lg">
+          La formación y el entrenamiento en Trabajo Seguro en Alturas es vital para garantizar la prevención de accidentes y proteger la vida de los trabajadores que realizan labores a más de 2 metros de altura, cumpliendo con la normatividad vigente.
+        </p>
+        <p className="text-slate-600 dark:text-slate-300 leading-relaxed">
+          En el CTMA contamos con pistas y estructuras de entrenamiento certificadas, además de instructores altamente calificados que imparten los diferentes niveles de formación (Básico, Avanzado, Coordinador y Reentrenamiento), garantizando las mejores prácticas de seguridad industrial.
+        </p>
+      </div>
+    )
+  },
+  "administracion-educativa": {
+    title: "Administración Educativa",
+    content: (
+      <div className="py-6">
+        <p className="text-slate-600 dark:text-slate-300 leading-relaxed mb-4 text-lg">
+          El área de Administración Educativa se encarga de gestionar y coordinar todos los procesos académicos y administrativos de nuestros aprendices, desde su ingreso hasta su certificación.
+        </p>
+        <p className="text-slate-600 dark:text-slate-300 leading-relaxed">
+          Aquí podrás encontrar información relevante sobre procesos de traslados, aplazamientos, retiros, certificaciones, novedades académicas y demás trámites relacionados con tu vida como aprendiz dentro de la institución.
+        </p>
+      </div>
+    )
+  },
+  "icfes-pruebas-tyt": {
+    title: "ICFES Pruebas TYT",
+    content: (
+      <div className="py-6">
+        <p className="text-slate-600 dark:text-slate-300 leading-relaxed mb-4 text-lg">
+          Las pruebas Saber TyT (Técnicos y Tecnólogos) del ICFES son un requisito de grado obligatorio para todos los aprendices de nivel tecnológico en el SENA y buscan evaluar la calidad de la educación superior en Colombia.
+        </p>
+        <p className="text-slate-600 dark:text-slate-300 leading-relaxed">
+          En esta sección publicamos los cronogramas oficiales, las fechas límite de recaudo, los instructivos de inscripción y recursos de preparación para que nuestros aprendices presenten sus pruebas de Estado con éxito y puedan continuar con su proceso de certificación.
+        </p>
+      </div>
+    )
   }
 };
 
-const sectionMap: Record<string, string> = {
+  const sectionMap: Record<string, string> = {
   // Nosotros
   "mision-y-vision": "Misión y Visión",
   "promesa-de-valor": "Promesa de Valor",
@@ -539,37 +669,33 @@ export default async function CtmaPage({ params }: { params: Promise<{ slug: str
   return (
     <div className="min-h-[calc(100vh-64px)] bg-slate-50 dark:bg-slate-950 py-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden flex flex-col items-center">
       
-      {/* Fondo Decorativo Grid y Glows MUY VISIBLES */}
-      <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
-        {/* Patrón de puntos (Grid Pattern) más oscuro y visible */}
-        <div className="absolute inset-0 bg-[radial-gradient(#94a3b8_2px,transparent_2px)] dark:bg-[radial-gradient(#475569_2px,transparent_2px)] [background-size:32px_32px] opacity-100 dark:opacity-80"></div>
-        
-          {/* Gradientes ambientales gigantes optimizados sin blur ni animaciones pesadas */}
-          <div className="absolute top-[-10%] left-[-10%] w-[60%] h-[60%] bg-[radial-gradient(circle,rgba(99,102,241,0.25)_0%,transparent_60%)] dark:bg-[radial-gradient(circle,rgba(79,70,229,0.2)_0%,transparent_60%)]"></div>
-          <div className="absolute bottom-[-10%] right-[-10%] w-[60%] h-[60%] bg-[radial-gradient(circle,rgba(96,165,250,0.25)_0%,transparent_60%)] dark:bg-[radial-gradient(circle,rgba(37,99,235,0.2)_0%,transparent_60%)]"></div>
-          <div className="absolute top-[20%] right-[20%] w-[40%] h-[40%] bg-[radial-gradient(circle,rgba(192,132,252,0.2)_0%,transparent_60%)] dark:bg-[radial-gradient(circle,rgba(147,51,234,0.15)_0%,transparent_60%)]"></div>
+      {/* Fondo Decorativo Moderno y Elegante sin puntos */}
+      <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden bg-slate-50 dark:bg-slate-900">
+        {/* Soft Ambient Gradients */}
+        <div className="absolute top-[-20%] left-[-10%] w-[70%] h-[70%] bg-[radial-gradient(ellipse_at_center,rgba(16,185,129,0.15)_0%,transparent_70%)] dark:bg-[radial-gradient(ellipse_at_center,rgba(5,150,105,0.1)_0%,transparent_70%)]"></div>
+        <div className="absolute bottom-[-10%] right-[-10%] w-[60%] h-[60%] bg-[radial-gradient(ellipse_at_center,rgba(56,189,248,0.15)_0%,transparent_70%)] dark:bg-[radial-gradient(ellipse_at_center,rgba(2,132,199,0.1)_0%,transparent_70%)]"></div>
       </div>
 
       <div className="w-full relative z-10">
         {/* BOTÓN DE VOLVER MEJORADO */}
         <Link 
           href="/?guest=true" 
-          className="group inline-flex items-center px-6 py-3 mb-10 bg-white dark:bg-slate-800 text-indigo-600 dark:text-indigo-400 font-bold rounded-full shadow-md hover:shadow-xl hover:shadow-indigo-500/20 dark:hover:shadow-indigo-900/30 hover:-translate-y-1 hover:bg-indigo-50 dark:hover:bg-slate-700 transition-all duration-300 border border-slate-200 dark:border-slate-700"
+          className="group inline-flex items-center px-6 py-3 mb-10 bg-white dark:bg-slate-800 text-sena-600 dark:text-sena-400 font-bold rounded-full shadow-md hover:shadow-xl hover:shadow-sena-500/20 dark:hover:shadow-sena-900/30 hover:-translate-y-1 hover:bg-sena-50 dark:hover:bg-slate-700 transition-all duration-300 border border-slate-200 dark:border-slate-700"
         >
           <ArrowLeft className="w-5 h-5 mr-3 group-hover:-translate-x-1 transition-transform duration-300" />
           Volver a la plataforma
         </Link>
         
-        <div className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-xl rounded-[2.5rem] shadow-2xl border border-slate-200/50 dark:border-slate-700/50 overflow-hidden transform transition-all hover:shadow-indigo-500/10 duration-700">
+        <div className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-xl rounded-[2.5rem] shadow-2xl border border-slate-200/50 dark:border-slate-700/50 overflow-hidden transform transition-all hover:shadow-sena-500/10 duration-700">
           
           {/* Cabecera del Documento */}
-          <div className="bg-gradient-to-br from-indigo-700 via-blue-700 to-indigo-900 px-10 py-16 text-white relative overflow-hidden group">
+          <div className="bg-gradient-to-br from-sena-600 via-emerald-500 to-sena-800 px-10 py-16 text-white relative overflow-hidden group">
             {/* Patrón CSS Puro (Líneas Diagonales) Muy Visible */}
             <div className="absolute inset-0 opacity-30 mix-blend-overlay" style={{ backgroundImage: 'repeating-linear-gradient(45deg, #ffffff 0, #ffffff 2px, transparent 0, transparent 50%)', backgroundSize: '24px 24px' }}></div>
             
             {/* Figuras geométricas brillantes optimizadas */}
-            <div className="absolute -top-32 -right-32 bg-[radial-gradient(circle,rgba(34,211,238,0.4)_0%,transparent_60%)] w-96 h-96 rounded-full group-hover:scale-125 transition-transform duration-1000"></div>
-            <div className="absolute -bottom-32 -left-32 bg-[radial-gradient(circle,rgba(168,85,247,0.4)_0%,transparent_60%)] w-96 h-96 rounded-full group-hover:scale-125 transition-transform duration-1000 delay-100"></div>
+            <div className="absolute -top-32 -right-32 bg-[radial-gradient(circle,rgba(16,185,129,0.4)_0%,transparent_60%)] w-96 h-96 rounded-full group-hover:scale-125 transition-transform duration-1000"></div>
+            <div className="absolute -bottom-32 -left-32 bg-[radial-gradient(circle,rgba(16,185,129,0.4)_0%,transparent_60%)] w-96 h-96 rounded-full group-hover:scale-125 transition-transform duration-1000 delay-100"></div>
             
             <div className="absolute top-8 right-12 opacity-20 transform group-hover:rotate-12 group-hover:scale-110 transition-all duration-700">
               <Info className="w-40 h-40" />
@@ -583,7 +709,7 @@ export default async function CtmaPage({ params }: { params: Promise<{ slug: str
                 {pageData.title}
               </h1>
               <div className="w-20 h-1.5 bg-gradient-to-r from-amber-400 to-orange-500 rounded-full mb-4"></div>
-              <p className="text-indigo-100 font-medium text-lg drop-shadow-sm">
+              <p className="text-sena-100 font-medium text-lg drop-shadow-sm">
                 Centro de Tecnología de la Manufactura Avanzada (CTMA)
               </p>
             </div>
@@ -591,7 +717,7 @@ export default async function CtmaPage({ params }: { params: Promise<{ slug: str
           
           {/* Contenido */}
           <div className="p-10 md:p-14 bg-white/50 dark:bg-slate-800/50 relative">
-            <div className="absolute top-0 left-10 w-px h-full bg-gradient-to-b from-indigo-500/20 to-transparent hidden md:block"></div>
+            <div className="absolute top-0 left-10 w-px h-full bg-gradient-to-b from-sena-500/20 to-transparent hidden md:block"></div>
             
             <div className="prose dark:prose-invert prose-slate prose-lg md:prose-xl max-w-none relative z-10 md:pl-8">
               {pageData.content}
@@ -600,8 +726,8 @@ export default async function CtmaPage({ params }: { params: Promise<{ slug: str
             {notes && notes.length > 0 && (
               <div className="mt-16 relative z-10">
                 <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-100 mb-8 flex items-center">
-                  <span className="w-8 h-1.5 bg-indigo-500 rounded-full mr-4"></span>
-                  Anuncios y Novedades ({notes.length})
+                  <span className="w-8 h-1.5 bg-sena-500 rounded-full mr-4"></span>
+                  Anuncios y Novedades
                 </h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {notes.map((note: any) => (
@@ -612,8 +738,8 @@ export default async function CtmaPage({ params }: { params: Promise<{ slug: str
                         </div>
                       )}
                       <div className="p-6 flex flex-col flex-1">
-                        <span className="text-xs font-bold text-indigo-500 uppercase tracking-wider mb-2">{note.section}</span>
-                        <h3 className="text-xl font-bold text-slate-800 dark:text-white mb-3 leading-snug group-hover:text-indigo-600 transition-colors">{note.title}</h3>
+                        <span className="text-xs font-bold text-sena-500 uppercase tracking-wider mb-2">{note.section}</span>
+                        <h3 className="text-xl font-bold text-slate-800 dark:text-white mb-3 leading-snug group-hover:text-sena-600 transition-colors">{note.title}</h3>
                         <p className="text-slate-600 dark:text-slate-300 text-sm mb-6 line-clamp-3 leading-relaxed">
                           {note.excerpt || note.body.substring(0, 150) + '...'}
                         </p>
@@ -622,7 +748,7 @@ export default async function CtmaPage({ params }: { params: Promise<{ slug: str
                             <span className="w-2 h-2 rounded-full bg-emerald-400 mr-2"></span>
                             {new Date(note.createdAt).toLocaleDateString()}
                           </span>
-                          <Link href={`/blogs/${note.id}`} className="text-sm font-bold text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 flex items-center">
+                          <Link href={`/blogs/${note.id}`} className="text-sm font-bold text-sena-600 dark:text-sena-400 hover:text-sena-800 flex items-center">
                             Leer más <ExternalLink className="w-4 h-4 ml-1" />
                           </Link>
                         </div>
@@ -635,9 +761,9 @@ export default async function CtmaPage({ params }: { params: Promise<{ slug: str
             
             {/* Elemento Decorativo Final */}
             <div className="mt-16 flex items-center justify-center space-x-2 opacity-50">
-              <div className="w-2 h-2 rounded-full bg-indigo-400"></div>
-              <div className="w-2 h-2 rounded-full bg-blue-400"></div>
-              <div className="w-2 h-2 rounded-full bg-indigo-400"></div>
+              <div className="w-2 h-2 rounded-full bg-sena-400"></div>
+              <div className="w-2 h-2 rounded-full bg-emerald-400"></div>
+              <div className="w-2 h-2 rounded-full bg-sena-400"></div>
             </div>
           </div>
         </div>
