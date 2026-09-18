@@ -3,6 +3,7 @@ export interface ChatbotProviderInput {
   context: string;
 }
 
+
 export interface AIProvider {
   generateResponse(data: ChatbotProviderInput): AsyncGenerator<string, void, unknown>;
   generateEmbedding?(text: string): Promise<number[]>;
