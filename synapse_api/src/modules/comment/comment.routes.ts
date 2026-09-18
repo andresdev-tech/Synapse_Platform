@@ -92,4 +92,27 @@ router.get("/:noteId", CommentController.getByNote);
  */
 router.post("/", verifyToken, CommentController.create);
 
+/**
+ * @swagger
+ * /api/comments/{id}:
+ *   delete:
+ *     summary: Eliminar un comentario
+ *     tags: [Comments]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *     responses:
+ *       200:
+ *         description: Comentario eliminado
+ *       403:
+ *         description: No tiene permisos
+ */
+router.delete("/:id", verifyToken, CommentController.delete);
+
 export default router;

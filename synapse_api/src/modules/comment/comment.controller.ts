@@ -30,6 +30,22 @@ export class CommentController {
       res.status(500).json({ error: "Error al obtener comentarios" });
     }
   }
+
+  static async delete(req: AuthRequest, res: Response): Promise<void> {
+    const { id } = req.params;
+    try {
+      // Opcionalmente, validar que el req.user es ADMIN
+      if (!req.user || (req.user.role !== 'ADMIN' && req.user.role !== 'SUPER_ADMIN')) {
+         res.status(403).json({ error: "No tienes permiso para eliminar comentarios" });
+         return;
+      }
+      await CommentService.deleteComment(id);
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Error deleting comment:", error);
+      res.status(500).json({ error: "Error al eliminar el comentario" });
+    }
+  }
 }
 
 // Backward compatibility exports

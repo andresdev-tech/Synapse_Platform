@@ -34,23 +34,6 @@ const router = Router();
  *     responses:
  *       200:
  *         description: Respuesta generada por el modelo fundamentada en la base documental
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 response:
- *                   type: string
- *                   description: Texto de la respuesta
- *                 sources:
- *                   type: array
- *                   items:
- *                     type: object
- *                     properties:
- *                       title:
- *                         type: string
- *                       similarity:
- *                         type: number
  *       400:
  *         description: Mensaje vacío o formato incorrecto
  *       401:

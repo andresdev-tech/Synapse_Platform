@@ -24,12 +24,10 @@ export class ChatbotController {
           success: false,
           error: "Usuario no autenticado.",
         });
-
         return;
       }
 
-      const { message } =
-        chatbotMessageSchema.parse(req.body);
+      const { message } = chatbotMessageSchema.parse(req.body);
 
       const rateLimitCheck = chatRateLimiter.checkRateLimit(req.user.id);
       if (!rateLimitCheck.allowed) {
@@ -45,12 +43,11 @@ export class ChatbotController {
 
       setupChatbotStream(res);
 
-      const stream =
-        chatbotService.processMessage({
-          userId: req.user.id,
-          correo: req.user.email || req.user.correo || 'test@test.com', // get from JWT
-          message,
-        });
+      const stream = chatbotService.processMessage({
+        userId: req.user.id,
+        correo: req.user.email || req.user.correo || 'usuario@synapse.com',
+        message,
+      });
 
       for await (const chunk of stream) {
         res.write(
