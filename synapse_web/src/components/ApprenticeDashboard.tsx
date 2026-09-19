@@ -61,7 +61,8 @@ const InlineVideoPlayer = memo(({ videoId, videoUrl }: { videoId: string, videoU
 interface Note {
   id: string
   title: string
-  content: string
+  body: string
+  excerpt?: string
   seoImage?: string; attachments?: { type: string, url: string }[];
   isGlobal: boolean
   authorId: string
@@ -69,6 +70,7 @@ interface Note {
   category?: { name: string; id: string }
   categoryId?: string | null
   createdAt: string
+  scheduledAt?: string | null
   deletedAt?: string | null
 }
 
@@ -86,6 +88,20 @@ const officialResources = [
 ]
 
 import NextLink from "next/link"
+
+const getNotePreview = (note: Note) => {
+  if (note.excerpt && note.excerpt.trim() !== "") return note.excerpt;
+  if (note.body && note.body.startsWith("[")) {
+    try {
+      const blocks = JSON.parse(note.body);
+      const textBlock = blocks.find((b: any) => b.type === 'text' && b.content);
+      return textBlock ? textBlock.content.substring(0, 200) : "";
+    } catch (e) {
+      return "";
+    }
+  }
+  return note.body || "";
+}
 
 const SortableNoteItem = memo(function SortableNoteItem({ note, priority }: { note: Note, priority?: boolean }) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: note.id })
@@ -145,7 +161,7 @@ const SortableNoteItem = memo(function SortableNoteItem({ note, priority }: { no
           {note.title}
         </h3>
         <p className="grow whitespace-pre-wrap text-base leading-relaxed text-slate-600 line-clamp-4 dark:text-slate-400">
-          {note.content}
+          {getNotePreview(note)}
         </p>
 
         {note.attachments && note.attachments.length > 0 && (
@@ -421,12 +437,27 @@ export function ApprenticeDashboard({ initialNotes = [], initialCategories = [] 
 
   // Eventos para el Widget Lateral
   const upcomingEvents = useMemo(() => {
-    return globalNotes.filter(n =>
-      n.category?.name?.toLowerCase().includes("evento") ||
-      n.category?.name?.toLowerCase().includes("acad") ||
-      n.title.toLowerCase().includes("inscrip") ||
-      n.title.toLowerCase().includes("fecha")
-    ).slice(0, 3)
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    return globalNotes
+      .filter(n => {
+        const isEvent = n.scheduledAt ||
+                        n.category?.name?.toLowerCase().includes("evento") ||
+                        n.category?.name?.toLowerCase().includes("acad") ||
+                        n.title.toLowerCase().includes("inscrip") ||
+                        n.title.toLowerCase().includes("fecha");
+        if (!isEvent) return false;
+
+        const eventDate = new Date(n.scheduledAt || n.createdAt);
+        return eventDate >= today;
+      })
+      .sort((a, b) => {
+        const dateA = new Date(a.scheduledAt || a.createdAt).getTime();
+        const dateB = new Date(b.scheduledAt || b.createdAt).getTime();
+        return dateA - dateB;
+      })
+      .slice(0, 3);
   }, [globalNotes]);
 
   return (
@@ -653,8 +684,8 @@ export function ApprenticeDashboard({ initialNotes = [], initialCategories = [] 
                   {upcomingEvents.map(event => (
                     <div key={event.id} className="flex gap-3 items-start p-3 bg-white dark:bg-zinc-800 rounded-xl shadow-sm border border-slate-100 dark:border-zinc-700">
                       <div className="flex min-w-14 flex-col items-center justify-center rounded-lg bg-sena-50 py-2 dark:bg-zinc-700">
-                        <span className="text-[10px] font-bold text-sena-400 dark:text-sena-300 uppercase">{new Date(event.createdAt).toLocaleString('es', { month: 'short' })}</span>
-                        <span className="text-xl font-black text-sena-600 dark:text-white leading-none">{new Date(event.createdAt).getDate()}</span>
+                        <span className="text-[10px] font-bold text-sena-400 dark:text-sena-300 uppercase">{new Date(event.scheduledAt || event.createdAt).toLocaleString('es', { month: 'short' })}</span>
+                        <span className="text-xl font-black text-sena-600 dark:text-white leading-none">{new Date(event.scheduledAt || event.createdAt).getDate()}</span>
                       </div>
                       <div className="grow">
                         <h4 className="font-bold text-zinc-800 dark:text-slate-200 text-sm line-clamp-2">{event.title}</h4>
@@ -672,10 +703,10 @@ export function ApprenticeDashboard({ initialNotes = [], initialCategories = [] 
                 Enlaces Rápidos
               </h3>
               <div className="space-y-3">
-                <NextLink href="/ctma/inicio" className="block p-4 rounded-xl bg-slate-50 dark:bg-zinc-900 hover:bg-orange-50 dark:hover:bg-zinc-700 hover:text-orange-700 dark:hover:text-orange-400 border border-transparent dark:border-zinc-700 transition-colors group">
+                <a href="https://tecnologia-manufactura-avanzada.blogspot.com/" target="_blank" rel="noopener noreferrer" className="block p-4 rounded-xl bg-slate-50 dark:bg-zinc-900 hover:bg-orange-50 dark:hover:bg-zinc-700 hover:text-orange-700 dark:hover:text-orange-400 border border-transparent dark:border-zinc-700 transition-colors group">
                   <span className="block font-bold text-zinc-700 dark:text-slate-300 group-hover:text-orange-700 dark:group-hover:text-orange-400">CTMA Principal</span>
                   <span className="text-xs text-slate-500">Información del centro</span>
-                </NextLink>
+                </a>
                 <a href="https://caprendizaje.sena.edu.co/sgva/SGVA_Diseno/pag/login.aspx" target="_blank" rel="noopener noreferrer" className="block p-4 rounded-xl bg-slate-50 dark:bg-zinc-900 hover:bg-emerald-50 dark:hover:bg-zinc-700 hover:text-emerald-700 dark:hover:text-emerald-400 border border-transparent dark:border-zinc-700 transition-colors group">
                   <span className="block font-bold text-zinc-700 dark:text-slate-300 group-hover:text-emerald-700 dark:group-hover:text-emerald-400">SGVA</span>
                   <span className="text-xs text-slate-500">Sistema de Gestión Virtual de Aprendices</span>
@@ -689,7 +720,7 @@ export function ApprenticeDashboard({ initialNotes = [], initialCategories = [] 
                   <span className="text-xs text-slate-500">Portal de oferta educativa</span>
                 </a>
                 <a href="https://sena.territorio.la/index.php?login=true" target="_blank" rel="noopener noreferrer" className="block p-4 rounded-xl bg-slate-50 dark:bg-zinc-900 hover:bg-amber-50 dark:hover:bg-zinc-700 hover:text-amber-700 dark:hover:text-amber-400 border border-transparent dark:border-zinc-700 transition-colors group">
-                  <span className="block font-bold text-zinc-700 dark:text-slate-300 group-hover:text-amber-700 dark:group-hover:text-amber-400">Territorium</span>
+                  <span className="block font-bold text-zinc-700 dark:text-slate-300 group-hover:text-amber-700 dark:group-hover:text-amber-400">Zajuna</span>
                   <span className="text-xs text-slate-500">Plataforma de aprendizaje</span>
                 </a>
                 <a href="https://ape.sena.edu.co/Paginas/Inicio.aspx" target="_blank" rel="noopener noreferrer" className="block p-4 rounded-xl bg-slate-50 dark:bg-zinc-900 hover:bg-teal-50 dark:hover:bg-zinc-700 hover:text-teal-700 dark:hover:text-teal-400 border border-transparent dark:border-zinc-700 transition-colors group">
