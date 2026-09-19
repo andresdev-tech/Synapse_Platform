@@ -10,7 +10,14 @@ export interface CreateNoteParams {
   embeddings?: number[][];
 }
 
+/**
+ * Repositorio de base de datos para la gestión de notas y recursos de estudio (tabla Content).
+ * Maneja transacciones complejas para almacenar contenidos junto a sus documentos y fragmentos vectoriales (embeddings RAG).
+ */
 export class NoteRepository {
+  /**
+   * Consulta las notas globales públicas, con su autor, categoría y reacciones.
+   */
   static async findGlobal(section?: string) {
     const whereClause: any = { isGlobal: true };
     if (section) {
@@ -27,6 +34,9 @@ export class NoteRepository {
     });
   }
 
+  /**
+   * Consulta las notas privadas creadas por un usuario específico.
+   */
   static async findPersonal(userId: string) {
     return await prisma.content.findMany({
       where: { authorId: String(userId), isGlobal: false },
@@ -34,6 +44,9 @@ export class NoteRepository {
     });
   }
 
+  /**
+   * Consulta las notas creadas como sugerencias de los usuarios.
+   */
   static async findSuggestions() {
     return await prisma.content.findMany({
       where: { isGlobal: false },
@@ -45,6 +58,9 @@ export class NoteRepository {
     });
   }
 
+  /**
+   * Busca una nota por su ID incluyendo información del autor, categoría y reacciones.
+   */
   static async findById(id: string) {
     return await prisma.content.findUnique({
       where: { id: String(id) },
@@ -56,6 +72,10 @@ export class NoteRepository {
     });
   }
 
+  /**
+   * Crea una nota en una transacción de base de datos.
+   * Si incluye documento RAG, guarda el recurso y sus fragmentos vectoriales (embeddings de 1024 dimensiones en pgvector).
+   */
   static async createWithTransaction(params: CreateNoteParams) {
     const { data, slug, authorId, chunks = [], embeddings = [] } = params;
     const contentId = randomUUID();
@@ -131,6 +151,9 @@ export class NoteRepository {
     });
   }
 
+  /**
+   * Actualiza los campos modificados de una nota existente.
+   */
   static async update(id: string, data: UpdateNoteDTO) {
     const updateData: any = {};
     if (data.title !== undefined) updateData.title = data.title;
@@ -155,12 +178,18 @@ export class NoteRepository {
     });
   }
 
+  /**
+   * Elimina una nota de la base de datos por su ID.
+   */
   static async delete(id: string) {
     return await prisma.content.delete({
       where: { id: String(id) },
     });
   }
 
+  /**
+   * Gestiona la reacción de un usuario sobre una nota (crea nueva, cambia tipo o elimina si ya existía la misma).
+   */
   static async toggleReaction(contentId: string, userId: string, type: "LIKE" | "LOVE" | "USEFUL" | "IMPORTANT" | "DISLIKE") {
     const existing = await prisma.reaction.findFirst({
       where: { contentId, userId },
@@ -188,3 +217,4 @@ export class NoteRepository {
     }
   }
 }
+

@@ -1,7 +1,14 @@
 import { prisma } from "../../config/prisma";
 import { CreateCategoryDTO, UpdateCategoryDTO } from "./category.types";
 
+/**
+ * Repositorio de base de datos para categorías.
+ * Maneja las consultas, creaciones, modificaciones y eliminaciones en la tabla Category de PostgreSQL.
+ */
 export class CategoryRepository {
+  /**
+   * Obtiene todas las categorías junto a su categoría padre y conteo de contenidos asociados.
+   */
   static async findAll() {
     return await prisma.category.findMany({
       include: {
@@ -15,6 +22,9 @@ export class CategoryRepository {
     });
   }
 
+  /**
+   * Busca una categoría por su ID incluyendo sus categorías hijas y contenidos relacionados.
+   */
   static async findById(id: string) {
     const category = await prisma.category.findUnique({
       where: { id: String(id) },
@@ -36,12 +46,18 @@ export class CategoryRepository {
     return category;
   }
 
+  /**
+   * Busca una categoría por su slug (URL amigable).
+   */
   static async findBySlug(slug: string) {
     return await prisma.category.findUnique({
       where: { slug },
     });
   }
 
+  /**
+   * Inserta un nuevo registro de categoría en la base de datos.
+   */
   static async create(data: CreateCategoryDTO & { slug: string }) {
     return await prisma.category.create({
       data: {
@@ -56,6 +72,9 @@ export class CategoryRepository {
     });
   }
 
+  /**
+   * Actualiza los datos de una categoría existente.
+   */
   static async update(id: string, data: UpdateCategoryDTO & { slug?: string }) {
     const updateData: any = {};
     if (data.name !== undefined) updateData.name = data.name;
@@ -71,9 +90,13 @@ export class CategoryRepository {
     });
   }
 
+  /**
+   * Elimina una categoría de la base de datos según su ID.
+   */
   static async delete(id: string) {
     return await prisma.category.delete({
       where: { id: String(id) },
     });
   }
 }
+

@@ -9,7 +9,14 @@ export interface CreateAuditLogDTO {
   metadata?: any;
 }
 
+/**
+ * Repositorio de base de datos para los registros de auditoría.
+ * Se encarga de insertar los eventos del sistema y consultar los logs almacenados en PostgreSQL.
+ */
 export class AuditLogRepository {
+  /**
+   * Inserta un nuevo registro de auditoría en la base de datos con los detalles del evento.
+   */
   static async createLog(data: CreateAuditLogDTO) {
     return await prisma.auditLog.create({
       data: {
@@ -22,6 +29,9 @@ export class AuditLogRepository {
     });
   }
 
+  /**
+   * Consulta y pagina los registros de auditoría existentes, incluyendo la información básica del usuario que realizó la acción.
+   */
   static async getLogs(params: {
     actorId?: string;
     action?: AuditAction;
@@ -66,3 +76,4 @@ export class AuditLogRepository {
     };
   }
 }
+

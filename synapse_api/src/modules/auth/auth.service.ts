@@ -10,9 +10,16 @@ import { AllowedDomainService } from "../allowed-domain/allowed-domain.service";
 import { AuditAction } from "../../../generated/prisma/client";
 import crypto from "crypto";
 
+/**
+ * Servicio principal de autenticación y seguridad.
+ * Contiene la lógica de negocio para inicio de sesión, generación de tokens JWT, emisión de códigos OTP y registro de sesiones.
+ */
 export class AuthService {
+  /**
+   * Registra la sesión activa del usuario, actualiza su fecha de último acceso y guarda el evento en la auditoría.
+   */
   private static async recordUserLogin(user: { id: string; email: string }, token: string, role: string, loginType: string) {
-    const expires = new Date(Date.now() + 24 * 60 * 60 * 1000);
+    const expires = new Date(Date.now() + 3 * 60 * 60 * 1000);
     let session = null;
     try {
       session = await SessionRepository.createSession({
@@ -51,12 +58,15 @@ export class AuthService {
     }
   }
 
+  /**
+   * Genera y firma el token de seguridad JWT para el usuario con vigencia de 3 horas.
+   */
   private static createJwt(user: { id: string; email: string; name?: string | null; layoutPrefs?: unknown }, role: string) {
     const secret = process.env.JWT_SECRET || "default_dev_secret_for_synapse";
     const token = jwt.sign(
       { id: user.id, email: user.email, role },
       secret,
-      { expiresIn: "24h" }
+      { expiresIn: "3h" }
     );
 
     return {
@@ -65,6 +75,9 @@ export class AuthService {
     };
   }
 
+  /**
+   * Configura y retorna el servicio de transporte para el envío de correos electrónicos.
+   */
   private static getTransporter() {
     return nodemailer.createTransport({
       service: "gmail",
@@ -75,7 +88,10 @@ export class AuthService {
     });
   }
 
-  static async createadmin (data: any) {
+  /**
+   * Valida permisos, dominios permitidos y disponibilidad de correo para crear un nuevo usuario administrador.
+   */
+  static async createadmin(data: any) {
     try {
       const domainCheck = await AllowedDomainService.isDomainAllowed(data.email, "ADMIN");
       if (!domainCheck.allowed) {
@@ -99,8 +115,9 @@ export class AuthService {
     }
   }
 
-
-
+  /**
+   * Procesa el inicio de sesión convencional de un usuario mediante correo electrónico.
+   */
   static async loginUser(credentials: LoginDTO): Promise<AuthResponse> {
     const user = await AuthRepository.findUserByEmail(credentials.email);
     if (!user) {
@@ -108,7 +125,7 @@ export class AuthService {
     }
 
     if (!user.emailVerified) {
-      return { success: false, error: "unverified_email" }; // Special string required by frontend
+      return { success: false, error: "unverified_email" }; // Requerido por el frontend
     }
 
     const role = user.role?.name || RoleNames.USER;
@@ -122,6 +139,9 @@ export class AuthService {
     };
   }
 
+  /**
+   * Valida el dominio del correo, crea el usuario si es nuevo, genera un código OTP de 6 dígitos y lo envía por correo.
+   */
   static async requestOtp(data: OtpEmailDTO): Promise<AuthResponse> {
     const email = data.email.trim().toLowerCase();
 
@@ -173,6 +193,9 @@ export class AuthService {
     return { success: true, data: { email } };
   }
 
+  /**
+   * Verifica la validez del código OTP ingresado y retorna la sesión con el token JWT del usuario.
+   */
   static async verifyOtp(data: OtpVerifyDTO): Promise<AuthResponse> {
     const email = data.email.trim().toLowerCase();
     const user = await AuthRepository.findUserByEmail(email);
@@ -197,6 +220,9 @@ export class AuthService {
     return { success: true, data: jwtData };
   }
 
+  /**
+   * Envía el correo electrónico con el código OTP de acceso o lo imprime en consola si no hay credenciales SMTP.
+   */
   private static async sendCode(email: string, code: string, subject: string) {
     if (process.env.EMAIL_USER && process.env.EMAIL_PASS) {
       await this.getTransporter().sendMail({
@@ -210,6 +236,9 @@ export class AuthService {
     }
   }
 
+  /**
+   * Procesa la autenticación exclusiva para el portal de administración validando rol y dominio permitido.
+   */
   static async loginAdmin(credentials: LoginAdminDTO): Promise<AuthResponse> {
     const domainCheck = await AllowedDomainService.isDomainAllowed(credentials.email, "ADMIN");
     if (!domainCheck.allowed) {
@@ -241,3 +270,4 @@ export class AuthService {
     return { success: true, data: jwtData };
   }
 }
+

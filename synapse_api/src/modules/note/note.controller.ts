@@ -4,7 +4,14 @@ import { NoteService } from "./note.service";
 import { createNoteSchema, updateNoteSchema } from "./note.schema";
 import { AuthRequest } from "../../middleware/auth.middleware";
 
+/**
+ * Controlador para la gestión de notas, guías y recursos de estudio en la plataforma.
+ * Permite listar notas públicas y personales, crear nuevas notas con IA/RAG, editarlas y reaccionar a ellas.
+ */
 export class NoteController {
+  /**
+   * Obtiene todas las notas globales públicas de la plataforma (opcionalmente filtradas por sección).
+   */
   static async getGlobal(req: Request, res: Response): Promise<void> {
     try {
       const section = req.query.section as string | undefined;
@@ -16,6 +23,9 @@ export class NoteController {
     }
   }
 
+  /**
+   * Obtiene las notas personales y privadas de un usuario específico.
+   */
   static async getPersonal(req: Request, res: Response): Promise<void> {
     const { userId } = req.params;
     try {
@@ -27,6 +37,9 @@ export class NoteController {
     }
   }
 
+  /**
+   * Obtiene las sugerencias de notas creadas por los usuarios para revisión o retroalimentación.
+   */
   static async getSuggestions(_req: Request, res: Response): Promise<void> {
     try {
       const suggestions = await NoteService.getSuggestions();
@@ -37,6 +50,9 @@ export class NoteController {
     }
   }
 
+  /**
+   * Obtiene el detalle de una nota en específico por su identificador.
+   */
   static async getById(req: Request, res: Response): Promise<void> {
     const { id } = req.params;
     try {
@@ -52,6 +68,9 @@ export class NoteController {
     }
   }
 
+  /**
+   * Crea una nueva nota de estudio, procesando e indexando automáticamente documentos adjuntos para el chatbot si incluye RAG.
+   */
   static async create(req: AuthRequest, res: Response): Promise<void> {
     try {
       const parsedData = createNoteSchema.parse(req.body);
@@ -67,6 +86,9 @@ export class NoteController {
     }
   }
 
+  /**
+   * Actualiza el contenido, categoría o estado de una nota existente.
+   */
   static async update(req: Request, res: Response): Promise<void> {
     const { id } = req.params;
     try {
@@ -83,6 +105,9 @@ export class NoteController {
     }
   }
 
+  /**
+   * Elimina una nota de la plataforma según su ID.
+   */
   static async delete(req: Request, res: Response): Promise<void> {
     const { id } = req.params;
     try {
@@ -94,6 +119,9 @@ export class NoteController {
     }
   }
 
+  /**
+   * Registra, actualiza o retira una reacción (LIKE, LOVE, USEFUL, etc.) del usuario en una nota.
+   */
   static async toggleReaction(req: AuthRequest, res: Response): Promise<void> {
     const { id } = req.params;
     const { type = "LIKE" } = req.body;
@@ -120,11 +148,11 @@ export class NoteController {
   }
 }
 
-// Backward compatibility exports
+// Exportaciones para compatibilidad
 export const getGlobalNotes = NoteController.getGlobal;
 export const getPersonalNotes = NoteController.getPersonal;
 export const getSuggestions = NoteController.getSuggestions;
 export const getNoteById = NoteController.getById;
 export const createNote = NoteController.create;
 export const updateNote = NoteController.update;
-export const deleteNote = NoteController.delete;
+export const deleteNote = NoteController.delete;

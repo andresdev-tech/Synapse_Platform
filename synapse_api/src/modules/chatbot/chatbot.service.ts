@@ -9,6 +9,7 @@ export interface ChatbotMessage {
   message: string;
 }
 
+// Estados del flujo interactivo para la consulta de certificados
 type FlujoState = 
   | 'fuera_de_flujo'
   | 'esperando_tipo_documento'
@@ -22,8 +23,12 @@ interface ChatbotSession {
   ultimaActividad: number;
 }
 
+// Mapa en memoria para el seguimiento de la conversación del usuario
 const sessionMap = new Map<string, ChatbotSession>();
 
+/**
+ * Obtiene o inicializa la sesión conversacional de un usuario (expira tras 3 minutos de inactividad).
+ */
 function getSession(userId: string): ChatbotSession {
   const session = sessionMap.get(userId);
   if (!session || Date.now() - session.ultimaActividad > 3 * 60 * 1000) {
@@ -34,16 +39,26 @@ function getSession(userId: string): ChatbotSession {
   return session;
 }
 
+/**
+ * Actualiza los datos de la sesión del usuario y renueva la marca de tiempo de actividad.
+ */
 function updateSession(userId: string, data: Partial<ChatbotSession>) {
   const session = getSession(userId);
   Object.assign(session, data, { ultimaActividad: Date.now() });
   sessionMap.set(userId, session);
 }
 
+/**
+ * Finaliza y elimina la sesión activa del usuario.
+ */
 function endSession(userId: string) {
   sessionMap.delete(userId);
 }
 
+/**
+ * Servicio principal del Chatbot institucional.
+ * Orquesta la máquina de estados para la consulta de certificados SENA y las respuestas con IA basada en RAG.
+ */
 export class ChatbotService {
   private readonly provider: AIProvider;
 
@@ -53,6 +68,10 @@ export class ChatbotService {
     this.provider = ProviderFactory.getProvider();
   }
 
+  /**
+   * Procesa cada mensaje enviado por el usuario, respondiendo en streaming.
+   * Maneja tanto el flujo conversacional del scraper de certificados como la consulta semántica RAG a la base de conocimiento.
+   */
   async *processMessage(
     data: ChatbotMessage
   ): AsyncGenerator<string, void, unknown> {
@@ -124,7 +143,7 @@ export class ChatbotService {
         endSession(userId);
         const minutos = Math.max(1, Math.ceil((result.esperaMs || 0) / (1000 * 60)));
         console.warn(`[CHATBOT SERVICE] Rate limit excedido para ${correo}. Espera requerida: ${minutos} minutos.`);
-        yield `Has alcanzado el límite de 7 intentos de consulta. Por favor, espera ${minutos} minuto(s) antes de volver a intentar.`;
+        yield `Has alcanzado el límite de 10 intentos de consulta. Por favor, espera ${minutos} minuto(s) antes de volver a intentar.`;
       } else {
         endSession(userId);
         console.error(`[CHATBOT SERVICE] Error desconocido al iniciar consulta para usuario ${userId}.`);
@@ -208,7 +227,7 @@ export class ChatbotService {
     }
 
     // ===============================
-    // FLUJO NORMAL RAG
+    // FLUJO NORMAL RAG (BASE DE CONOCIMIENTO)
     // ===============================
     const embedding = await this.provider.generateEmbedding!(normalizedMessage);
     const chunks = await this.repository.searchSimilarChunks(embedding, 5);
@@ -227,7 +246,7 @@ export class ChatbotService {
         if (firstChunks) {
           buffer += chunk;
           if (buffer.length < 15 && !buffer.includes("]")) {
-             continue; // wait to see if it contains [INIT_CERT]
+             continue; // Espera para verificar si incluye [INIT_CERT]
           }
           firstChunks = false;
           if (buffer.includes("[INIT_CERT]")) {
@@ -257,3 +276,4 @@ export class ChatbotService {
     }
   }
 }
+

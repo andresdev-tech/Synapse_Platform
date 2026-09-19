@@ -4,7 +4,14 @@ import { RagService } from "./rag.service";
 import { createRagResourceSchema } from "./rag.schema";
 import { AuthRequest } from "../../middleware/auth.middleware";
 
+/**
+ * Controlador para la gestión de documentos y base de conocimiento RAG (Retrieval-Augmented Generation).
+ * Permite subir documentos, indexarlos vectorialmente para el chatbot y administrarlos.
+ */
 export class RagController {
+  /**
+   * Obtiene la lista de todos los documentos y recursos indexados en la base de conocimiento.
+   */
   static async getResources(_req: AuthRequest, res: Response): Promise<void> {
     try {
         const resources = await RagService.getAllResources();
@@ -15,6 +22,9 @@ export class RagController {
     }
   }
 
+  /**
+   * Registra un nuevo documento, genera sus fragmentos vectoriales con IA y lo indexa para consultas del chatbot.
+   */
   static async createResource(req: AuthRequest, res: Response): Promise<void> {
     const userId = req.user?.id;
     if (!userId) {
@@ -38,6 +48,9 @@ export class RagController {
     }
   }
 
+  /**
+   * Elimina un documento y sus vectores de la base de conocimiento por su ID.
+   */
   static async deleteResource(req: AuthRequest, res: Response): Promise<void> {
     const { id } = req.params;
     try {
@@ -49,3 +62,4 @@ export class RagController {
     }
   }
 }
+

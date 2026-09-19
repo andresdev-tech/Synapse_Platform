@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
 import crypto from "crypto";
 
+// Configuración del cliente S3 para almacenamiento de archivos en la nube
 const s3 = new S3Client({
   region: process.env.AWS_REGION || "us-east-2",
   endpoint: process.env.AWS_ENDPOINT_URL_S3,
@@ -12,6 +13,11 @@ const s3 = new S3Client({
   },
 });
 
+/**
+ * Controlador para la subida de archivos adjuntos (documentos, imágenes, etc.).
+ * Recibe el archivo de la petición, genera un nombre único, lo carga en el bucket S3 / Neon Storage
+ * y retorna la URL pública junto a los metadatos del archivo.
+ */
 export const uploadFile = async (req: Request, res: Response) => {
   try {
     if (!req.file) {
@@ -32,7 +38,7 @@ export const uploadFile = async (req: Request, res: Response) => {
     const uniqueFileName =
       `${crypto.randomUUID()}.${fileExtension}`;
 
-    // Ruta REAL dentro del bucket
+    // Ruta dentro del bucket
     const objectKey =
       `systemdocs/${uniqueFileName}`;
 
@@ -45,10 +51,7 @@ export const uploadFile = async (req: Request, res: Response) => {
       })
     );
 
-    // ==========================================================
-    // URL PÚBLICA DE NEON STORAGE
-    // ==========================================================
-
+    // Construcción de la URL pública de acceso al archivo
     const endpoint =
       (process.env.AWS_ENDPOINT_URL_S3 || "").replace(/\/$/, "");
 
@@ -76,4 +79,4 @@ export const uploadFile = async (req: Request, res: Response) => {
       error: "Failed to upload file to S3",
     });
   }
-};
+};

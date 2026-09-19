@@ -4,7 +4,14 @@ import { CommentService } from "./comment.service";
 import { createCommentSchema } from "./comment.schema";
 import { AuthRequest } from "../../middleware/auth.middleware";
 
+/**
+ * Controlador para la gestión de comentarios en las notas y contenidos de estudio.
+ * Permite a los usuarios publicar comentarios, listar comentarios por nota y eliminarlos.
+ */
 export class CommentController {
+  /**
+   * Publica un nuevo comentario en una nota de estudio asignando al autor autenticado.
+   */
   static async create(req: AuthRequest, res: Response): Promise<void> {
     try {
       const parsedData = createCommentSchema.parse(req.body);
@@ -20,6 +27,9 @@ export class CommentController {
     }
   }
 
+  /**
+   * Obtiene todos los comentarios asociados a una nota específica.
+   */
   static async getByNote(req: Request, res: Response): Promise<void> {
     const { noteId } = req.params;
     try {
@@ -31,15 +41,17 @@ export class CommentController {
     }
   }
 
+  /**
+   * Elimina un comentario verificando que el solicitante tenga permisos administrativos.
+   */
   static async delete(req: AuthRequest, res: Response): Promise<void> {
     const { id } = req.params;
     try {
-      // Opcionalmente, validar que el req.user es ADMIN
       if (!req.user || (req.user.role !== 'ADMIN' && req.user.role !== 'SUPER_ADMIN')) {
          res.status(403).json({ error: "No tienes permiso para eliminar comentarios" });
          return;
       }
-      await CommentService.deleteComment(id);
+      await CommentService.deleteComment(id as string);
       res.json({ success: true });
     } catch (error) {
       console.error("Error deleting comment:", error);
@@ -48,6 +60,7 @@ export class CommentController {
   }
 }
 
-// Backward compatibility exports
+// Exportaciones para compatibilidad
 export const createComment = CommentController.create;
 export const getCommentsByNote = CommentController.getByNote;
+

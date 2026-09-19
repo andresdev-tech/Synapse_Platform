@@ -2,7 +2,14 @@ import { Response } from "express";
 import { AuthRequest } from "../../middleware/auth.middleware";
 import { AllowedDomainService } from "./allowed-domain.service";
 
+/**
+ * Controlador para la gestión de dominios de correo autorizados en la plataforma.
+ * Permite listar, registrar, actualizar y eliminar dominios permitidos (ej. @sena.edu.co).
+ */
 export class AllowedDomainController {
+  /**
+   * Obtiene la lista completa de todos los dominios autorizados en el sistema.
+   */
   static async getAll(req: AuthRequest, res: Response): Promise<void> {
     try {
       const domains = await AllowedDomainService.getAllDomains();
@@ -12,6 +19,9 @@ export class AllowedDomainController {
     }
   }
 
+  /**
+   * Registra un nuevo dominio autorizado en la base de datos.
+   */
   static async create(req: AuthRequest, res: Response): Promise<void> {
     try {
       const { domain, scope, description, isActive } = req.body;
@@ -36,9 +46,12 @@ export class AllowedDomainController {
     }
   }
 
+  /**
+   * Actualiza los datos o estado de un dominio autorizado existente según su identificador.
+   */
   static async update(req: AuthRequest, res: Response): Promise<void> {
     try {
-      const { id } = req.params;
+      const id = String(req.params.id);
       const { scope, description, isActive } = req.body;
 
       const result = await AllowedDomainService.updateDomain(
@@ -58,9 +71,12 @@ export class AllowedDomainController {
     }
   }
 
+  /**
+   * Elimina un dominio autorizado del sistema por su identificador.
+   */
   static async delete(req: AuthRequest, res: Response): Promise<void> {
     try {
-      const { id } = req.params;
+      const id = String(req.params.id);
       const result = await AllowedDomainService.deleteDomain(id, req.user?.id);
 
       if (!result.success) {
@@ -74,3 +90,4 @@ export class AllowedDomainController {
     }
   }
 }
+

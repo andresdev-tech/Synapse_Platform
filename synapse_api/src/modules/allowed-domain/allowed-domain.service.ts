@@ -10,9 +10,13 @@ const DEFAULT_FALLBACK_DOMAINS = [
   { domain: "gmail.com", scope: "ADMIN" as DomainScope, description: "Dominio habilitado temporal para administración" },
 ];
 
+/**
+ * Servicio de lógica de negocio para la gestión y validación de dominios autorizados.
+ * Controla qué correos electrónicos tienen permiso de ingresar a la plataforma o al panel administrativo.
+ */
 export class AllowedDomainService {
   /**
-   * Asegura que existan los dominios por defecto al iniciar
+   * Carga los dominios institucionales predeterminados (SENA) si la tabla se encuentra vacía al iniciar la aplicación.
    */
   static async seedDefaultDomains(): Promise<void> {
     try {
@@ -33,11 +37,17 @@ export class AllowedDomainService {
     }
   }
 
+  /**
+   * Retorna la lista de todos los dominios permitidos, asegurando primero la carga de dominios por defecto.
+   */
   static async getAllDomains() {
     await this.seedDefaultDomains();
     return await AllowedDomainRepository.getAll();
   }
 
+  /**
+   * Valida, normaliza y registra un nuevo dominio autorizado, guardando el evento en la auditoría.
+   */
   static async createDomain(data: CreateAllowedDomainDTO, actorId?: string) {
     const cleanDomain = data.domain.trim().toLowerCase().replace(/^@/, "");
 
@@ -74,6 +84,9 @@ export class AllowedDomainService {
     return { success: true, data: created };
   }
 
+  /**
+   * Actualiza la información de un dominio autorizado y registra la modificación en auditoría.
+   */
   static async updateDomain(id: string, data: UpdateAllowedDomainDTO, actorId?: string) {
     const existing = await AllowedDomainRepository.findById(id);
     if (!existing) {
@@ -99,6 +112,9 @@ export class AllowedDomainService {
     return { success: true, data: updated };
   }
 
+  /**
+   * Elimina un dominio autorizado del sistema y crea el registro correspondiente en auditoría.
+   */
   static async deleteDomain(id: string, actorId?: string) {
     const existing = await AllowedDomainRepository.findById(id);
     if (!existing) {
@@ -125,7 +141,7 @@ export class AllowedDomainService {
   }
 
   /**
-   * Valida dinámicamente si un correo tiene un dominio autorizado según el rol destino (USER o ADMIN)
+   * Valida si el correo electrónico ingresado pertenece a un dominio permitido según el tipo de acceso solicitado (Usuario o Administrador).
    */
   static async isDomainAllowed(
     email: string,
@@ -172,3 +188,4 @@ export class AllowedDomainService {
     };
   }
 }
+

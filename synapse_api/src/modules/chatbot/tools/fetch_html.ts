@@ -1,6 +1,10 @@
 import { chromium } from "playwright";
 import fs from "fs";
 
+/**
+ * Script de utilidad para descargar y almacenar localmente el HTML de la página de certificados del SENA.
+ * Se utiliza para análisis de la estructura DOM y desarrollo del scraper.
+ */
 async function fetchHTML() {
   const browser = await chromium.launch({ headless: true });
   const page = await browser.newPage();
@@ -17,3 +21,4 @@ async function fetchHTML() {
 }
 
 fetchHTML();
+

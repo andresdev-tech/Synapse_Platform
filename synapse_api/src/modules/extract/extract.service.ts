@@ -12,13 +12,19 @@ const s3 = new S3Client({
   },
 });
 
+/**
+ * Servicio para la extracción y generación de URLs de imágenes y portadas.
+ */
 export class ExtractService {
+  /**
+   * Obtiene la URL de imagen a partir de un enlace.
+   * Si el enlace pertenece al almacenamiento S3/Neon, genera una URL firmada temporal (1 hora).
+   * Si es un enlace web externo, consulta la página para extraer la imagen de portada mediante OpenGraph.
+   */
   static async extractImageFromUrl(
     url: string
   ): Promise<string | null> {
-    // ============================================================
-    // 1. NEON STORAGE
-    // ============================================================
+    // 1. Manejo de archivos en almacenamiento S3 / Neon Storage
     try {
       const neonEndpoint = (
         process.env.AWS_ENDPOINT_URL_S3 || ""
@@ -32,12 +38,6 @@ export class ExtractService {
         const urlPath = url.slice(
           `${neonEndpoint}/`.length
         );
-
-        // La URL de Neon usa:
-        // /bucket/key
-        //
-        // Ejemplo:
-        // /synapse-platform-storage/systemdocs/archivo.png
 
         const bucketPrefix = `${bucketName}/`;
 
@@ -54,11 +54,6 @@ export class ExtractService {
           return null;
         }
 
-        // Removemos únicamente:
-        // synapse-platform-storage/
-        //
-        // Resultado:
-        // systemdocs/archivo.png
         const objectKey = urlPath.slice(
           bucketPrefix.length
         );
@@ -90,9 +85,7 @@ export class ExtractService {
       );
     }
 
-    // ============================================================
-    // 2. SCRAPING NORMAL
-    // ============================================================
+    // 2. Scraping de páginas externas para extraer imagen
     try {
       const response =
         await ExtractRepository.fetchResource(url);
@@ -128,4 +121,4 @@ export class ExtractService {
 
     return null;
   }
-}
+}

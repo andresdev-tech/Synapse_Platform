@@ -1,5 +1,8 @@
 import { prisma } from './../../config/prisma';
 
+/**
+ * Estructura de un fragmento de documento recuperado por similitud semántica.
+ */
 export interface ChatbotChunk {
   id: string;
   content: string;
@@ -10,14 +13,17 @@ export interface ChatbotChunk {
   similarity: number;
 }
 
+/**
+ * Repositorio de base de datos para la búsqueda semántica vectorial del Chatbot.
+ * Utiliza PostgreSQL con la extensión pgvector para encontrar la información más relevante a la pregunta del usuario.
+ */
 export class ChatbotRepository {
   constructor(
     private readonly Prisma: typeof prisma
   ) {}
 
   /**
-   * Busca los DocumentChunk más similares
-   * utilizando pgvector.
+   * Busca los fragmentos de documentos (DocumentChunk) más similares a la consulta utilizando distancia de cosenos en pgvector.
    */
   async searchSimilarChunks(
     embedding: number[],
@@ -30,10 +36,7 @@ export class ChatbotRepository {
     }
 
     /**
-     * Convertimos el vector a la representación
-     * esperada por PostgreSQL:
-     *
-     * [0.123,0.456,...]
+     * Convertimos el arreglo de números a la representación de vector esperada por PostgreSQL: [0.123,0.456,...]
      */
     const vector = `[${embedding.join(",")}]`;
 
@@ -61,3 +64,4 @@ export class ChatbotRepository {
     return chunks;
   }
 }
+

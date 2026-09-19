@@ -1,6 +1,13 @@
 import { prisma } from "../../config/prisma";
 
+/**
+ * Repositorio de base de datos para los comentarios.
+ * Gestiona la inserción, consulta y eliminación de comentarios en la tabla Comment de PostgreSQL.
+ */
 export class CommentRepository {
+  /**
+   * Obtiene todos los comentarios no eliminados asociados a un contenido/nota con los datos del autor.
+   */
   static async findByContentId(contentId: string) {
     return await prisma.comment.findMany({
       where: {
@@ -23,6 +30,9 @@ export class CommentRepository {
     });
   }
 
+  /**
+   * Busca un comentario específico por su ID.
+   */
   static async findById(id: string) {
     return await prisma.comment.findUnique({
       where: { id: String(id) },
@@ -39,6 +49,9 @@ export class CommentRepository {
     });
   }
 
+  /**
+   * Inserta un nuevo comentario en la base de datos asociado a una nota y autor.
+   */
   static async create(data: { content: string; contentId: string; authorId: string; parentId?: string | null }) {
     return await prisma.comment.create({
       data: {
@@ -61,9 +74,13 @@ export class CommentRepository {
     });
   }
 
+  /**
+   * Elimina un comentario de la base de datos por su ID.
+   */
   static async delete(id: string) {
     return await prisma.comment.delete({
       where: { id: String(id) },
     });
   }
 }
+

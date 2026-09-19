@@ -1,5 +1,9 @@
 import { chromium } from "playwright";
 
+/**
+ * Script de prueba manual para validar la automatización con Playwright:
+ * Selecciona el tipo de documento, rellena el campo y captura la imagen del captcha en base64/buffer.
+ */
 async function testScraping() {
   const browser = await chromium.launch({ headless: true });
   const page = await browser.newPage();
@@ -25,3 +29,4 @@ async function testScraping() {
 }
 
 testScraping();
+

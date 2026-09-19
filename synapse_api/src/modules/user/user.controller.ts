@@ -4,7 +4,14 @@ import { UserService } from "./user.service";
 import { updateLayoutSchema } from "./user.schema";
 import { AuthRequest } from "../../middleware/auth.middleware";
 
+/**
+ * Controlador para la gestión de usuarios y personalización de su interfaz.
+ * Permite listar usuarios y consultar o guardar preferencias de diseño (layout).
+ */
 export class UserController {
+  /**
+   * Obtiene la lista completa de usuarios registrados en el sistema.
+   */
   static async getUsers(_req: AuthRequest, res: Response): Promise<void> {
     try {
       const users = await UserService.getAllUsers();
@@ -15,6 +22,9 @@ export class UserController {
     }
   }
 
+  /**
+   * Obtiene las preferencias de interfaz y disposición visual del usuario autenticado.
+   */
   static async getLayout(req: AuthRequest, res: Response): Promise<void> {
     const userId = req.user?.id;
     if (!userId) {
@@ -31,6 +41,9 @@ export class UserController {
     }
   }
 
+  /**
+   * Actualiza las preferencias de diseño y disposición visual del usuario autenticado.
+   */
   static async updateLayout(req: AuthRequest, res: Response): Promise<void> {
     const userId = req.user?.id;
     if (!userId) {
@@ -53,7 +66,8 @@ export class UserController {
   }
 }
 
-// Backward compatibility exports
+// Exportaciones para compatibilidad
 export const getUsers = UserController.getUsers;
 export const getLayout = UserController.getLayout;
 export const updateLayout = UserController.updateLayout;
+
