@@ -75,6 +75,7 @@ export class NoteRepository {
           seoDescription: data.seoDescription,
           featured: false,
           publishedAt: data.published ? new Date() : null,
+          scheduledAt: data.scheduledAt ? new Date(data.scheduledAt) : null,
           categoryId: data.categoryId,
           type: "INFORMATION",
           status: "PUBLISHED",
@@ -143,6 +144,9 @@ export class NoteRepository {
     if (data.section !== undefined) updateData.section = data.section;
     if (data.published !== undefined) {
       updateData.publishedAt = data.published ? new Date() : null;
+    }
+    if (data.scheduledAt !== undefined) {
+      updateData.scheduledAt = data.scheduledAt ? new Date(data.scheduledAt) : null;
     }
 
     return await prisma.content.update({

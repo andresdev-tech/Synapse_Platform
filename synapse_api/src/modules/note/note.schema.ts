@@ -21,6 +21,7 @@ export const createNoteSchema = z.object({
   seoTitle: z.string().optional().nullable(),
   seoDescription: z.string().optional().nullable(),
   section: z.string().trim().optional().nullable(),
+  scheduledAt: z.string().optional().nullable(),
   ragDocument: ragDocumentSchema.optional().nullable(),
 });
 
@@ -35,4 +36,5 @@ export const updateNoteSchema = z.object({
   seoTitle: z.string().optional().nullable(),
   seoDescription: z.string().optional().nullable(),
   section: z.string().trim().optional().nullable(),
+  scheduledAt: z.string().optional().nullable(),
 });

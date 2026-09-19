@@ -1,9 +1,9 @@
 import { NoteRepository } from "./note.repository";
 import { CreateNoteDTO, UpdateNoteDTO } from "./note.types";
-import { EmbeddingService } from "../chatbot/embedding.service";
+import { ProviderFactory } from "../chatbot/providers/provider.factory";
 
 export class NoteService {
-  private static embeddingService = new EmbeddingService();
+  private static provider = ProviderFactory.getProvider();
   private static CHUNK_SIZE = 1200;
 
   static generateSlug(title: string): string {
@@ -67,7 +67,7 @@ export class NoteService {
       
       // Procesar secuencialmente para evitar Rate Limits (429 Too Many Requests) de la API
       for (const chunk of chunks) {
-        const embedding = await this.embeddingService.generateEmbedding(chunk);
+        const embedding = await this.provider.generateEmbedding!(chunk);
         embeddings.push(embedding);
       }
 

@@ -154,16 +154,21 @@ function LoginForm() {
           
           <div className="space-y-5">
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">Correo Electrónico</label>
+              <label className="block text-sm font-medium text-slate-700 mb-1">Correo Electrónico Institucional</label>
               <input 
                 type="email" 
-                placeholder="ej. tucorreo@gmail.com" 
+                placeholder="tucorreo@soy.sena.edu.co" 
                 value={email}
                 disabled={otpSent || loading}
                 className="w-full p-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition text-slate-900 placeholder-slate-400 disabled:bg-slate-100 disabled:text-slate-500" 
                 required 
                 onChange={e => setEmail(e.target.value)} 
               />
+              {!otpSent && (
+                <p className="text-[11px] text-slate-500 mt-1.5 ml-1">
+                  Solo se permite el ingreso con correos institucionales (@soy.sena.edu.co o @sena.edu.co).
+                </p>
+              )}
               
               {otpSent && (
                 <div className="mt-2 flex items-center justify-between text-xs bg-slate-50 p-2.5 rounded-xl border border-slate-200">

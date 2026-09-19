@@ -236,7 +236,7 @@ function AdminLoginForm() {
               </label>
               <input
                 type="email"
-                placeholder="ej. admin@soy.sena.edu.co"
+                placeholder="admin@sena.edu.co"
                 value={email}
                 disabled={otpSent || loading}
                 className="w-full p-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition text-slate-900 placeholder-slate-400 disabled:bg-slate-100 disabled:text-slate-500"

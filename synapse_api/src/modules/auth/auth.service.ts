@@ -77,6 +77,10 @@ export class AuthService {
   static async createadmin (data: any) {
 
     try {
+      if (!data.email.endsWith("@soy.sena.edu.co") && !data.email.endsWith("@sena.edu.co")) {
+        return { success: false, error: "Solo se permiten correos institucionales del SENA (@soy.sena.edu.co o @sena.edu.co)" };
+      }
+
       const emailExist = await AuthRepository.findUserByEmail(data.email);
       if (emailExist) {
         return { success: false, error: "El correo ya está en uso" };
@@ -138,6 +142,13 @@ export class AuthService {
     }
 
     if (!user) {
+      if (!email.endsWith("@soy.sena.edu.co") && !email.endsWith("@sena.edu.co")) {
+        return {
+          success: false,
+          error: "Solo se permite el registro con cuentas institucionales del SENA (@soy.sena.edu.co o @sena.edu.co).",
+        };
+      }
+
       const userRole = await AuthRepository.findRoleByName(RoleNames.USER) || await AuthRepository.createRole(RoleNames.USER);
       await AuthRepository.createUser({
         name: email.split("@")[0],

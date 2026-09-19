@@ -32,6 +32,7 @@ interface Note {
   category?: { name: string }
   author?: { name: string; role: string }
   createdAt: string
+  scheduledAt?: string | null
   deletedAt?: string | null
 }
 
@@ -42,6 +43,20 @@ interface ContentBlock {
   content?: string;
   url?: string;
   name?: string;
+}
+
+const getNotePreview = (note: Note) => {
+  if (note.excerpt && note.excerpt.trim() !== "") return note.excerpt;
+  if (note.body && note.body.startsWith("[")) {
+    try {
+      const blocks = JSON.parse(note.body);
+      const textBlock = blocks.find((b: any) => b.type === 'text' && b.content);
+      return textBlock ? textBlock.content.substring(0, 200) : "Contenido estructurado...";
+    } catch (e) {
+      return "Contenido estructurado...";
+    }
+  }
+  return note.body;
 }
 
 export function AdminDashboard() {
@@ -61,6 +76,7 @@ export function AdminDashboard() {
   const [isUploadingRag, setIsUploadingRag] = useState(false);
   const [newCategoryId, setNewCategoryId] = useState(""); 
   const [newSection, setNewSection] = useState("");
+  const [newScheduledAt, setNewScheduledAt] = useState("");
   const [newAttachments, setNewAttachments] = useState<{type: string, url: string}[]>([]);
   const [editingId, setEditingId] = useState<string | null>(null)
   const [isFormOpen, setIsFormOpen] = useState(false)
@@ -98,40 +114,41 @@ export function AdminDashboard() {
 
   // Efecto magico para extraer imagenes de links automaticamente
   useEffect(() => {
-    const timer = setTimeout(async () => {
-      setExtractError(false)
+    if (!newImageUrl || !newImageUrl.startsWith("http")) {
       setValidImageUrl(null)
-      
-      if (!newImageUrl || !newImageUrl.startsWith('http')) {
-        return;
-      }
+      setExtractError(false)
+      return
+    }
 
-      // Si parece una imagen normal, la damos por valida inmediatamente
-      if (newImageUrl.match(/\.(jpeg|jpg|gif|png|webp|svg)(\?.*)?$/i)) {
-        setValidImageUrl(newImageUrl)
-        return;
-      }
-
-      // Si no tiene extension clara (ej. Google Images o link web), verificamos en el servidor
+    const checkUrl = async () => {
       setIsExtracting(true)
+      setExtractError(false)
       try {
+        const isDirectImage = newImageUrl.match(/\.(jpeg|jpg|gif|png|webp|svg)$/i)
+        if (isDirectImage) {
+          setValidImageUrl(newImageUrl)
+          return
+        }
+
         const res = await fetchApi(`/api/extract-image?url=${encodeURIComponent(newImageUrl)}`)
         const data = await res.json()
+        
         if (data.imageUrl) {
-          setNewImageUrl(data.imageUrl) // Actualiza el input si extrajo algo nuevo
-          setValidImageUrl(data.imageUrl) // Muestra la vista previa
+          setValidImageUrl(data.imageUrl)
+          setNewImageUrl(data.imageUrl)
         } else {
-          setExtractError(true)
+          setValidImageUrl(newImageUrl)
         }
-      } catch (e) {
-        console.error("No se pudo verificar la imagen", e)
-        setExtractError(true)
+      } catch (error) {
+        console.error("Error extrayendo imagen:", error)
+        setValidImageUrl(newImageUrl)
       } finally {
         setIsExtracting(false)
       }
-    }, 1000)
-    
-    return () => clearTimeout(timer)
+    }
+
+    const timeout = setTimeout(checkUrl, 1000)
+    return () => clearTimeout(timeout)
   }, [newImageUrl])
 
   const fetchCategories = async () => {
@@ -205,6 +222,7 @@ export function AdminDashboard() {
       attachments: newAttachments,
       categoryId: newCategoryId || null,
       section: newSection || null,
+      scheduledAt: newScheduledAt ? new Date(newScheduledAt).toISOString() : null,
       isGlobal: true,
       published: true,
       authorId: session?.user?.id,
@@ -239,6 +257,7 @@ export function AdminDashboard() {
       setNewTitle("")
       setContentBlocks([{ id: Math.random().toString(36).substr(2, 9), type: "text", content: "" }])
       setNewImageUrl("")
+      setNewScheduledAt("")
       setRagName(""); setRagUrl(""); setRagMimeType("application/pdf"); setRagSize(""); setRagContent("")
       setNewCategoryId(""); setNewSection(""); setNewAttachments([]);
       setEditingId(null)
@@ -266,6 +285,12 @@ export function AdminDashboard() {
     setRagName(""); setRagUrl(""); setRagMimeType("application/pdf"); setRagSize(""); setRagContent("")
     setNewCategoryId(note.categoryId || "");
     setNewSection(note.section || "");
+    if (note.scheduledAt) {
+      const d = new Date(note.scheduledAt);
+      setNewScheduledAt(new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString().slice(0, 16));
+    } else {
+      setNewScheduledAt("");
+    }
     setNewAttachments(note.attachments || []);
     setEditingId(note.id)
     setIsFormOpen(true)
@@ -642,6 +667,7 @@ export function AdminDashboard() {
               setNewTitle("")
               setContentBlocks([{ id: Math.random().toString(36).substr(2, 9), type: "text", content: "" }])
               setNewImageUrl("")
+              setNewScheduledAt("")
               setRagName(""); setRagUrl(""); setRagMimeType("application/pdf"); setRagSize(""); setRagContent("")
               setNewCategoryId(""); setNewAttachments([]);
               setIsFormOpen(!isFormOpen)
@@ -719,6 +745,16 @@ export function AdminDashboard() {
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">Fecha del Evento (Opcional)</label>
+                <input 
+                  type="datetime-local" 
+                  className="w-full p-4 bg-white border border-slate-200 rounded-xl focus:ring-4 focus:ring-sena-500/20 focus:border-sena-500 outline-none text-zinc-800 font-medium transition-all"
+                  value={newScheduledAt}
+                  onChange={(e) => setNewScheduledAt(e.target.value)}
+                />
+              </div>
+              
               <div className="space-y-6">
                 <div>
                   <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">URL de la Imagen (Opcional)</label>
@@ -1007,7 +1043,7 @@ export function AdminDashboard() {
                     </span>
                   )}
                   <h3 className="font-extrabold text-zinc-900 text-xl mb-3 leading-tight">{note.title}</h3>
-                  <p className="text-slate-600 text-sm line-clamp-3 mb-4 leading-relaxed">{note.body && note.body.startsWith("[") ? "Contenido estructurado..." : note.body}</p>
+                  <p className="text-slate-600 text-sm line-clamp-3 mb-4 leading-relaxed">{getNotePreview(note)}</p>
                 </div>
                 
                 <div className="flex items-center justify-between mt-auto pt-5 border-t border-slate-100/80">
@@ -1016,10 +1052,13 @@ export function AdminDashboard() {
                   </span>
                   {!note.deletedAt && (
                     <div className="flex space-x-2">
-                      <button onClick={() => handleEdit(note)} className="p-2.5 text-slate-400 hover:text-sena-500 hover:bg-sena-50 rounded-xl transition-colors">
+                      <a href={`/blogs/${note.id}`} className="p-2.5 text-slate-400 hover:text-blue-500 hover:bg-blue-50 rounded-xl transition-colors" title="Ver anuncio y comentarios">
+                        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
+                      </a>
+                      <button onClick={() => handleEdit(note)} className="p-2.5 text-slate-400 hover:text-sena-500 hover:bg-sena-50 rounded-xl transition-colors" title="Editar">
                         <Edit2 className="w-4 h-4" />
                       </button>
-                      <button onClick={() => handleDelete(note.id)} className="p-2.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-xl transition-colors">
+                      <button onClick={() => handleDelete(note.id)} className="p-2.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-xl transition-colors" title="Eliminar">
                         <Trash2 className="w-4 h-4" />
                       </button>
                     </div>
