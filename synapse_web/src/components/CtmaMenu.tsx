@@ -86,7 +86,7 @@ export const CtmaMenu = () => {
         ))}
       </nav>
 
-      <div className="md:hidden flex items-center">
+      <div className="md:hidden flex items-center ml-auto">
         <button 
           onClick={() => setIsOpen(!isOpen)}
           className="p-2 text-slate-700 dark:text-zinc-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-zinc-800 rounded-md transition-colors focus:outline-none"

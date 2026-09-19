@@ -309,7 +309,7 @@ const pageContent: Record<string, { title: string, content: React.ReactNode }> =
                 "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgeYaSl7G9Kmey8eOpXATLyY4qMacpRRR4Cu0tV4e7zVT2MHCw6lAa661aL3rfQ_UZUpIUdHtycU2hZ0jgeEYJLB1M1x6ND3n7ugTtJaAv3Vajv1FIyraHClKyzydIsUtCSkx8pSVy3AS0D4WHlwDXLPk0ZIV6gK1qWNmaSFAZPR2ZaBLq9GwhfuGpT/s800/Bienestar_pages-to-jpg-0005.jpg",
                 "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEixjoJSbftMaLECa_N7fz1ADm8SVY8FdRBjdmyK2hHoBzMDJizYxAY6oYEyBIeoaNxnBY7gg35lQbSL7TwSXwaZnf2AWCF-wd6eav4x_3_xk6-FarXwgMA6vtk3qiZWubL9UhJOzvFjA8nz78W0kNiOCBcEDlxWXd2bnVCUSHx4l0yJHcNDdGrVk8nC/s800/Bienestar_pages-to-jpg-0006.jpg"
               ]}
-              buttonText="Ver 4 Imágenes"
+              buttonText="Ver Galería"
             />
           </div>
         </div>
@@ -338,7 +338,7 @@ const pageContent: Record<string, { title: string, content: React.ReactNode }> =
                 coverImage="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEikhCcRFQo2D2F91VA-MTkPBzQcpRlGdQkhmJW_qjUr1mV3wtsImXnWf_zxbd7Mfn3hK8wEfBN9SmF3jG_3NLFDJwJeFVAOaV-GWP77HB-7L0-RvU4SMUHxOyoXoYC__nsdsEzRsQ56reR1uilJwVCAE7QoVAy-N1YsMXaCLXnJXL3tuXFNN5yNJxwguwyj/s800/%C2%BFQu%C3%A9%20es%20la%20Etapa%20Productiva.jpg"
                 title="¿Qué es la Etapa Productiva?"
                 images={[]}
-                buttonText="Pendiente"
+                buttonText="Ver Detalle"
               />
             </div>
           </div>
@@ -346,14 +346,14 @@ const pageContent: Record<string, { title: string, content: React.ReactNode }> =
           {/* Card 2 */}
           <div className="flex flex-col h-full bg-slate-100 dark:bg-slate-800/50 rounded-3xl p-6 shadow-sm border border-slate-200 dark:border-slate-700/50 hover:shadow-xl transition-all duration-300">
             <h4 className="text-lg font-bold text-slate-800 dark:text-slate-200 mb-4 text-center min-h-[56px] flex items-center justify-center">
-              Opción 1
+              Contrato de Aprendizaje
             </h4>
             <div className="mt-auto [&>div]:mt-0">
               <GalleryTrigger 
                 coverImage="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEh9zAXM4dKpBv3qUZ3vs6kAoHoZmeijqex_1vSBMCru6fo86RxMKlB8JAKagCtxIPDL2LXBlrC4F5__wUHWayqX64Tv1HxYHiZH_Cy6hzGAkEIWmVsExb7sLnMzUs4IxL4hKnyI-nSdm8xOoyU0VeqvyUS_FtI4FgR2-Zq-OZ1f-KQeovofq1gyBwA08ynP/s800/1.jpg"
-                title="Opción 1"
+                title="Contrato de Aprendizaje"
                 images={[]}
-                buttonText="Pendiente"
+                buttonText="Ver Detalle"
               />
             </div>
           </div>
@@ -361,14 +361,14 @@ const pageContent: Record<string, { title: string, content: React.ReactNode }> =
           {/* Card 3 */}
           <div className="flex flex-col h-full bg-slate-100 dark:bg-slate-800/50 rounded-3xl p-6 shadow-sm border border-slate-200 dark:border-slate-700/50 hover:shadow-xl transition-all duration-300">
             <h4 className="text-lg font-bold text-slate-800 dark:text-slate-200 mb-4 text-center min-h-[56px] flex items-center justify-center">
-              Opción 2
+              Vínculo Laboral
             </h4>
             <div className="mt-auto [&>div]:mt-0">
               <GalleryTrigger 
                 coverImage="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEj-Mdqgj9juqsc3asksn2O_Rlq_WOhdNIuXfWkwULZHRFbh_d2R4FRYsDmm0oRcIGqPqEJeFHDNtIi8x1nCnndr7FAMvfxzQfleArWH4SO2h_gckxWbOXUzDSdh0_tUTw9wk8z-VoOyvzX6QZaExsPuanaNYmvIUm0y8tNbKPxgWkMIv8htnvRx9AOz6aY-/s800/2.jpg"
-                title="Opción 2"
+                title="Vínculo Laboral"
                 images={[]}
-                buttonText="Pendiente"
+                buttonText="Ver Detalle"
               />
             </div>
           </div>
@@ -376,14 +376,14 @@ const pageContent: Record<string, { title: string, content: React.ReactNode }> =
           {/* Card 4 */}
           <div className="flex flex-col h-full bg-slate-100 dark:bg-slate-800/50 rounded-3xl p-6 shadow-sm border border-slate-200 dark:border-slate-700/50 hover:shadow-xl transition-all duration-300">
             <h4 className="text-lg font-bold text-slate-800 dark:text-slate-200 mb-4 text-center min-h-[56px] flex items-center justify-center">
-              Opción 3
+              Proyecto Productivo
             </h4>
             <div className="mt-auto [&>div]:mt-0">
               <GalleryTrigger 
                 coverImage="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgl1grKI6zy-RLqJYxzhsamHEXu1nZtKnCE68rUNIK_ktM6cvUzjJEiulDh7MOR6vMBSxEvpRRn3-UmjGNgOKmlwSs-pvzU-YpQ2_WlbwcwOH1h_-opyCNJ6c8EGwUYspoUyy1aTC78nB1XS_lCEi2LniRGVGlmldMzuoXf1HxNxZU8wZE20uJqp2C1LFQL/s800/3.jpg"
-                title="Opción 3"
+                title="Proyecto Productivo"
                 images={[]}
-                buttonText="Pendiente"
+                buttonText="Ver Detalle"
               />
             </div>
           </div>
@@ -391,14 +391,14 @@ const pageContent: Record<string, { title: string, content: React.ReactNode }> =
           {/* Card 5 */}
           <div className="flex flex-col h-full bg-slate-100 dark:bg-slate-800/50 rounded-3xl p-6 shadow-sm border border-slate-200 dark:border-slate-700/50 hover:shadow-xl transition-all duration-300">
             <h4 className="text-lg font-bold text-slate-800 dark:text-slate-200 mb-4 text-center min-h-[56px] flex items-center justify-center">
-              Opción 4
+              Apoyo a Unidad Familiar
             </h4>
             <div className="mt-auto [&>div]:mt-0">
               <GalleryTrigger 
                 coverImage="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgaH-tToszQeBuAtpQ5lAen2tQ_rD0zX5V2P65jsBH0hTTWupYsXwjBcGmX2zLev6WCQ2KqYr7WmVRjkuKVg_PUijcfZqqc28cIcfqg1I3pGh6FZJunu3WNOansxwDa_KHJjkKE2GBpWWMzDuuO5Qgs8PRDvMdnNs7HMXeCrr8njUnYduWdEHbsnf8csBfR/s800/4.jpg"
-                title="Opción 4"
+                title="Apoyo a Unidad Familiar"
                 images={[]}
-                buttonText="Pendiente"
+                buttonText="Ver Detalle"
               />
             </div>
           </div>
@@ -406,14 +406,14 @@ const pageContent: Record<string, { title: string, content: React.ReactNode }> =
           {/* Card 6 */}
           <div className="flex flex-col h-full bg-slate-100 dark:bg-slate-800/50 rounded-3xl p-6 shadow-sm border border-slate-200 dark:border-slate-700/50 hover:shadow-xl transition-all duration-300">
             <h4 className="text-lg font-bold text-slate-800 dark:text-slate-200 mb-4 text-center min-h-[56px] flex items-center justify-center">
-              Opción 5
+              Pasantías
             </h4>
             <div className="mt-auto [&>div]:mt-0">
               <GalleryTrigger 
                 coverImage="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjHJMtzwh-VT5Tv0P8ATw0vX4zY28I-6Mm8SykSgg4RgHjf7O9MAUe5c30Ll4w74jXVCeTMY1SGetbWXVP-v190KvI4OIkKACSLDflrkf2giSIRTUf3ljSG8UZV5STFYSko7jK1lVtXiuCNkvpK6U3zcCzgR50Fo5I93cYiMdf1LWENwTfcoK0CdkHMDuVU/s800/5.jpg"
-                title="Opción 5"
+                title="Pasantías"
                 images={[]}
-                buttonText="Pendiente"
+                buttonText="Ver Detalle"
               />
             </div>
           </div>
@@ -421,14 +421,14 @@ const pageContent: Record<string, { title: string, content: React.ReactNode }> =
           {/* Card 7 */}
           <div className="flex flex-col h-full bg-slate-100 dark:bg-slate-800/50 rounded-3xl p-6 shadow-sm border border-slate-200 dark:border-slate-700/50 hover:shadow-xl transition-all duration-300">
             <h4 className="text-lg font-bold text-slate-800 dark:text-slate-200 mb-4 text-center min-h-[56px] flex items-center justify-center">
-              Opción 6
+              Monitorías
             </h4>
             <div className="mt-auto [&>div]:mt-0">
               <GalleryTrigger 
                 coverImage="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEh2WuHMlkIcU9IoA_IiKEVYpynEbXX6dJsfa3vzGAM-Ez9MvCYBsbfuMLHrk6aQMg1q2Ekp3QlM6O1L_gnHsJeiZYTQdmnNomzlAbhZGtfwHc-HmqEBb1DDE8bc1gberS5u1372z-RJk1-xOcT_rk-QCwTNN1jIOK06DSDHSqtgxf6y4YB5c3qCi3oYoPSO/s800/6.jpg"
-                title="Opción 6"
+                title="Monitorías"
                 images={[]}
-                buttonText="Pendiente"
+                buttonText="Ver Detalle"
               />
             </div>
           </div>
@@ -436,14 +436,14 @@ const pageContent: Record<string, { title: string, content: React.ReactNode }> =
           {/* Card 8 */}
           <div className="flex flex-col h-full bg-slate-100 dark:bg-slate-800/50 rounded-3xl p-6 shadow-sm border border-slate-200 dark:border-slate-700/50 hover:shadow-xl transition-all duration-300">
             <h4 className="text-lg font-bold text-slate-800 dark:text-slate-200 mb-4 text-center min-h-[56px] flex items-center justify-center">
-              Opción 7
+              ONG y Entidades
             </h4>
             <div className="mt-auto [&>div]:mt-0">
               <GalleryTrigger 
                 coverImage="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiJHQUQUDijxqocsy3mbhqSqwug_g3Oj-WI8MlKSrtU48vu9cyHM1B8Q3_z-Hvpjjfdr3dZx3quHob_eiNumRqtnaKX5XcAO9aSbrWswGum2Fdv6ZR2GA3ZP6FPDcMD9DhpDgaZHGrwZnsrgxLdgVBhMDuCN9zKtCKF_d-qSBTdPe4ZFNpV_gCvUlt8u035/s800/7.jpg"
-                title="Opción 7"
+                title="ONG y Entidades"
                 images={[]}
-                buttonText="Pendiente"
+                buttonText="Ver Detalle"
               />
             </div>
           </div>
@@ -689,17 +689,7 @@ export default async function CtmaPage({ params }: { params: Promise<{ slug: str
         <div className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-xl rounded-[2.5rem] shadow-2xl border border-slate-200/50 dark:border-slate-700/50 overflow-hidden transform transition-all hover:shadow-sena-500/10 duration-700">
           
           {/* Cabecera del Documento */}
-          <div className="bg-gradient-to-br from-sena-600 via-emerald-500 to-sena-800 px-10 py-16 text-white relative overflow-hidden group">
-            {/* Patrón CSS Puro (Líneas Diagonales) Muy Visible */}
-            <div className="absolute inset-0 opacity-30 mix-blend-overlay" style={{ backgroundImage: 'repeating-linear-gradient(45deg, #ffffff 0, #ffffff 2px, transparent 0, transparent 50%)', backgroundSize: '24px 24px' }}></div>
-            
-            {/* Figuras geométricas brillantes optimizadas */}
-            <div className="absolute -top-32 -right-32 bg-[radial-gradient(circle,rgba(16,185,129,0.4)_0%,transparent_60%)] w-96 h-96 rounded-full group-hover:scale-125 transition-transform duration-1000"></div>
-            <div className="absolute -bottom-32 -left-32 bg-[radial-gradient(circle,rgba(16,185,129,0.4)_0%,transparent_60%)] w-96 h-96 rounded-full group-hover:scale-125 transition-transform duration-1000 delay-100"></div>
-            
-            <div className="absolute top-8 right-12 opacity-20 transform group-hover:rotate-12 group-hover:scale-110 transition-all duration-700">
-              <Info className="w-40 h-40" />
-            </div>
+          <div className="bg-linear-to-br from-sena-500 via-sena-400 to-sena-600 px-10 py-16 text-white relative overflow-hidden group">
             
             <div className="relative z-10 max-w-2xl">
               <span className="inline-block px-4 py-1 bg-white/20 rounded-full text-sm font-semibold tracking-wider uppercase mb-4 backdrop-blur-md border border-white/30 shadow-sm">
@@ -708,8 +698,7 @@ export default async function CtmaPage({ params }: { params: Promise<{ slug: str
               <h1 className="text-4xl md:text-5xl font-black tracking-tight leading-tight mb-4 drop-shadow-md">
                 {pageData.title}
               </h1>
-              <div className="w-20 h-1.5 bg-gradient-to-r from-amber-400 to-orange-500 rounded-full mb-4"></div>
-              <p className="text-sena-100 font-medium text-lg drop-shadow-sm">
+              <p className="text-sena-50 font-medium text-lg drop-shadow-sm">
                 Centro de Tecnología de la Manufactura Avanzada (CTMA)
               </p>
             </div>

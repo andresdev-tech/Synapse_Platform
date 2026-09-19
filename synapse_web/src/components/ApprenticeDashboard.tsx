@@ -69,6 +69,7 @@ interface Note {
   category?: { name: string; id: string }
   categoryId?: string | null
   createdAt: string
+  scheduledAt?: string | null
   deletedAt?: string | null
 }
 
@@ -421,12 +422,27 @@ export function ApprenticeDashboard({ initialNotes = [], initialCategories = [] 
 
   // Eventos para el Widget Lateral
   const upcomingEvents = useMemo(() => {
-    return globalNotes.filter(n =>
-      n.category?.name?.toLowerCase().includes("evento") ||
-      n.category?.name?.toLowerCase().includes("acad") ||
-      n.title.toLowerCase().includes("inscrip") ||
-      n.title.toLowerCase().includes("fecha")
-    ).slice(0, 3)
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    return globalNotes
+      .filter(n => {
+        const isEvent = n.scheduledAt ||
+                        n.category?.name?.toLowerCase().includes("evento") ||
+                        n.category?.name?.toLowerCase().includes("acad") ||
+                        n.title.toLowerCase().includes("inscrip") ||
+                        n.title.toLowerCase().includes("fecha");
+        if (!isEvent) return false;
+
+        const eventDate = new Date(n.scheduledAt || n.createdAt);
+        return eventDate >= today;
+      })
+      .sort((a, b) => {
+        const dateA = new Date(a.scheduledAt || a.createdAt).getTime();
+        const dateB = new Date(b.scheduledAt || b.createdAt).getTime();
+        return dateA - dateB;
+      })
+      .slice(0, 3);
   }, [globalNotes]);
 
   return (
@@ -653,8 +669,8 @@ export function ApprenticeDashboard({ initialNotes = [], initialCategories = [] 
                   {upcomingEvents.map(event => (
                     <div key={event.id} className="flex gap-3 items-start p-3 bg-white dark:bg-zinc-800 rounded-xl shadow-sm border border-slate-100 dark:border-zinc-700">
                       <div className="flex min-w-14 flex-col items-center justify-center rounded-lg bg-sena-50 py-2 dark:bg-zinc-700">
-                        <span className="text-[10px] font-bold text-sena-400 dark:text-sena-300 uppercase">{new Date(event.createdAt).toLocaleString('es', { month: 'short' })}</span>
-                        <span className="text-xl font-black text-sena-600 dark:text-white leading-none">{new Date(event.createdAt).getDate()}</span>
+                        <span className="text-[10px] font-bold text-sena-400 dark:text-sena-300 uppercase">{new Date(event.scheduledAt || event.createdAt).toLocaleString('es', { month: 'short' })}</span>
+                        <span className="text-xl font-black text-sena-600 dark:text-white leading-none">{new Date(event.scheduledAt || event.createdAt).getDate()}</span>
                       </div>
                       <div className="grow">
                         <h4 className="font-bold text-zinc-800 dark:text-slate-200 text-sm line-clamp-2">{event.title}</h4>
