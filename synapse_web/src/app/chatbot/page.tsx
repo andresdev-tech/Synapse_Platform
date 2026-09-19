@@ -65,20 +65,27 @@ export default function ChatbotPage() {
     setInputValue('')
     setIsTyping(true)
 
+    console.log(`[CHATBOT FRONTEND] [REQUEST] Enviando mensaje al backend: "${content}"`);
+    const startTime = Date.now();
+
     try {
       const response = await fetchApi('/api/chatbot', {
         method: 'POST',
         body: JSON.stringify({ message: content })
       })
 
+      console.log(`[CHATBOT FRONTEND] [RESPONSE] Status HTTP: ${response.status} ${response.statusText}`);
+
       if (!response.ok || !response.body) {
-        const result = await response.json().catch(() => null)
+        const result = await response.json().catch(() => null);
+        console.error(`[CHATBOT FRONTEND] [HTTP ERROR] Respuesta no exitosa:`, result);
         throw new Error(result?.error || 'No se pudo obtener una respuesta')
       }
 
       const reader = response.body.getReader()
       const decoder = new TextDecoder()
       let buffer = ''
+      let receivedChunks = 0
 
       while (true) {
         const { value, done } = await reader.read()
@@ -96,11 +103,15 @@ export default function ChatbotPage() {
             error?: string
           }
 
+          console.log(`[CHATBOT FRONTEND] [SSE EVENT] Tipo: ${event.type}`, event.content ? `(${event.content.length} caracteres)` : '', event.error ? `Error: ${event.error}` : '')
+
           if (event.type === 'error') {
+            console.error(`[CHATBOT FRONTEND] [SSE ERROR EVENT]:`, event.error);
             throw new Error(event.error || 'Error del chatbot')
           }
 
           if (event.type === 'chunk' && event.content) {
+            receivedChunks++
             setMessages(prev => prev.map(message =>
               message.id === botMessageId
                 ? { ...message, content: message.content + event.content }
@@ -109,9 +120,14 @@ export default function ChatbotPage() {
           }
         }
 
-        if (done) break
+        if (done) {
+          const duration = Date.now() - startTime;
+          console.log(`[CHATBOT FRONTEND] [STREAM FINISHED] Total chunks recibidos: ${receivedChunks}, Duración: ${duration}ms`);
+          break
+        }
       }
     } catch (error) {
+      console.error(`[CHATBOT FRONTEND] [EXCEPTION]:`, error);
       const errorMessage = error instanceof Error ? error.message : 'Error de conexión'
       setMessages(prev => prev.map(message =>
         message.id === botMessageId

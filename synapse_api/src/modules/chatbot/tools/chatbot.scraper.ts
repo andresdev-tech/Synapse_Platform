@@ -46,7 +46,9 @@ export interface Certificado {
 export interface ResolverCaptchaOutput {
   ok: boolean;
   certificados?: Certificado[];
-  error?: 'SESSION_EXPIRED' | 'CAPTCHA_INVALIDO_O_ERROR';
+  nuevoCaptchaBase64?: string;
+  mensajeError?: string;
+  error?: 'SESSION_EXPIRED' | 'CAPTCHA_INVALIDO' | 'CAPTCHA_INVALIDO_O_ERROR' | 'ERROR_DESCONOCIDO';
 }
 
 // Definiciones estilo function-calling, por si Antigravity/el LLM las necesita
@@ -88,8 +90,8 @@ export const resolverCaptchaToolDefinition = {
 
 const URL_SENA = 'https://certificados.sena.edu.co/CertificadoDigital/com.sena.consultacer';
 const SESSION_TTL_MS = 3 * 60 * 1000; // 3 min para resolver el captcha
-const RATE_LIMIT_MAX_INTENTOS = 3;
-const RATE_LIMIT_WINDOW_MS = 24 * 60 * 60 * 1000; // 24 horas
+const RATE_LIMIT_MAX_INTENTOS = 7;
+const RATE_LIMIT_WINDOW_MS = 5 * 60 * 1000; // 5 minutos de espera tras 7 intentos
 
 // =====================================================
 // Tipos internos
@@ -188,9 +190,13 @@ class ScrapingSessionManager {
 
   async iniciarConsulta(input: IniciarConsultaInput): Promise<IniciarConsultaOutput> {
     const { chatId, correo, tipoDocumento, numeroDocumento } = input;
+    console.log(`\n---------------- [SCRAPER: INICIAR CONSULTA] ----------------`);
+    console.log(`[SCRAPER] [iniciarConsulta] Solicitud para usuario: ${chatId} (${correo})`);
+    console.log(`[SCRAPER] [iniciarConsulta] Documento: Tipo=${tipoDocumento}, Número=${numeroDocumento}`);
 
     if (!this.rateLimiter.puedeConsultar(correo)) {
       const esperaMs = this.rateLimiter.proximoIntentoEnMs(correo);
+      console.warn(`[SCRAPER] [iniciarConsulta] RATE LIMIT EXCEDIDO para ${correo}. Espera: ${Math.ceil(esperaMs / 1000)}s`);
       this.logger.registrar({
         timestamp: Date.now(),
         correo,
@@ -203,70 +209,119 @@ class ScrapingSessionManager {
 
     // Se cuenta el intento al iniciar, no solo si el captcha sale bien
     this.rateLimiter.registrarIntento(correo);
+    const intentosRestantes = this.rateLimiter.intentosRestantes(correo);
+    console.log(`[SCRAPER] [iniciarConsulta] Intento registrado. Intentos restantes: ${intentosRestantes}`);
 
     await this.cerrarSesion(chatId);
 
     try {
-      /* console.log */ void(`[SCRAPER] [iniciarConsulta] Lanzando navegador para ${correo}...`);
-      const browser = await chromium.launch({ headless: true });
-      const page = await browser.newPage();
+      console.log(`[SCRAPER] [iniciarConsulta] Lanzando Chromium headless...`);
+      const browser = await chromium.launch({
+        headless: true,
+        args: [
+          '--no-sandbox',
+          '--disable-setuid-sandbox',
+          '--disable-dev-shm-usage',
+          '--disable-gpu',
+        ],
+      });
+      const page = await browser.newPage({
+        userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36'
+      });
 
-      /* console.log */ void(`[SCRAPER] [iniciarConsulta] Navegando a URL SENA...`);
-      await page.goto(URL_SENA, { waitUntil: 'domcontentloaded' });
+      console.log(`[SCRAPER] [iniciarConsulta] Navegando a ${URL_SENA}...`);
+      const response = await page.goto(URL_SENA, { waitUntil: 'domcontentloaded', timeout: 30000 });
+      console.log(`[SCRAPER] [iniciarConsulta] Respuesta de página SENA: HTTP ${response?.status() ?? 'N/A'}`);
       
-      /* console.log */ void(`[SCRAPER] [iniciarConsulta] Llenando formulario: tipo=${tipoDocumento}, doc=${numeroDocumento}`);
+      console.log(`[SCRAPER] [iniciarConsulta] Seleccionando tipo de documento: "${tipoDocumento}"...`);
       await page.selectOption('select#vTIPO_DOCUMENTO', { value: tipoDocumento });
+      await page.dispatchEvent('select#vTIPO_DOCUMENTO', 'change');
+      
+      console.log(`[SCRAPER] [iniciarConsulta] Ingresando número de documento: "${numeroDocumento}"...`);
       await page.fill('input#vNUMERO_DOCUMENTO', numeroDocumento);
+      await page.dispatchEvent('input#vNUMERO_DOCUMENTO', 'change');
+      await page.dispatchEvent('input#vNUMERO_DOCUMENTO', 'blur');
 
-      /* console.log */ void(`[SCRAPER] [iniciarConsulta] Extrayendo imagen del captcha...`);
-      const captchaBuffer = await page.locator('img#vCAPTCHAIMAGE').screenshot();
-      /* console.log */ void(`[SCRAPER] [iniciarConsulta] Captcha obtenido, tamaño: ${captchaBuffer.length} bytes`);
+      console.log(`[SCRAPER] [iniciarConsulta] Capturando imagen del Captcha (img#vCAPTCHAIMAGE)...`);
+      const captchaLocator = page.locator('img#vCAPTCHAIMAGE');
+      await captchaLocator.waitFor({ state: 'visible', timeout: 10000 });
+      const captchaBuffer = await captchaLocator.screenshot();
+      console.log(`[SCRAPER] [iniciarConsulta] ✅ Captcha capturado con éxito (${captchaBuffer.length} bytes base64)`);
 
       const timeoutHandle = setTimeout(() => {
+        console.log(`[SCRAPER] [TTL] Sesión expirada por inactividad para usuario ${chatId}`);
         this.cerrarSesion(chatId);
       }, SESSION_TTL_MS);
 
       this.sessions.set(chatId, { browser, page, createdAt: Date.now(), timeoutHandle, correo });
+      console.log(`[SCRAPER] [iniciarConsulta] Sesión guardada en memoria. Esperando respuesta del usuario (TTL: 3 min)`);
+      console.log(`-------------------------------------------------------------\n`);
 
       return {
         ok: true,
         captchaBase64: captchaBuffer.toString('base64'),
-        intentosRestantes: this.rateLimiter.intentosRestantes(correo),
+        intentosRestantes,
       };
     } catch (e) {
-      console.error("[SCRAPER ERROR]", e);
+      console.error("[SCRAPER ERROR] [iniciarConsulta] Fallo al iniciar consulta:", e);
       return { ok: false, error: 'ERROR_DESCONOCIDO' };
     }
   }
 
   async resolverCaptcha(input: ResolverCaptchaInput): Promise<ResolverCaptchaOutput> {
     const { chatId, textoCaptcha, tipoDocumento, numeroDocumento } = input;
+    console.log(`\n---------------- [SCRAPER: RESOLVER CAPTCHA] ----------------`);
+    console.log(`[SCRAPER] [resolverCaptcha] Validando captcha para usuario: ${chatId}`);
+    console.log(`[SCRAPER] [resolverCaptcha] Texto de captcha proporcionado: "${textoCaptcha}"`);
+    console.log(`[SCRAPER] [resolverCaptcha] Documento: ${tipoDocumento}:${numeroDocumento}`);
+
     const session = this.sessions.get(chatId);
 
     if (!session) {
+      console.warn(`[SCRAPER] [resolverCaptcha] ⚠️ Sesión no encontrada o ya expirada para chat: ${chatId}`);
       return { ok: false, error: 'SESSION_EXPIRED' };
     }
 
     try {
-      /* console.log */ void(`[SCRAPER] [resolverCaptcha] Iniciando resolución para chat ${chatId}`);
-      /* console.log */ void(`[SCRAPER] [resolverCaptcha] Texto captcha: ${textoCaptcha}`);
-
+      console.log(`[SCRAPER] [resolverCaptcha] Escribiendo texto en input#vCAPTCHATEXT y disparando eventos...`);
       await session.page.fill('input#vCAPTCHATEXT', textoCaptcha);
+      await session.page.dispatchEvent('input#vCAPTCHATEXT', 'change');
       
-      /* console.log */ void(`[SCRAPER] [resolverCaptcha] Dando clic en consultar...`);
-      // Use Promise.all to wait for the click and the subsequent network activity to settle
+      console.log(`[SCRAPER] [resolverCaptcha] Haciendo clic en input#CONSULTAR y esperando respuesta de red...`);
       await Promise.all([
-        session.page.waitForLoadState('networkidle', { timeout: 15000 }).catch(() => /* console.log */ void('[SCRAPER] [resolverCaptcha] networkidle timeout, continuando de todos modos')),
+        session.page.waitForLoadState('networkidle', { timeout: 15000 }).catch(() => {
+          console.log(`[SCRAPER] [resolverCaptcha] networkidle timeout (15s), continuando análisis del DOM`);
+        }),
         session.page.click('input#CONSULTAR')
       ]);
 
-      /* console.log */ void(`[SCRAPER] [resolverCaptcha] Esperando a que el DOM se actualice tras la consulta...`);
-      // Esperamos 2 segundos extra de gracia por si hay animaciones de UI o renderizado lento
-      await session.page.waitForTimeout(2000);
+      console.log(`[SCRAPER] [resolverCaptcha] Esperando renderizado de GeneXus...`);
+      await session.page.waitForTimeout(2500);
 
-      const rowsCount = await session.page.$$eval('#GridceContainerTbl tbody tr', rows => rows.length);
-      /* console.log */ void(`[SCRAPER] [resolverCaptcha] Filas encontradas en la grilla: ${rowsCount}`);
-      
+      // Inspeccionar si GeneXus muestra mensajes de error o alerta en el DOM
+      const possibleErrorMessages = await session.page.$$eval(
+        '#gxErrorViewer, .gx-warning-message, .gx-error-message, span[id*="CAPTCHA"], .alert',
+        elements => elements.map(el => el.textContent?.trim()).filter(t => Boolean(t))
+      ).catch(() => []);
+
+      if (possibleErrorMessages.length > 0) {
+        console.warn(`[SCRAPER] [resolverCaptcha] ⚠️ Mensajes de alerta/error detectados en el DOM del portal SENA:`, possibleErrorMessages);
+      }
+
+      // Comprobar si hubo error de captcha explícito en el DOM
+      const hasCaptchaError = possibleErrorMessages.some(txt => {
+        const lower = txt.toLowerCase();
+        return lower.includes('captcha') || 
+               lower.includes('imagen') || 
+               lower.includes('seguridad') ||
+               lower.includes('código') ||
+               lower.includes('codigo') ||
+               lower.includes('incorrect');
+      });
+
+      const rowsCount = await session.page.$$eval('#GridceContainerTbl tbody tr', rows => rows.length).catch(() => 0);
+      console.log(`[SCRAPER] [resolverCaptcha] Filas encontradas en tabla #GridceContainerTbl: ${rowsCount}`);
+
       const certificados = await session.page.$$eval('#GridceContainerTbl tbody tr', (rows) => {
         return rows.map((row) => {
           const cells = row.querySelectorAll('td');
@@ -286,9 +341,39 @@ class ScrapingSessionManager {
             link
           };
         }).filter(c => c !== null && c.link !== '') as {titulo: string, tipo: string, programa: string, link: string}[];
-      });
+      }).catch(() => []);
 
-      /* console.log */ void(`[SCRAPER] [resolverCaptcha] Certificados extraídos exitosamente: ${JSON.stringify(certificados, null, 2)}`);
+      console.log(`[SCRAPER] [resolverCaptcha] ✅ Certificados parseados (${certificados.length}):`, JSON.stringify(certificados, null, 2));
+
+      // Si se detectó error de captcha
+      if (hasCaptchaError) {
+        console.warn(`[SCRAPER] [resolverCaptcha] ❌ El portal SENA reportó Captcha incorrecto.`);
+        let nuevoCaptchaBase64: string | undefined;
+        try {
+          const newCaptchaLocator = session.page.locator('img#vCAPTCHAIMAGE');
+          await newCaptchaLocator.waitFor({ state: 'visible', timeout: 3000 });
+          const newBuf = await newCaptchaLocator.screenshot();
+          nuevoCaptchaBase64 = newBuf.toString('base64');
+          console.log(`[SCRAPER] [resolverCaptcha] 🔄 Nueva imagen de captcha extraída (${newBuf.length} bytes)`);
+        } catch {
+          console.log(`[SCRAPER] [resolverCaptcha] No se pudo extraer nuevo screenshot de captcha directo de la sesión`);
+        }
+
+        this.logger.registrar({
+          timestamp: Date.now(),
+          correo: session.correo,
+          tipoDocumento,
+          numeroDocumento,
+          resultado: 'captcha_incorrecto',
+        });
+
+        return {
+          ok: false,
+          error: 'CAPTCHA_INVALIDO',
+          mensajeError: possibleErrorMessages.join(' - ') || 'Código de seguridad incorrecto',
+          nuevoCaptchaBase64
+        };
+      }
 
       this.logger.registrar({
         timestamp: Date.now(),
@@ -298,9 +383,10 @@ class ScrapingSessionManager {
         resultado: 'exitosa',
       });
 
+      console.log(`-------------------------------------------------------------\n`);
       return { ok: true, certificados };
     } catch (e) {
-      console.error("[SCRAPER ERROR CAPTCHA]", e);
+      console.error("[SCRAPER ERROR CAPTCHA] Error durante resolverCaptcha:", e);
       this.logger.registrar({
         timestamp: Date.now(),
         correo: session.correo,
@@ -310,6 +396,7 @@ class ScrapingSessionManager {
       });
       return { ok: false, error: 'CAPTCHA_INVALIDO_O_ERROR' };
     } finally {
+      console.log(`[SCRAPER] [resolverCaptcha] Cerrando sesión y navegador para chat: ${chatId}`);
       await this.cerrarSesion(chatId);
     }
   }
