@@ -13,7 +13,15 @@ import {
 import { chatbotService } from "./chatbot.container";
 import { chatRateLimiter } from "./chatbot.ratelimit";
 
+/**
+ * Controlador para la interacción con el Asistente Virtual / Chatbot institucional.
+ * Gestiona el control de flujo en tiempo real (SSE), la validación de peticiones y el rate limiting por usuario.
+ */
 export class ChatbotController {
+  /**
+   * Endpoint principal de mensajería del chatbot.
+   * Verifica límites de petición, establece la conexión Server-Sent Events (SSE) y transmite la respuesta generada por IA.
+   */
   static async chat(
     req: AuthRequest,
     res: Response
@@ -48,7 +56,7 @@ export class ChatbotController {
         return;
       }
 
-      // If allowed, record the request
+      // Si está permitido, registra la petición en el contador
       chatRateLimiter.recordRequest(req.user.id);
 
       setupChatbotStream(res);
@@ -119,3 +127,4 @@ export class ChatbotController {
     }
   }
 }
+

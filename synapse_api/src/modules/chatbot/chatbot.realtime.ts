@@ -1,7 +1,8 @@
-// chatbot.realtime.ts
-
 import { Response } from "express";
 
+/**
+ * Estructura de cada fragmento enviado en la transmisión SSE del chatbot.
+ */
 export interface ChatbotStreamChunk {
   type: "token" | "done" | "error";
   content?: string;
@@ -9,7 +10,7 @@ export interface ChatbotStreamChunk {
 }
 
 /**
- * Configura la respuesta HTTP como Server-Sent Events (SSE).
+ * Configura los encabezados HTTP necesarios para mantener abierta la conexión Server-Sent Events (SSE).
  */
 export const setupChatbotStream = (res: Response): void => {
   res.status(200);
@@ -22,7 +23,7 @@ export const setupChatbotStream = (res: Response): void => {
 };
 
 /**
- * Envía un evento SSE al cliente.
+ * Envía un fragmento (chunk) de datos al cliente a través del canal SSE.
  */
 export const sendChatbotStreamChunk = (
   res: Response,
@@ -32,7 +33,7 @@ export const sendChatbotStreamChunk = (
 };
 
 /**
- * Finaliza correctamente el stream.
+ * Notifica al cliente que la transmisión ha terminado exitosamente y cierra la conexión.
  */
 export const endChatbotStream = (res: Response): void => {
   sendChatbotStreamChunk(res, {
@@ -43,7 +44,7 @@ export const endChatbotStream = (res: Response): void => {
 };
 
 /**
- * Envía un error dentro del stream y finaliza la conexión.
+ * Notifica al cliente que ocurrió un error durante la transmisión y finaliza la conexión.
  */
 export const sendChatbotStreamError = (
   res: Response,
@@ -55,4 +56,4 @@ export const sendChatbotStreamError = (
   });
 
   res.end();
-};
+};

@@ -9,7 +9,14 @@ export interface CreateRagResourceParams {
   embeddings: number[][];
 }
 
+/**
+ * Repositorio de base de datos para los documentos RAG y sus fragmentos vectoriales.
+ * Guarda recursos en la tabla Resource y vectores en la tabla DocumentChunk usando la extensión pgvector de PostgreSQL.
+ */
 export class RagRepository {
+  /**
+   * Obtiene todos los documentos registrados con el conteo de fragmentos vectoriales asociados.
+   */
   static async findAll() {
     const resources = await prisma.resource.findMany({
       where: { type: "DOCUMENT" },
@@ -26,12 +33,18 @@ export class RagRepository {
     }));
   }
 
+  /**
+   * Busca un recurso documental por su ID.
+   */
   static async findById(id: string) {
     return await prisma.resource.findUnique({
       where: { id: String(id) },
     });
   }
 
+  /**
+   * Guarda el documento en la tabla Resource e inserta cada fragmento con su vector en DocumentChunk dentro de una transacción.
+   */
   static async createWithChunks(params: CreateRagResourceParams) {
     const { data, userId, chunks, embeddings } = params;
     const resourceId = randomUUID();
@@ -71,9 +84,13 @@ export class RagRepository {
     });
   }
 
+  /**
+   * Elimina un recurso documental y sus fragmentos asociados de la base de datos.
+   */
   static async delete(id: string) {
     return await prisma.resource.delete({
       where: { id: String(id) },
     });
   }
 }
+

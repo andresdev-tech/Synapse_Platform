@@ -4,10 +4,14 @@ import { AuthRepository } from "./auth.repository";
 import { registerSchema, loginSchema, otpEmailSchema, otpVerifySchema, LoginAdmin } from "./auth.schema";
 import { ZodError } from "zod";
 
-
+/**
+ * Controlador de autenticación y accesos.
+ * Maneja el inicio de sesión convencional, acceso con código OTP al correo, verificación de email y login administrativo.
+ */
 export class AuthController {
-
-
+  /**
+   * Procesa el inicio de sesión de usuarios con correo y contraseña.
+   */
   static async login(req: Request, res: Response): Promise<void> {
     try {
       const parsedData = loginSchema.parse(req.body);
@@ -28,6 +32,10 @@ export class AuthController {
     }
   }
 
+  /**
+   * Recibe la solicitud para generar y enviar un código de verificación OTP al correo electrónico.
+   * Valida el reCAPTCHA si está activo y comprueba el dominio del correo.
+   */
   static async requestOtp(req: Request, res: Response): Promise<void> {
     try {
       const parsedData = otpEmailSchema.parse(req.body);
@@ -69,6 +77,9 @@ export class AuthController {
     }
   }
 
+  /**
+   * Valida el código OTP ingresado por el usuario y le otorga su sesión/token de acceso.
+   */
   static async verifyOtp(req: Request, res: Response): Promise<void> {
     try {
       const parsedData = otpVerifySchema.parse(req.body);
@@ -90,6 +101,9 @@ export class AuthController {
     }
   }
 
+  /**
+   * Confirma la verificación del correo electrónico de una cuenta a través de un código.
+   */
   static async verifyEmail(req: Request, res: Response): Promise<void> {
     try {
       const { email, code } = req.body;
@@ -113,6 +127,9 @@ export class AuthController {
     }
   }
 
+  /**
+   * Procesa el inicio de sesión exclusivo para cuentas con rol administrativo.
+   */
   static async loginAdmin(req: Request, res: Response): Promise<void> {
     try {
       const parsedData = LoginAdmin.parse(req.body);
@@ -152,7 +169,10 @@ export class AuthController {
     }
   }
 
-  static async CreateAdmin (req: Request, res: Response): Promise<void>{
+  /**
+   * Registra una nueva cuenta con rol de Administrador en el sistema.
+   */
+  static async CreateAdmin(req: Request, res: Response): Promise<void> {
     const data = req.body;
     const result = await AuthService.createadmin(data);
     if (!result) {
@@ -162,3 +182,4 @@ export class AuthController {
     res.status(200).json({ success: true, data: result.data });
   }
 }
+

@@ -3,7 +3,13 @@ import { ZodError } from "zod";
 import { ExtractService } from "./extract.service";
 import { extractImageQuerySchema } from "./extract.schema";
 
+/**
+ * Controlador para la extracción y obtención de imágenes de portada o recursos multimedia.
+ */
 export class ExtractController {
+  /**
+   * Procesa la solicitud para extraer la imagen principal de una URL o generar el enlace temporal firmado si es de S3.
+   */
   static async extractImage(req: Request, res: Response): Promise<void> {
     try {
       const parsedQuery = extractImageQuerySchema.parse(req.query);
@@ -26,5 +32,6 @@ export class ExtractController {
   }
 }
 
-// Backward compatibility export
+// Exportación para compatibilidad
 export const extractImage = ExtractController.extractImage;
+

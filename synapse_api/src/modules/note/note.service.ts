@@ -2,10 +2,16 @@ import { NoteRepository } from "./note.repository";
 import { CreateNoteDTO, UpdateNoteDTO } from "./note.types";
 import { ProviderFactory } from "../chatbot/providers/provider.factory";
 
+/**
+ * Servicio de lógica de negocio para la gestión de notas de estudio e indexación RAG con IA.
+ */
 export class NoteService {
   private static provider = ProviderFactory.getProvider();
   private static CHUNK_SIZE = 1200;
 
+  /**
+   * Genera una URL amigable (slug) única agregando un sufijo aleatorio.
+   */
   static generateSlug(title: string): string {
     const randomSuffix = Math.random().toString(36).substring(2, 6);
     return title
@@ -15,6 +21,9 @@ export class NoteService {
       .replace(/[^\w-]/g, "") + "-" + randomSuffix;
   }
 
+  /**
+   * Divide el texto de un documento en bloques (*chunks*) de tamaño uniforme para su posterior vectorización.
+   */
   static splitIntoChunks(text: string): string[] {
     const normalizedText = text.trim().replace(/\s+/g, " ");
     const chunks: string[] = [];
@@ -27,22 +36,37 @@ export class NoteService {
     return chunks;
   }
 
+  /**
+   * Obtiene todas las notas globales públicas (opcionalmente filtradas por sección).
+   */
   static async getGlobalNotes(section?: string) {
     return await NoteRepository.findGlobal(section);
   }
 
+  /**
+   * Obtiene las notas personales creadas por un usuario.
+   */
   static async getPersonalNotes(userId: string) {
     return await NoteRepository.findPersonal(userId);
   }
 
+  /**
+   * Obtiene las notas sugeridas por los usuarios.
+   */
   static async getSuggestions() {
     return await NoteRepository.findSuggestions();
   }
 
+  /**
+   * Obtiene los datos detallados de una nota por su ID.
+   */
   static async getNoteById(id: string) {
     return await NoteRepository.findById(id);
   }
 
+  /**
+   * Crea una nueva nota. Si tiene un documento adjunto para RAG, lo divide en fragmentos, genera sus embeddings vectoriales y lo guarda en base de datos.
+   */
   static async createNote(data: CreateNoteDTO, fallbackAuthorId?: string) {
     const authorId = data.authorId || fallbackAuthorId;
     if (!authorId) {
@@ -65,7 +89,7 @@ export class NoteService {
       chunks = this.splitIntoChunks(data.ragDocument.content);
       embeddings = [];
       
-      // Procesar secuencialmente para evitar Rate Limits (429 Too Many Requests) de la API
+      // Procesar secuencialmente para evitar Rate Limits (429 Too Many Requests) de la API de IA
       for (const chunk of chunks) {
         const embedding = await this.provider.generateEmbedding!(chunk);
         embeddings.push(embedding);
@@ -85,15 +109,25 @@ export class NoteService {
     });
   }
 
+  /**
+   * Actualiza el contenido o metadatos de una nota de estudio.
+   */
   static async updateNote(id: string, data: UpdateNoteDTO) {
     return await NoteRepository.update(id, data);
   }
 
+  /**
+   * Elimina una nota por su ID.
+   */
   static async deleteNote(id: string) {
     return await NoteRepository.delete(id);
   }
 
+  /**
+   * Registra o alterna la reacción de un usuario en una nota.
+   */
   static async toggleReaction(id: string, userId: string, type: "LIKE" | "LOVE" | "USEFUL" | "IMPORTANT" | "DISLIKE") {
     return await NoteRepository.toggleReaction(id, userId, type);
   }
 }
+

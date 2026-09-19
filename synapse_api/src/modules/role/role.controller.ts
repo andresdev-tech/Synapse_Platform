@@ -2,7 +2,14 @@ import { Response } from "express";
 import { AuthRequest } from "../../middleware/auth.middleware";
 import { RoleService } from "./role.service";
 
+/**
+ * Controlador para la administración de roles del sistema.
+ * Permite listar y registrar los roles de usuario disponibles en la plataforma.
+ */
 export class RoleController {
+  /**
+   * Obtiene todos los roles configurados en la plataforma.
+   */
   static async getRoles(req: AuthRequest, res: Response): Promise<void> {
     try {
       const roles = await RoleService.getRoles();
@@ -12,6 +19,9 @@ export class RoleController {
     }
   }
 
+  /**
+   * Registra un nuevo rol o actualiza uno existente en el sistema.
+   */
   static async createRole(req: AuthRequest, res: Response): Promise<void> {
     try {
       const { name, description } = req.body;
@@ -31,3 +41,4 @@ export class RoleController {
     }
   }
 }
+

@@ -10,9 +10,16 @@ import { AllowedDomainService } from "../allowed-domain/allowed-domain.service";
 import { AuditAction } from "../../../generated/prisma/client";
 import crypto from "crypto";
 
+/**
+ * Servicio principal de autenticación y seguridad.
+ * Contiene la lógica de negocio para inicio de sesión, generación de tokens JWT, emisión de códigos OTP y registro de sesiones.
+ */
 export class AuthService {
+  /**
+   * Registra la sesión activa del usuario, actualiza su fecha de último acceso y guarda el evento en la auditoría.
+   */
   private static async recordUserLogin(user: { id: string; email: string }, token: string, role: string, loginType: string) {
-    const expires = new Date(Date.now() + 24 * 60 * 60 * 1000);
+    const expires = new Date(Date.now() + 3 * 60 * 60 * 1000);
     let session = null;
     try {
       session = await SessionRepository.createSession({
@@ -51,12 +58,15 @@ export class AuthService {
     }
   }
 
+  /**
+   * Genera y firma el token de seguridad JWT para el usuario con vigencia de 3 horas.
+   */
   private static createJwt(user: { id: string; email: string; name?: string | null; layoutPrefs?: unknown }, role: string) {
     const secret = process.env.JWT_SECRET || "default_dev_secret_for_synapse";
     const token = jwt.sign(
       { id: user.id, email: user.email, role },
       secret,
-      { expiresIn: "24h" }
+      { expiresIn: "3h" }
     );
 
     return {
@@ -65,6 +75,9 @@ export class AuthService {
     };
   }
 
+  /**
+   * Configura y retorna el servicio de transporte para el envío de correos electrónicos.
+   */
   private static getTransporter() {
     return nodemailer.createTransport({
       service: "gmail",
@@ -75,7 +88,10 @@ export class AuthService {
     });
   }
 
-  static async createadmin (data: any) {
+  /**
+   * Valida permisos, dominios permitidos y disponibilidad de correo para crear un nuevo usuario administrador.
+   */
+  static async createadmin(data: any) {
     try {
       const domainCheck = await AllowedDomainService.isDomainAllowed(data.email, "ADMIN");
       if (!domainCheck.allowed) {
@@ -99,8 +115,9 @@ export class AuthService {
     }
   }
 
-
-
+  /**
+   * Procesa el inicio de sesión convencional de un usuario mediante correo electrónico.
+   */
   static async loginUser(credentials: LoginDTO): Promise<AuthResponse> {
     const user = await AuthRepository.findUserByEmail(credentials.email);
     if (!user) {
@@ -108,7 +125,7 @@ export class AuthService {
     }
 
     if (!user.emailVerified) {
-      return { success: false, error: "unverified_email" }; // Special string required by frontend
+      return { success: false, error: "unverified_email" }; // Requerido por el frontend
     }
 
     const role = user.role?.name || RoleNames.USER;
@@ -122,6 +139,9 @@ export class AuthService {
     };
   }
 
+  /**
+   * Valida el dominio del correo, crea el usuario si es nuevo, genera un código OTP de 6 dígitos y lo envía por correo.
+   */
   static async requestOtp(data: OtpEmailDTO): Promise<AuthResponse> {
     const email = data.email.trim().toLowerCase();
 
@@ -173,6 +193,9 @@ export class AuthService {
     return { success: true, data: { email } };
   }
 
+  /**
+   * Verifica la validez del código OTP ingresado y retorna la sesión con el token JWT del usuario.
+   */
   static async verifyOtp(data: OtpVerifyDTO): Promise<AuthResponse> {
     const email = data.email.trim().toLowerCase();
     const user = await AuthRepository.findUserByEmail(email);
@@ -197,19 +220,106 @@ export class AuthService {
     return { success: true, data: jwtData };
   }
 
+  /**
+   * Envía el correo electrónico con el código OTP de acceso utilizando una plantilla institucional con la identidad visual del SENA.
+   */
   private static async sendCode(email: string, code: string, subject: string) {
     if (process.env.EMAIL_USER && process.env.EMAIL_PASS) {
+      const htmlTemplate = `
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Código de Acceso - Synapse</title>
+</head>
+<body style="margin: 0; padding: 0; background-color: #f4f7f6; font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif; color: #333333; line-height: 1.6;">
+  <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background-color: #f4f7f6; padding: 30px 15px;">
+    <tr>
+      <td align="center">
+        <table role="presentation" width="100%" style="max-width: 580px; background-color: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.06); border: 1px solid #e5e7eb;">
+          <!-- Encabezado Institucional SENA -->
+          <tr>
+            <td style="background: linear-gradient(135deg, #00324D 0%, #39A900 100%); padding: 35px 30px; text-align: center;">
+              <div style="font-size: 28px; font-weight: 800; color: #ffffff; letter-spacing: 1px; margin-bottom: 6px;">
+                SYNAPSE
+              </div>
+              <div style="font-size: 13px; color: #e0f2fe; text-transform: uppercase; letter-spacing: 1.5px; font-weight: 600;">
+                SENA • Centro Tecnológico del Mobiliario y la Madera
+              </div>
+            </td>
+          </tr>
+
+          <!-- Contenido Principal -->
+          <tr>
+            <td style="padding: 40px 35px 30px 35px; text-align: center;">
+              <h2 style="margin: 0 0 16px 0; color: #00324D; font-size: 22px; font-weight: 700;">
+                Tu Código de Verificación
+              </h2>
+              <p style="margin: 0 0 28px 0; color: #4b5563; font-size: 15px; line-height: 1.6;">
+                Has solicitado iniciar sesión en la plataforma <strong>Synapse</strong>. Utiliza el siguiente código de seguridad de un solo uso para continuar:
+              </p>
+
+              <!-- Caja del Código OTP -->
+              <div style="background-color: #f0fdf4; border: 2px dashed #39A900; border-radius: 12px; padding: 22px 15px; margin: 0 auto 28px auto; max-width: 320px;">
+                <span style="font-family: 'Courier New', Courier, monospace; font-size: 34px; font-weight: 800; color: #166534; letter-spacing: 8px; display: inline-block; padding-left: 8px;">
+                  ${code}
+                </span>
+              </div>
+
+              <!-- Aviso de Expiración -->
+              <div style="background-color: #fffbeb; border: 1px solid #fef3c7; border-radius: 10px; padding: 12px 18px; margin-bottom: 25px; text-align: left; display: inline-block;">
+                <table role="presentation" cellspacing="0" cellpadding="0">
+                  <tr>
+                    <td style="vertical-align: middle; padding-right: 10px; font-size: 18px;">⏳</td>
+                    <td style="font-size: 13px; color: #92400e; line-height: 1.4;">
+                      Este código es válido durante <strong>10 minutos</strong> y expirará tras su uso.
+                    </td>
+                  </tr>
+                </table>
+              </div>
+
+              <!-- Advertencia de Seguridad -->
+              <p style="margin: 0; color: #6b7280; font-size: 13px; line-height: 1.5; border-top: 1px solid #f3f4f6; padding-top: 20px;">
+                Si tú no solicitaste este código, puedes ignorar este correo con tranquilidad. Nunca compartas este código con terceros.
+              </p>
+            </td>
+          </tr>
+
+          <!-- Pie de Página Institucional -->
+          <tr>
+            <td style="background-color: #f9fafb; padding: 22px 30px; text-align: center; border-top: 1px solid #e5e7eb;">
+              <p style="margin: 0 0 6px 0; font-size: 12px; font-weight: 600; color: #00324D;">
+                Servicio Nacional de Aprendizaje — SENA CTMA
+              </p>
+              <p style="margin: 0; font-size: 11px; color: #9ca3af;">
+                Synapse Knowledge & Community Platform • Medellín, Colombia
+              </p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>
+      `;
+
       await this.getTransporter().sendMail({
-        from: '"Synapse CTMA" <no-reply@synapse.edu.co>',
+        from: '"Synapse SENA CTMA" <no-reply@synapse.edu.co>',
         to: email,
         subject,
-        html: `<h1>Synapse</h1><p>Tu código de acceso es: <b>${code}</b></p><p>Este código vence en 10 minutos.</p>`,
+        text: `Tu código de acceso a Synapse es: ${code}. Este código vence en 10 minutos.`,
+        html: htmlTemplate,
       });
     } else {
       console.log(`\n[MOCK EMAIL] Para: ${email} | Código OTP: ${code}\n`);
     }
   }
 
+  /**
+   * Procesa la autenticación exclusiva para el portal de administración validando rol y dominio permitido.
+   */
   static async loginAdmin(credentials: LoginAdminDTO): Promise<AuthResponse> {
     const domainCheck = await AllowedDomainService.isDomainAllowed(credentials.email, "ADMIN");
     if (!domainCheck.allowed) {
@@ -241,3 +351,4 @@ export class AuthService {
     return { success: true, data: jwtData };
   }
 }
+

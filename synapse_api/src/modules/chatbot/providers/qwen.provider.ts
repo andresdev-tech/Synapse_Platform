@@ -2,6 +2,10 @@ import OpenAI from "openai";
 import { prompt } from '../prompt/system.prompt';
 import { AIProvider, ChatbotProviderInput } from "./ai-provider.interface";
 
+/**
+ * Proveedor de Inteligencia Artificial que conecta con los modelos de Qwen / Alibaba Cloud DashScope.
+ * Implementa la interfaz AIProvider para generación de respuestas en streaming y cálculo de embeddings.
+ */
 export class QwenProvider implements AIProvider {
   private readonly qwen: OpenAI;
   private readonly qwenEmbedding: OpenAI;
@@ -24,7 +28,7 @@ export class QwenProvider implements AIProvider {
   }
 
   /**
-   * Genera la respuesta del chatbot mediante streaming.
+   * Genera la respuesta del chatbot en tiempo real mediante un flujo continuo de fragmentos (streaming).
    */
   async *generateResponse(
     data: ChatbotProviderInput
@@ -65,11 +69,13 @@ ${message}
     }
   }
 
+  /**
+   * Genera el vector de embedding de 1024 dimensiones para indexación o búsqueda semántica.
+   */
   async generateEmbedding(text: string): Promise<number[]> {
     const response = await this.qwenEmbedding.embeddings.create({
       model: process.env.AI_EMBEDDING_MODEL || "text-embedding-v4",
       input: text,
-      // Only set dimensions for qwen if needed, openai might differ, but this is the QwenProvider
       dimensions: 1024,
     });
 
@@ -80,3 +86,4 @@ ${message}
     return embedding;
   }
 }
+
