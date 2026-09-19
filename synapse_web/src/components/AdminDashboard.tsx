@@ -45,6 +45,20 @@ interface ContentBlock {
   name?: string;
 }
 
+const getNotePreview = (note: Note) => {
+  if (note.excerpt && note.excerpt.trim() !== "") return note.excerpt;
+  if (note.body && note.body.startsWith("[")) {
+    try {
+      const blocks = JSON.parse(note.body);
+      const textBlock = blocks.find((b: any) => b.type === 'text' && b.content);
+      return textBlock ? textBlock.content.substring(0, 200) : "Contenido estructurado...";
+    } catch (e) {
+      return "Contenido estructurado...";
+    }
+  }
+  return note.body;
+}
+
 export function AdminDashboard() {
   const { data: session } = useSession()
   const [globalNotes, setGlobalNotes] = useState<Note[]>([])
@@ -1029,7 +1043,7 @@ export function AdminDashboard() {
                     </span>
                   )}
                   <h3 className="font-extrabold text-zinc-900 text-xl mb-3 leading-tight">{note.title}</h3>
-                  <p className="text-slate-600 text-sm line-clamp-3 mb-4 leading-relaxed">{note.body && note.body.startsWith("[") ? "Contenido estructurado..." : note.body}</p>
+                  <p className="text-slate-600 text-sm line-clamp-3 mb-4 leading-relaxed">{getNotePreview(note)}</p>
                 </div>
                 
                 <div className="flex items-center justify-between mt-auto pt-5 border-t border-slate-100/80">
