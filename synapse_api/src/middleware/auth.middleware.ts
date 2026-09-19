@@ -50,7 +50,7 @@ export const requireAdmin = (req: AuthRequest, res: Response, next: NextFunction
 };
 
 export const requireSuperAdmin = (req: AuthRequest, res: Response, next: NextFunction) => {
-  if (req.user?.role === "ADMIN") {
+  if (req.user?.role === "SUPER_ADMIN") {
     next();
   } else {
     return res.status(403).json({ error: "Acceso denegado. Requiere privilegios de SUPER_ADMIN." });

@@ -429,7 +429,8 @@ export function ApprenticeDashboard({ initialNotes = [], initialCategories = [] 
   // Filtrado de Notas
   const filteredNotes = useMemo(() => {
     return globalNotes.filter(n => {
-      const matchesSearch = n.title.toLowerCase().includes(searchQuery.toLowerCase()) || n.content.toLowerCase().includes(searchQuery.toLowerCase())
+      const noteContent = (n as any).content || (n as any).description || ""
+      const matchesSearch = n.title.toLowerCase().includes(searchQuery.toLowerCase()) || noteContent.toLowerCase().includes(searchQuery.toLowerCase())
       const matchesCategory = selectedFilter === "ALL" || n.categoryId === selectedFilter
       return matchesSearch && matchesCategory
     })
