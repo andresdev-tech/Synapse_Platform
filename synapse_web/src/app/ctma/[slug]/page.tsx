@@ -2,6 +2,7 @@ import Link from "next/link"
 import { ArrowLeft, ExternalLink, Info } from "lucide-react"
 import { ImageZoom } from "@/components/ImageZoom"
 import { GalleryTrigger } from "@/components/GalleryTrigger"
+import { PaginatedSectionNotes } from "@/components/PaginatedSectionNotes"
 
 // Diccionario con contenido real simulado
 const pageContent: Record<string, { title: string, content: React.ReactNode }> = {
@@ -713,39 +714,7 @@ export default async function CtmaPage({ params }: { params: Promise<{ slug: str
             </div>
 
             {notes && notes.length > 0 && (
-              <div className="mt-16 relative z-10">
-                <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-100 mb-8 flex items-center">
-                  <span className="w-8 h-1.5 bg-sena-500 rounded-full mr-4"></span>
-                  Anuncios y Novedades
-                </h2>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {notes.map((note: any) => (
-                    <div key={note.id} className="bg-white dark:bg-slate-800 rounded-3xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden hover:shadow-xl transition-all flex flex-col h-full group">
-                      {note.seoImage && (
-                        <div className="w-full h-48 overflow-hidden relative">
-                          <img src={note.seoImage} alt={note.title} className="w-full h-full object-cover transform transition-transform duration-700 group-hover:scale-110" loading="lazy" />
-                        </div>
-                      )}
-                      <div className="p-6 flex flex-col flex-1">
-                        <span className="text-xs font-bold text-sena-500 uppercase tracking-wider mb-2">{note.section}</span>
-                        <h3 className="text-xl font-bold text-slate-800 dark:text-white mb-3 leading-snug group-hover:text-sena-600 transition-colors">{note.title}</h3>
-                        <p className="text-slate-600 dark:text-slate-300 text-sm mb-6 line-clamp-3 leading-relaxed">
-                          {note.excerpt || note.body.substring(0, 150) + '...'}
-                        </p>
-                        <div className="mt-auto flex items-center justify-between border-t border-slate-100 dark:border-slate-700 pt-4">
-                          <span className="text-xs font-medium text-slate-400 flex items-center">
-                            <span className="w-2 h-2 rounded-full bg-emerald-400 mr-2"></span>
-                            {new Date(note.createdAt).toLocaleDateString()}
-                          </span>
-                          <Link href={`/blogs/${note.id}`} className="text-sm font-bold text-sena-600 dark:text-sena-400 hover:text-sena-800 flex items-center">
-                            Leer más <ExternalLink className="w-4 h-4 ml-1" />
-                          </Link>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
+              <PaginatedSectionNotes notes={notes} itemsPerPage={6} />
             )}
             
             {/* Elemento Decorativo Final */}

@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation"
 import Image from "next/image"
 import { useState, useEffect, useMemo, memo } from "react"
 import { useSession, signOut } from "next-auth/react"
-import { Megaphone, Link as LinkIcon, Send, User, MessageSquarePlus, X, GripHorizontal, Search, BookOpen, Calendar, Moon, Sun, Download, FileText, ArrowLeft } from "lucide-react"
+import { Megaphone, Link as LinkIcon, Send, User, MessageSquarePlus, X, GripHorizontal, Search, BookOpen, Calendar, Moon, Sun, Download, FileText, ArrowLeft, ChevronLeft, ChevronRight } from "lucide-react"
 import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors, DragEndEvent } from "@dnd-kit/core"
 import { arrayMove, SortableContext, sortableKeyboardCoordinates, rectSortingStrategy } from "@dnd-kit/sortable"
 import { useSortable } from "@dnd-kit/sortable"
@@ -436,10 +436,28 @@ export function ApprenticeDashboard({ initialNotes = [], initialCategories = [] 
     })
   }, [globalNotes, searchQuery, selectedFilter]);
 
-  // Mostrar únicamente los 5 anuncios más importantes / recientes
-  const displayedNotes = useMemo(() => {
-    return filteredNotes.slice(0, 5);
-  }, [filteredNotes]);
+  // Paginación del feed
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 6;
+  const totalPages = Math.ceil(filteredNotes.length / itemsPerPage);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery, selectedFilter]);
+
+  const paginatedNotes = useMemo(() => {
+    const start = (currentPage - 1) * itemsPerPage;
+    return filteredNotes.slice(start, start + itemsPerPage);
+  }, [filteredNotes, currentPage, itemsPerPage]);
+
+  const handlePageChange = (page: number) => {
+    if (page < 1 || page > totalPages) return;
+    setCurrentPage(page);
+    const el = document.getElementById("feed-anuncios-dashboard");
+    if (el) {
+      el.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  };
 
   // Eventos para el Widget Lateral
   const upcomingEvents = useMemo(() => {
@@ -503,33 +521,36 @@ export function ApprenticeDashboard({ initialNotes = [], initialCategories = [] 
         <div className="flex flex-col lg:flex-row gap-8">
 
           {/* MAIN FEED (IZQUIERDA) */}
-          <div className="w-full lg:w-3/4">
+          <div id="feed-anuncios-dashboard" className="w-full lg:w-3/4 scroll-mt-24">
 
-            <div className="flex items-center justify-between mb-8 pb-4 border-b-2 border-slate-100 dark:border-zinc-800">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8 pb-4 border-b-2 border-slate-100 dark:border-zinc-800">
               <div className="flex items-center">
                 <Megaphone className="w-6 h-6 text-sena-500 dark:text-sena-400 mr-3" />
                 <h2 className="text-2xl font-black text-zinc-800 dark:text-slate-100 tracking-tight">Últimos Anuncios</h2>
+                <span className="ml-3 px-2.5 py-0.5 text-xs font-semibold bg-sena-100 dark:bg-sena-900/40 text-sena-700 dark:text-sena-300 rounded-full">
+                  {filteredNotes.length} {filteredNotes.length === 1 ? 'anuncio' : 'anuncios'}
+                </span>
               </div>
-              {displayedNotes.length > 0 && (
+              {totalPages > 1 && (
                 <span className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider bg-slate-100 dark:bg-zinc-800 px-3 py-1 rounded-full">
-                  Top 5 destacados
+                  Página {currentPage} de {totalPages}
                 </span>
               )}
             </div>
 
-            {displayedNotes.length === 0 ? (
+            {paginatedNotes.length === 0 ? (
               <div className="text-center py-20 px-4 bg-white dark:bg-zinc-800 rounded-3xl border border-slate-100 dark:border-zinc-700 shadow-sm">
                 <Megaphone className="w-16 h-16 text-slate-200 dark:text-slate-600 mx-auto mb-5" />
                 <h3 className="text-xl font-bold text-zinc-700 dark:text-slate-300 mb-2">No hay anuncios</h3>
                 <p className="text-slate-500 dark:text-slate-400 text-sm">No se encontraron anuncios con esos filtros.</p>
               </div>
             ) : (
-              /* Solo permitimos Drag and Drop si NO hay filtros aplicados, para no dañar los índices del arreglo completo */
-              searchQuery === "" && selectedFilter === "ALL" ? (
+              /* Solo permitimos Drag and Drop si NO hay filtros aplicados y en primera página */
+              searchQuery === "" && selectedFilter === "ALL" && currentPage === 1 ? (
                 <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-                  <SortableContext items={displayedNotes.map(n => n.id)} strategy={rectSortingStrategy}>
+                  <SortableContext items={paginatedNotes.map(n => n.id)} strategy={rectSortingStrategy}>
                     <div className="columns-1 md:columns-2 gap-8">
-                    {displayedNotes.map((n, index) => (
+                    {paginatedNotes.map((n, index) => (
                       <SortableNoteItem key={n.id} note={n} priority={index === 0} />
                     ))}
                   </div>
@@ -537,11 +558,70 @@ export function ApprenticeDashboard({ initialNotes = [], initialCategories = [] 
                 </DndContext>
               ) : (
                 <div className="columns-1 md:columns-2 gap-8">
-                  {displayedNotes.map((n, index) => (
+                  {paginatedNotes.map((n, index) => (
                     <SortableNoteItem key={n.id} note={n} priority={index === 0} />
                   ))}
                 </div>
               )
+            )}
+
+            {/* Controles de Paginación del Feed */}
+            {totalPages > 1 && (
+              <div className="mt-12 flex flex-col sm:flex-row items-center justify-between gap-4 pt-6 border-t border-slate-200 dark:border-zinc-800">
+                <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">
+                  Mostrando {(currentPage - 1) * itemsPerPage + 1} a {Math.min(currentPage * itemsPerPage, filteredNotes.length)} de {filteredNotes.length} anuncios
+                </p>
+
+                <div className="flex items-center space-x-1">
+                  <button
+                    onClick={() => handlePageChange(currentPage - 1)}
+                    disabled={currentPage === 1}
+                    className="p-2.5 rounded-xl border border-slate-200 dark:border-zinc-700 text-slate-600 dark:text-slate-300 hover:bg-sena-50 dark:hover:bg-zinc-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                    title="Página anterior"
+                    aria-label="Anterior"
+                  >
+                    <ChevronLeft className="w-4 h-4" />
+                  </button>
+
+                  {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => {
+                    if (
+                      totalPages > 6 &&
+                      page !== 1 &&
+                      page !== totalPages &&
+                      Math.abs(page - currentPage) > 1
+                    ) {
+                      if (page === 2 || page === totalPages - 1) {
+                        return <span key={page} className="px-2 text-xs text-slate-400">...</span>
+                      }
+                      return null
+                    }
+
+                    return (
+                      <button
+                        key={page}
+                        onClick={() => handlePageChange(page)}
+                        className={`w-9 h-9 text-xs font-bold rounded-xl transition-all ${
+                          currentPage === page
+                            ? "bg-sena-600 text-white shadow-md shadow-sena-600/30 scale-105"
+                            : "border border-slate-200 dark:border-zinc-700 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-zinc-700"
+                        }`}
+                      >
+                        {page}
+                      </button>
+                    )
+                  })}
+
+                  <button
+                    onClick={() => handlePageChange(currentPage + 1)}
+                    disabled={currentPage === totalPages}
+                    className="p-2.5 rounded-xl border border-slate-200 dark:border-zinc-700 text-slate-600 dark:text-slate-300 hover:bg-sena-50 dark:hover:bg-zinc-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                    title="Página siguiente"
+                    aria-label="Siguiente"
+                  >
+                    <ChevronRight className="w-4 h-4" />
+                  </button>
+                </div>
+              </div>
             )}
 
             {/* SECCIÓN DIRECTO DEL BLOG CTMA: CANALES DE ATENCIÓN */}
