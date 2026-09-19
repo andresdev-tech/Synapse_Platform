@@ -90,8 +90,8 @@ export const resolverCaptchaToolDefinition = {
 
 const URL_SENA = 'https://certificados.sena.edu.co/CertificadoDigital/com.sena.consultacer';
 const SESSION_TTL_MS = 3 * 60 * 1000; // 3 min para resolver el captcha
-const RATE_LIMIT_MAX_INTENTOS = 7;
-const RATE_LIMIT_WINDOW_MS = 5 * 60 * 1000; // 5 minutos de espera tras 7 intentos
+const RATE_LIMIT_MAX_INTENTOS = 10;
+const RATE_LIMIT_WINDOW_MS = 3 * 60 * 1000; // 3 minutos de espera tras 10 intentos
 
 // =====================================================
 // Tipos internos
