@@ -104,7 +104,7 @@ export class NoteController {
       return;
     }
     
-    const validTypes = ["LIKE", "LOVE", "USEFUL", "IMPORTANT"];
+    const validTypes = ["LIKE", "LOVE", "USEFUL", "IMPORTANT", "DISLIKE"];
     if (!validTypes.includes(type)) {
       res.status(400).json({ error: "Tipo de reacción inválido" });
       return;

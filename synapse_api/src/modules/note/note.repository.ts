@@ -161,7 +161,7 @@ export class NoteRepository {
     });
   }
 
-  static async toggleReaction(contentId: string, userId: string, type: "LIKE" | "LOVE" | "USEFUL" | "IMPORTANT") {
+  static async toggleReaction(contentId: string, userId: string, type: "LIKE" | "LOVE" | "USEFUL" | "IMPORTANT" | "DISLIKE") {
     const existing = await prisma.reaction.findFirst({
       where: { contentId, userId },
     });

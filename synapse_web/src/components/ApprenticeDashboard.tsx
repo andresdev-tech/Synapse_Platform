@@ -436,6 +436,11 @@ export function ApprenticeDashboard({ initialNotes = [], initialCategories = [] 
     })
   }, [globalNotes, searchQuery, selectedFilter]);
 
+  // Mostrar únicamente los 5 anuncios más importantes / recientes
+  const displayedNotes = useMemo(() => {
+    return filteredNotes.slice(0, 5);
+  }, [filteredNotes]);
+
   // Eventos para el Widget Lateral
   const upcomingEvents = useMemo(() => {
     const today = new Date();
@@ -500,21 +505,19 @@ export function ApprenticeDashboard({ initialNotes = [], initialCategories = [] 
           {/* MAIN FEED (IZQUIERDA) */}
           <div className="w-full lg:w-3/4">
 
-
-
             <div className="flex items-center justify-between mb-8 pb-4 border-b-2 border-slate-100 dark:border-zinc-800">
               <div className="flex items-center">
                 <Megaphone className="w-6 h-6 text-sena-500 dark:text-sena-400 mr-3" />
                 <h2 className="text-2xl font-black text-zinc-800 dark:text-slate-100 tracking-tight">Últimos Anuncios</h2>
               </div>
-              {filteredNotes.length > 0 && searchQuery === "" && selectedFilter === "ALL" && (
+              {displayedNotes.length > 0 && (
                 <span className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider bg-slate-100 dark:bg-zinc-800 px-3 py-1 rounded-full">
-                  Arrastra para ordenar
+                  Top 5 destacados
                 </span>
               )}
             </div>
 
-            {filteredNotes.length === 0 ? (
+            {displayedNotes.length === 0 ? (
               <div className="text-center py-20 px-4 bg-white dark:bg-zinc-800 rounded-3xl border border-slate-100 dark:border-zinc-700 shadow-sm">
                 <Megaphone className="w-16 h-16 text-slate-200 dark:text-slate-600 mx-auto mb-5" />
                 <h3 className="text-xl font-bold text-zinc-700 dark:text-slate-300 mb-2">No hay anuncios</h3>
@@ -524,9 +527,9 @@ export function ApprenticeDashboard({ initialNotes = [], initialCategories = [] 
               /* Solo permitimos Drag and Drop si NO hay filtros aplicados, para no dañar los índices del arreglo completo */
               searchQuery === "" && selectedFilter === "ALL" ? (
                 <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-                  <SortableContext items={filteredNotes.map(n => n.id)} strategy={rectSortingStrategy}>
+                  <SortableContext items={displayedNotes.map(n => n.id)} strategy={rectSortingStrategy}>
                     <div className="columns-1 md:columns-2 gap-8">
-                    {filteredNotes.map((n, index) => (
+                    {displayedNotes.map((n, index) => (
                       <SortableNoteItem key={n.id} note={n} priority={index === 0} />
                     ))}
                   </div>
@@ -534,7 +537,7 @@ export function ApprenticeDashboard({ initialNotes = [], initialCategories = [] 
                 </DndContext>
               ) : (
                 <div className="columns-1 md:columns-2 gap-8">
-                  {filteredNotes.map((n, index) => (
+                  {displayedNotes.map((n, index) => (
                     <SortableNoteItem key={n.id} note={n} priority={index === 0} />
                   ))}
                 </div>
