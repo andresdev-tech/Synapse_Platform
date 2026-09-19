@@ -26,9 +26,21 @@ import {
   RefreshCw,
   Info,
   Key,
+  Globe,
+  Trash2,
 } from "lucide-react"
 
 import { fetchApi } from "@/lib/fetchApi"
+
+interface AllowedDomainItem {
+  id: string
+  domain: string
+  scope: "USER" | "ADMIN" | "ALL"
+  isActive: boolean
+  description?: string | null
+  createdAt: string
+  updatedAt: string
+}
 
 interface AdminUser {
   id: string
@@ -87,6 +99,15 @@ export default function SuperAdminDashboard() {
   const [newRoleDesc, setNewRoleDesc] = useState("")
   const [roleSubmitting, setRoleSubmitting] = useState(false)
   const [roleFeedback, setRoleFeedback] = useState<{ type: "success" | "error"; message: string } | null>(null)
+
+  // Estado de Dominios de Correo Permitidos
+  const [allowedDomains, setAllowedDomains] = useState<AllowedDomainItem[]>([])
+  const [domainLoading, setDomainLoading] = useState(false)
+  const [newDomain, setNewDomain] = useState("")
+  const [newDomainScope, setNewDomainScope] = useState<"USER" | "ADMIN" | "ALL">("USER")
+  const [newDomainDesc, setNewDomainDesc] = useState("")
+  const [domainSubmitting, setDomainSubmitting] = useState(false)
+  const [domainFeedback, setDomainFeedback] = useState<{ type: "success" | "error"; message: string } | null>(null)
 
   // Estado para alternar la visualización del formulario
   const [registerAdmin, setRegisterAdmin] = useState(true)
@@ -166,11 +187,28 @@ export default function SuperAdminDashboard() {
     }
   }, [])
 
+  // Cargar Dominios Autorizados de la BD
+  const loadAllowedDomains = useCallback(async () => {
+    setDomainLoading(true)
+    try {
+      const res = await fetchApi("/api/allowed-domains")
+      if (res.ok) {
+        const result = await res.json()
+        setAllowedDomains(result.data || [])
+      }
+    } catch (err) {
+      console.warn("Error al cargar dominios autorizados:", err)
+    } finally {
+      setDomainLoading(false)
+    }
+  }, [])
+
   useEffect(() => {
     loadUsers()
     loadAuditLogs()
     loadRoles()
-  }, [loadUsers, loadAuditLogs, loadRoles])
+    loadAllowedDomains()
+  }, [loadUsers, loadAuditLogs, loadRoles, loadAllowedDomains])
 
   const handleReset = () => {
     setName("")
@@ -275,6 +313,80 @@ export default function SuperAdminDashboard() {
       })
     } finally {
       setRoleSubmitting(false)
+    }
+  }
+
+  const handleCreateDomain = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!newDomain.trim()) return
+
+    setDomainSubmitting(true)
+    setDomainFeedback(null)
+    try {
+      const clean = newDomain.trim().toLowerCase().replace(/^@/, "")
+      const res = await fetchApi("/api/allowed-domains", {
+        method: "POST",
+        body: JSON.stringify({
+          domain: clean,
+          scope: newDomainScope,
+          description: newDomainDesc.trim() || undefined,
+          isActive: true,
+        }),
+      })
+
+      const data = await res.json()
+      if (!res.ok || !data.success) {
+        throw new Error(data.error || "No se pudo registrar el dominio")
+      }
+
+      setDomainFeedback({
+        type: "success",
+        message: `¡Dominio "@${clean}" autorizado exitosamente para el alcance [${newDomainScope}]!`,
+      })
+      setNewDomain("")
+      setNewDomainDesc("")
+      loadAllowedDomains()
+      loadAuditLogs()
+    } catch (err: any) {
+      setDomainFeedback({
+        type: "error",
+        message: err.message || "Error al registrar el dominio",
+      })
+    } finally {
+      setDomainSubmitting(false)
+    }
+  }
+
+  const handleToggleDomain = async (id: string, currentStatus: boolean) => {
+    try {
+      const res = await fetchApi(`/api/allowed-domains/${id}`, {
+        method: "PATCH",
+        body: JSON.stringify({ isActive: !currentStatus }),
+      })
+      if (res.ok) {
+        loadAllowedDomains()
+        loadAuditLogs()
+      }
+    } catch (err) {
+      console.error("Error al alternar estado del dominio:", err)
+    }
+  }
+
+  const handleDeleteDomain = async (id: string, domainName: string) => {
+    if (!confirm(`¿Estás seguro de eliminar el dominio "@${domainName}" de la lista de permitidos?`)) {
+      return
+    }
+
+    try {
+      const res = await fetchApi(`/api/allowed-domains/${id}`, {
+        method: "DELETE",
+      })
+      if (res.ok) {
+        loadAllowedDomains()
+        loadAuditLogs()
+      }
+    } catch (err) {
+      console.error("Error al eliminar dominio:", err)
     }
   }
 
@@ -463,6 +575,171 @@ export default function SuperAdminDashboard() {
             ))}
           </div>
         )}
+      </div>
+
+      {/* SECCIÓN DE GESTIÓN DE DOMINIOS DE CORREO PERMITIDOS */}
+      <div className="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm p-6 space-y-5">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-slate-100 pb-4 gap-2">
+          <div className="flex items-center gap-2">
+            <Globe className="w-5 h-5 text-sena-600" />
+            <div>
+              <h3 className="text-lg font-black text-slate-800">Gestión de Dominios Institucionales Permitidos</h3>
+              <p className="text-xs text-slate-500">
+                Controla en tiempo real qué dominios de correo pueden registrarse o iniciar sesión (Usuarios vs Administradores).
+              </p>
+            </div>
+          </div>
+          <span className="self-start sm:self-auto px-2.5 py-0.5 rounded-full bg-blue-100 text-blue-800 text-xs font-black">
+            Acceso Dinámico BD
+          </span>
+        </div>
+
+        {domainFeedback && (
+          <div
+            className={`p-4 rounded-xl flex items-center gap-3 border text-sm font-semibold ${
+              domainFeedback.type === "success"
+                ? "bg-emerald-50 border-emerald-200 text-emerald-800"
+                : "bg-rose-50 border-rose-200 text-rose-800"
+            }`}
+          >
+            {domainFeedback.type === "success" ? (
+              <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0" />
+            ) : (
+              <AlertCircle className="w-5 h-5 text-rose-600 shrink-0" />
+            )}
+            {domainFeedback.message}
+          </div>
+        )}
+
+        {/* Formulario de registro de dominio */}
+        <form onSubmit={handleCreateDomain} className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end bg-slate-50/80 p-4 rounded-2xl border border-slate-200/60">
+          <div className="space-y-1">
+            <label className="text-xs font-bold uppercase tracking-wider text-slate-600">Dominio de Correo</label>
+            <div className="relative">
+              <span className="absolute left-3 top-3 text-slate-400 font-bold text-sm">@</span>
+              <input
+                type="text"
+                value={newDomain}
+                onChange={(e) => setNewDomain(e.target.value)}
+                placeholder="ej. soy.sena.edu.co"
+                className="w-full h-11 pl-8 pr-3 rounded-xl border border-slate-200 bg-white text-sm font-bold text-slate-800 outline-none focus:border-sena-500"
+                required
+              />
+            </div>
+          </div>
+
+          <div className="space-y-1">
+            <label className="text-xs font-bold uppercase tracking-wider text-slate-600">Alcance de Acceso</label>
+            <select
+              value={newDomainScope}
+              onChange={(e) => setNewDomainScope(e.target.value as any)}
+              className="w-full h-11 rounded-xl border border-slate-200 bg-white px-3 text-sm font-bold text-slate-800 outline-none focus:border-sena-500"
+            >
+              <option value="USER">USER (Solo Aprendices / Usuarios)</option>
+              <option value="ADMIN">ADMIN (Solo Administradores)</option>
+              <option value="ALL">ALL (Acceso Universal)</option>
+            </select>
+          </div>
+
+          <div className="space-y-1">
+            <label className="text-xs font-bold uppercase tracking-wider text-slate-600">Descripción / Motivo</label>
+            <input
+              type="text"
+              value={newDomainDesc}
+              onChange={(e) => setNewDomainDesc(e.target.value)}
+              placeholder="Ej. Sede Regional Bogotá / Convenio"
+              className="w-full h-11 rounded-xl border border-slate-200 bg-white px-3 text-sm font-medium text-slate-800 outline-none focus:border-sena-500"
+            />
+          </div>
+
+          <button
+            type="submit"
+            disabled={domainSubmitting}
+            className="h-11 px-6 rounded-xl bg-sena-500 hover:bg-sena-600 text-white font-extrabold text-sm shadow-md transition flex items-center justify-center gap-2 disabled:opacity-50"
+          >
+            <Plus className="w-4 h-4" />
+            {domainSubmitting ? "Autorizando..." : "Autorizar Dominio"}
+          </button>
+        </form>
+
+        {/* Tabla / Lista de dominios */}
+        <div className="space-y-2">
+          <div className="flex items-center justify-between">
+            <h4 className="text-xs font-bold uppercase tracking-wider text-slate-500">
+              Dominios Configurados ({allowedDomains.length})
+            </h4>
+            <button
+              onClick={loadAllowedDomains}
+              disabled={domainLoading}
+              className="text-xs font-bold text-sena-600 hover:text-sena-700 flex items-center gap-1"
+            >
+              <RefreshCw className={`w-3 h-3 ${domainLoading ? "animate-spin" : ""}`} /> Actualizar
+            </button>
+          </div>
+
+          {allowedDomains.length === 0 ? (
+            <div className="text-center py-6 text-slate-400 text-sm">
+              No hay dominios registrados en la base de datos.
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+              {allowedDomains.map((d) => (
+                <div
+                  key={d.id}
+                  className={`p-4 rounded-2xl border transition-all flex flex-col justify-between gap-3 ${
+                    d.isActive
+                      ? "bg-white border-slate-200 shadow-sm hover:border-sena-300"
+                      : "bg-slate-50 border-slate-200 opacity-60"
+                  }`}
+                >
+                  <div className="flex items-start justify-between gap-2">
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <span className="font-mono font-black text-sm text-slate-800">@{d.domain}</span>
+                        <span
+                          className={`px-2 py-0.5 rounded-full text-[10px] font-black ${
+                            d.scope === "ALL"
+                              ? "bg-purple-100 text-purple-800"
+                              : d.scope === "ADMIN"
+                              ? "bg-amber-100 text-amber-800"
+                              : "bg-emerald-100 text-emerald-800"
+                          }`}
+                        >
+                          {d.scope}
+                        </span>
+                      </div>
+                      {d.description && (
+                        <p className="text-xs text-slate-500 mt-1 font-medium">{d.description}</p>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="flex items-center justify-between pt-2 border-t border-slate-100 text-xs">
+                    <button
+                      onClick={() => handleToggleDomain(d.id, d.isActive)}
+                      className={`px-3 py-1 rounded-lg font-bold transition flex items-center gap-1.5 ${
+                        d.isActive
+                          ? "bg-emerald-50 text-emerald-700 hover:bg-emerald-100"
+                          : "bg-rose-50 text-rose-700 hover:bg-rose-100"
+                      }`}
+                    >
+                      <span className={`w-2 h-2 rounded-full ${d.isActive ? "bg-emerald-500" : "bg-rose-500"}`} />
+                      {d.isActive ? "Activo" : "Inactivo"}
+                    </button>
+
+                    <button
+                      onClick={() => handleDeleteDomain(d.id, d.domain)}
+                      className="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition"
+                      title="Eliminar dominio"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
 
       {/* SECCIÓN DE REGISTROS DE AUDITORÍA GLOBAL (AUDIT LOGS) */}

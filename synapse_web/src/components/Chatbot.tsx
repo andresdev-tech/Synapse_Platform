@@ -38,20 +38,27 @@ export default function Chatbot() {
     ]);
     setIsLoading(true);
 
+    console.log(`[CHATBOT COMPONENT] [REQUEST] Enviando: "${content}"`);
+    const startTime = Date.now();
+
     try {
       const response = await fetchApi("/api/chatbot", {
         method: "POST",
         body: JSON.stringify({ message: content }),
       });
 
+      console.log(`[CHATBOT COMPONENT] [RESPONSE] Status: ${response.status} ${response.statusText}`);
+
       if (!response.ok || !response.body) {
         const result = await response.json().catch(() => null);
+        console.error(`[CHATBOT COMPONENT] [HTTP ERROR]`, result);
         throw new Error(result?.error || "No se pudo obtener una respuesta");
       }
 
       const reader = response.body.getReader();
       const decoder = new TextDecoder();
       let buffer = "";
+      let receivedChunks = 0;
 
       const appendAssistantContent = (chunk: string) => {
         setMessages((current) => {
@@ -70,13 +77,26 @@ export default function Chatbot() {
 
         for (const eventText of events) {
           const event = parseSseEvent(eventText.trim());
-          if (event?.type === "chunk" && event.content) appendAssistantContent(event.content);
-          if (event?.type === "error") throw new Error(event.error || "Error del chatbot");
+          if (event) {
+            console.log(`[CHATBOT COMPONENT] [SSE EVENT] Tipo: ${event.type}`, event.content ? `(${event.content.length} chars)` : '', event.error ? `Error: ${event.error}` : '');
+          }
+          if (event?.type === "chunk" && event.content) {
+            receivedChunks++;
+            appendAssistantContent(event.content);
+          }
+          if (event?.type === "error") {
+            console.error(`[CHATBOT COMPONENT] [SSE ERROR]`, event.error);
+            throw new Error(event.error || "Error del chatbot");
+          }
         }
 
-        if (done) break;
+        if (done) {
+          console.log(`[CHATBOT COMPONENT] [DONE] Stream terminado. Chunks: ${receivedChunks}, Tiempo: ${Date.now() - startTime}ms`);
+          break;
+        }
       }
     } catch (requestError) {
+      console.error(`[CHATBOT COMPONENT] [EXCEPTION]`, requestError);
       const errorMessage = requestError instanceof Error ? requestError.message : "Error de conexión";
       setError(errorMessage);
       setMessages((current) => current.slice(0, -1));

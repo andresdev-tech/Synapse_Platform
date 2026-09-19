@@ -4,7 +4,7 @@ import { use, useEffect, useState } from 'react';
 import { fetchApi } from '@/lib/fetchApi';
 import Image from 'next/image';
 import { useSession } from 'next-auth/react';
-import { ArrowLeft, User, Calendar, Download, AlertCircle, Heart, ThumbsUp, Lightbulb, Star } from 'lucide-react';
+import { ArrowLeft, User, Calendar, Download, AlertCircle, Heart, ThumbsUp, ThumbsDown, Lightbulb, Star } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { CommentsSection } from '@/components/CommentsSection';
 
@@ -39,7 +39,7 @@ export default function BlogDetailPage({ params }: PageProps) {
   
   // Reacciones state
   const [reactionsCounts, setReactionsCounts] = useState<Record<string, number>>({
-    LIKE: 0, LOVE: 0, USEFUL: 0, IMPORTANT: 0
+    LIKE: 0, LOVE: 0, USEFUL: 0, IMPORTANT: 0, DISLIKE: 0
   });
   const [userReaction, setUserReaction] = useState<string | null>(null);
   const [isReacting, setIsReacting] = useState(false);
@@ -59,7 +59,7 @@ export default function BlogDetailPage({ params }: PageProps) {
             
             // Procesar reacciones
             if (found.reactions) {
-              const counts = { LIKE: 0, LOVE: 0, USEFUL: 0, IMPORTANT: 0 } as Record<string, number>;
+              const counts = { LIKE: 0, LOVE: 0, USEFUL: 0, IMPORTANT: 0, DISLIKE: 0 } as Record<string, number>;
               found.reactions.forEach((r: any) => {
                 if (counts[r.type] !== undefined) counts[r.type]++;
               });
@@ -398,6 +398,19 @@ export default function BlogDetailPage({ params }: PageProps) {
             >
               <Star className={`w-5 h-5 ${userReaction === "IMPORTANT" ? 'fill-current' : ''}`} />
               <span className="hidden sm:inline">Importante</span> {reactionsCounts.IMPORTANT > 0 && `(${reactionsCounts.IMPORTANT})`}
+            </button>
+            <button 
+              onClick={() => handleToggleReaction("DISLIKE")}
+              disabled={isReacting}
+              className={`flex items-center gap-2 px-4 py-2 rounded-full font-bold transition-all ${
+                userReaction === "DISLIKE" 
+                  ? 'bg-rose-50 text-rose-600 border border-rose-200 dark:bg-rose-900/20 dark:border-rose-800' 
+                  : 'bg-white text-slate-500 border border-slate-200 hover:bg-slate-50 dark:bg-zinc-800 dark:text-slate-400 dark:border-zinc-700 dark:hover:bg-zinc-700'
+              }`}
+              title="No me gusta / Spam"
+            >
+              <ThumbsDown className={`w-5 h-5 ${userReaction === "DISLIKE" ? 'fill-current' : ''}`} />
+              <span className="hidden sm:inline">No me gusta</span> {reactionsCounts.DISLIKE > 0 && `(${reactionsCounts.DISLIKE})`}
             </button>
           </div>
 

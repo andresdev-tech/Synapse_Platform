@@ -12,6 +12,7 @@ import ragRoutes from "./modules/rag/rag.routes";
 import uploadRoutes from "./modules/upload/upload.routes";
 import auditLogRoutes from "./modules/audit-log/audit-log.routes";
 import roleRoutes from "./modules/role/role.routes";
+import allowedDomainRoutes from "./modules/allowed-domain/allowed-domain.routes";
 import swaggerUi from "swagger-ui-express";
 import { swaggerSpec } from "./swagger/swagger.config";
 
@@ -36,6 +37,7 @@ app.use("/api/rag", ragRoutes);
 app.use("/api/upload", uploadRoutes);
 app.use("/api/audit-logs", auditLogRoutes);
 app.use("/api/roles", roleRoutes);
+app.use("/api/allowed-domains", allowedDomainRoutes);
 
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 

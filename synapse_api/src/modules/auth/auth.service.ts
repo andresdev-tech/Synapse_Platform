@@ -6,6 +6,7 @@ import jwt from "jsonwebtoken";
 import { RoleNames, prisma } from "../../config/prisma";
 import { SessionRepository } from "../session/session.repository";
 import { AuditLogService } from "../audit-log/audit-log.service";
+import { AllowedDomainService } from "../allowed-domain/allowed-domain.service";
 import { AuditAction } from "../../../generated/prisma/client";
 import crypto from "crypto";
 
@@ -75,10 +76,10 @@ export class AuthService {
   }
 
   static async createadmin (data: any) {
-
     try {
-      if (!data.email.endsWith("@soy.sena.edu.co") && !data.email.endsWith("@sena.edu.co")) {
-        return { success: false, error: "Solo se permiten correos institucionales del SENA (@soy.sena.edu.co o @sena.edu.co)" };
+      const domainCheck = await AllowedDomainService.isDomainAllowed(data.email, "ADMIN");
+      if (!domainCheck.allowed) {
+        return { success: false, error: domainCheck.error || "Solo se permiten correos con dominios autorizados para administración." };
       }
 
       const emailExist = await AuthRepository.findUserByEmail(data.email);
@@ -123,6 +124,16 @@ export class AuthService {
 
   static async requestOtp(data: OtpEmailDTO): Promise<AuthResponse> {
     const email = data.email.trim().toLowerCase();
+
+    const targetScope = data.adminOnly ? "ADMIN" : "USER";
+    const domainCheck = await AllowedDomainService.isDomainAllowed(email, targetScope);
+    if (!domainCheck.allowed) {
+      return {
+        success: false,
+        error: domainCheck.error || "Dominio de correo no autorizado para este tipo de acceso.",
+      };
+    }
+
     let user = await AuthRepository.findUserByEmail(email);
 
     if (data.adminOnly) {
@@ -142,13 +153,6 @@ export class AuthService {
     }
 
     if (!user) {
-      if (!email.endsWith("@soy.sena.edu.co") && !email.endsWith("@sena.edu.co")) {
-        return {
-          success: false,
-          error: "Solo se permite el registro con cuentas institucionales del SENA (@soy.sena.edu.co o @sena.edu.co).",
-        };
-      }
-
       const userRole = await AuthRepository.findRoleByName(RoleNames.USER) || await AuthRepository.createRole(RoleNames.USER);
       await AuthRepository.createUser({
         name: email.split("@")[0],
@@ -207,6 +211,11 @@ export class AuthService {
   }
 
   static async loginAdmin(credentials: LoginAdminDTO): Promise<AuthResponse> {
+    const domainCheck = await AllowedDomainService.isDomainAllowed(credentials.email, "ADMIN");
+    if (!domainCheck.allowed) {
+      return { success: false, error: domainCheck.error || "Dominio no autorizado para el portal administrativo." };
+    }
+
     const user = await AuthRepository.findUserByEmail(credentials.email);
     if (!user) {
       return { success: false, error: "Credenciales incorrectas" };

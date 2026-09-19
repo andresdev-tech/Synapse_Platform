@@ -93,7 +93,7 @@ export class NoteService {
     return await NoteRepository.delete(id);
   }
 
-  static async toggleReaction(id: string, userId: string, type: "LIKE" | "LOVE" | "USEFUL" | "IMPORTANT") {
+  static async toggleReaction(id: string, userId: string, type: "LIKE" | "LOVE" | "USEFUL" | "IMPORTANT" | "DISLIKE") {
     return await NoteRepository.toggleReaction(id, userId, type);
   }
 }
