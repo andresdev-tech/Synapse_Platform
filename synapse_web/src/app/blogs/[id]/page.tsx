@@ -87,10 +87,10 @@ export default function BlogDetailPage({ params }: PageProps) {
 
   const handleToggleReaction = async (type: string) => {
     if (!session) {
-      alert("Debes iniciar sesión para reaccionar");
+      router.push("/login");
       return;
     }
-    
+
     try {
       setIsReacting(true);
       

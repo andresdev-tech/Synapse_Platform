@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { NoteController } from "./note.controller";
-import { verifyToken, requireAdmin } from "../../middleware/auth.middleware";
+import { verifyToken, requireAdmin, optionalAuth } from "../../middleware/auth.middleware";
 
 const router = Router();
 
@@ -246,6 +246,6 @@ router.delete("/:id", verifyToken, NoteController.delete);
  *       401:
  *         description: No autenticado
  */
-router.post("/:id/reaction", verifyToken, NoteController.toggleReaction as any);
+router.post("/:id/reaction", optionalAuth, NoteController.toggleReaction as any);
 
 export default router;
