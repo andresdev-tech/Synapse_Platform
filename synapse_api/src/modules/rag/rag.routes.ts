@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { RagController } from "./rag.controller";
-import { verifyToken, requireSuperAdmin } from "../../middleware/auth.middleware";
+import { verifyToken, requireAdmin } from "../../middleware/auth.middleware";
 
 const router = Router();
 
@@ -11,13 +11,13 @@ const router = Router();
  *   description: Indexación documental y catálogo de conocimientos
  */
 
-router.use(verifyToken, requireSuperAdmin);
+router.use(verifyToken, requireAdmin);
 
 /**
  * @swagger
  * /api/rag/resources:
  *   get:
- *     summary: Obtener catálogo de recursos documentales indexados (Solo SuperAdmin)
+ *     summary: Obtener catálogo de recursos documentales indexados (Admin / SuperAdmin)
  *     tags: [RAG]
  *     security:
  *       - bearerAuth: []
@@ -46,7 +46,7 @@ router.use(verifyToken, requireSuperAdmin);
  *                     type: string
  *                     format: date-time
  *       403:
- *         description: Requiere privilegios de SuperAdmin
+ *         description: Requiere privilegios de administrador
  */
 router.get("/resources", RagController.getResources);
 
@@ -54,7 +54,7 @@ router.get("/resources", RagController.getResources);
  * @swagger
  * /api/rag/resources:
  *   post:
- *     summary: Subir e indexar un documento para fragmentación y vectorización RAG (Solo SuperAdmin)
+ *     summary: Subir e indexar un documento para fragmentación y vectorización RAG (Admin / SuperAdmin)
  *     tags: [RAG]
  *     security:
  *       - bearerAuth: []
@@ -88,7 +88,7 @@ router.get("/resources", RagController.getResources);
  *       400:
  *         description: Datos incompletos
  *       403:
- *         description: Requiere privilegios de SuperAdmin
+ *         description: Requiere privilegios de administrador
  */
 router.post("/resources", RagController.createResource);
 
@@ -96,7 +96,7 @@ router.post("/resources", RagController.createResource);
  * @swagger
  * /api/rag/resources/{id}:
  *   delete:
- *     summary: Eliminar un recurso documental y sus fragmentos vectoriales (Solo SuperAdmin)
+ *     summary: Eliminar un recurso documental y sus fragmentos vectoriales (Admin / SuperAdmin)
  *     tags: [RAG]
  *     security:
  *       - bearerAuth: []
@@ -112,7 +112,7 @@ router.post("/resources", RagController.createResource);
  *       204:
  *         description: Recurso eliminado correctamente
  *       403:
- *         description: Requiere privilegios de SuperAdmin
+ *         description: Requiere privilegios de administrador
  */
 router.delete("/resources/:id", RagController.deleteResource);
 
