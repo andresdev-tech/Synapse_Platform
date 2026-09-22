@@ -124,11 +124,11 @@ export class NoteController {
    */
   static async toggleReaction(req: AuthRequest, res: Response): Promise<void> {
     const { id } = req.params;
-    const { type = "LIKE" } = req.body;
+    const { type = "LIKE", sessionId } = req.body;
     const userId = req.user?.id;
     
-    if (!userId) {
-      res.status(401).json({ error: "No autorizado" });
+    if (!userId && !sessionId) {
+      res.status(400).json({ error: "Debe proveer userId o sessionId para reaccionar" });
       return;
     }
     
@@ -139,7 +139,7 @@ export class NoteController {
     }
 
     try {
-      const result = await NoteService.toggleReaction(id as string, userId, type as any);
+      const result = await NoteService.toggleReaction(id as string, type as any, userId, sessionId);
       res.json(result);
     } catch (error) {
       console.error("Error al dar reacción:", error);

@@ -245,7 +245,7 @@ export class AuthService {
                 SYNAPSE
               </div>
               <div style="font-size: 13px; color: #e0f2fe; text-transform: uppercase; letter-spacing: 1.5px; font-weight: 600;">
-                SENA • Centro Tecnológico del Mobiliario y la Madera
+                SENA • CTMA Blog
               </div>
             </td>
           </tr>
@@ -290,10 +290,10 @@ export class AuthService {
           <tr>
             <td style="background-color: #f9fafb; padding: 22px 30px; text-align: center; border-top: 1px solid #e5e7eb;">
               <p style="margin: 0 0 6px 0; font-size: 12px; font-weight: 600; color: #00324D;">
-                Servicio Nacional de Aprendizaje — SENA CTMA
+                Servicio Nacional de Aprendizaje — SENA
               </p>
               <p style="margin: 0; font-size: 11px; color: #9ca3af;">
-                Synapse Knowledge & Community Platform • Medellín, Colombia
+                Synapse Knowledge & Community Platform • Colombia
               </p>
             </td>
           </tr>
@@ -306,7 +306,7 @@ export class AuthService {
       `;
 
       await this.getTransporter().sendMail({
-        from: '"Synapse SENA CTMA" <no-reply@synapse.edu.co>',
+        from: '"Synapse SENA" <no-reply@synapse.edu.co>',
         to: email,
         subject,
         text: `Tu código de acceso a Synapse es: ${code}. Este código vence en 10 minutos.`,

@@ -126,8 +126,8 @@ export class NoteService {
   /**
    * Registra o alterna la reacción de un usuario en una nota.
    */
-  static async toggleReaction(id: string, userId: string, type: "LIKE" | "LOVE" | "USEFUL" | "IMPORTANT" | "DISLIKE") {
-    return await NoteRepository.toggleReaction(id, userId, type);
+  static async toggleReaction(id: string, type: "LIKE" | "LOVE" | "USEFUL" | "IMPORTANT" | "DISLIKE", userId?: string, sessionId?: string) {
+    return await NoteRepository.toggleReaction(id, type, userId, sessionId);
   }
 }
 

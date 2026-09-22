@@ -87,10 +87,10 @@ export default function BlogDetailPage({ params }: PageProps) {
 
   const handleToggleReaction = async (type: string) => {
     if (!session) {
-      alert("Debes iniciar sesión para reaccionar");
+      router.push("/login");
       return;
     }
-    
+
     try {
       setIsReacting(true);
       
@@ -198,6 +198,7 @@ export default function BlogDetailPage({ params }: PageProps) {
                   src={note.seoImage} 
                   alt={note.title} 
                   fill
+                  priority
                   sizes="(max-width: 768px) 100vw, 768px"
                   className="object-contain"
                   onError={(e) => { e.currentTarget.style.display = 'none'; }}
@@ -225,7 +226,7 @@ export default function BlogDetailPage({ params }: PageProps) {
                             if (block.type === 'image' && block.url) {
                               return (
                                 <div key={idx} className="rounded-2xl overflow-hidden shadow-sm my-4 border border-slate-200 dark:border-zinc-700 bg-slate-100 dark:bg-zinc-800 max-w-2xl">
-                                  <img src={block.url} alt="Imagen del anuncio" className="w-full h-auto object-cover" />
+                                  <img src={block.url} alt="Imagen del anuncio" loading="lazy" className="w-full h-auto object-cover" />
                                 </div>
                               );
                             }
@@ -253,6 +254,7 @@ export default function BlogDetailPage({ params }: PageProps) {
                                       src={`https://www.youtube-nocookie.com/embed/${videoId}`}
                                       className="absolute inset-0 w-full h-full"
                                       title="YouTube video player"
+                                      loading="lazy"
                                       allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
                                       allowFullScreen
                                     ></iframe>
@@ -274,7 +276,12 @@ export default function BlogDetailPage({ params }: PageProps) {
                 } catch (e) {}
 
                 if (bodyStr.includes('<') && bodyStr.includes('>')) {
-                  return <div className="prose prose-lg dark:prose-invert max-w-none" dangerouslySetInnerHTML={{ __html: bodyStr }} />;
+                  let optimizedBody = bodyStr;
+                  if (!optimizedBody.includes('loading="lazy"')) {
+                    optimizedBody = optimizedBody.replace(/<iframe /g, '<iframe loading="lazy" ');
+                    optimizedBody = optimizedBody.replace(/<img /g, '<img loading="lazy" ');
+                  }
+                  return <div className="prose prose-lg dark:prose-invert max-w-none" dangerouslySetInnerHTML={{ __html: optimizedBody }} />;
                 }
 
                 return (
@@ -298,7 +305,7 @@ export default function BlogDetailPage({ params }: PageProps) {
                   if (att.type === 'image') {
                     return (
                       <div key={idx} className="rounded-xl overflow-hidden border border-slate-200 dark:border-zinc-700 shadow-sm relative aspect-video sm:col-span-2 max-w-2xl mx-auto w-full">
-                        <Image src={att.url} alt="Adjunto" fill className="object-cover" />
+                        <Image src={att.url} alt="Adjunto" fill sizes="(max-width: 768px) 100vw, 768px" className="object-cover" />
                       </div>
                     );
                   } else if (att.type === 'video') {
@@ -322,6 +329,7 @@ export default function BlogDetailPage({ params }: PageProps) {
                             src={`https://www.youtube-nocookie.com/embed/${videoId}`}
                             className="absolute inset-0 w-full h-full"
                             title="YouTube video player"
+                            loading="lazy"
                             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
                             allowFullScreen
                           ></iframe>

@@ -28,7 +28,7 @@ export class NoteRepository {
       include: {
         author: { select: { name: true, role: true } },
         category: { select: { name: true } },
-        reactions: { select: { userId: true, type: true } },
+        reactions: { select: { userId: true, sessionId: true, type: true } },
       },
       orderBy: { updatedAt: "desc" },
     });
@@ -67,7 +67,7 @@ export class NoteRepository {
       include: {
         author: { select: { name: true, email: true } },
         category: { select: { name: true } },
-        reactions: { select: { userId: true, type: true } },
+        reactions: { select: { userId: true, sessionId: true, type: true } },
       },
     });
   }
@@ -190,9 +190,13 @@ export class NoteRepository {
   /**
    * Gestiona la reacción de un usuario sobre una nota (crea nueva, cambia tipo o elimina si ya existía la misma).
    */
-  static async toggleReaction(contentId: string, userId: string, type: "LIKE" | "LOVE" | "USEFUL" | "IMPORTANT" | "DISLIKE") {
+  static async toggleReaction(contentId: string, type: "LIKE" | "LOVE" | "USEFUL" | "IMPORTANT" | "DISLIKE", userId?: string, sessionId?: string) {
+    const whereClause = userId 
+      ? { contentId, userId } 
+      : { contentId, sessionId };
+
     const existing = await prisma.reaction.findFirst({
-      where: { contentId, userId },
+      where: whereClause,
     });
 
     if (existing) {
@@ -211,7 +215,11 @@ export class NoteRepository {
     } else {
       // Crear nueva
       await prisma.reaction.create({
-        data: { contentId, userId, type },
+        data: { 
+          contentId, 
+          type, 
+          ...(userId ? { userId } : { sessionId }) 
+        },
       });
       return { action: "created", type };
     }
