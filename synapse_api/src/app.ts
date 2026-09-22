@@ -20,7 +20,40 @@ import { errorHandler } from "./middleware/error.middleware";
 
 const app = express();
 
-app.use(cors({ origin: '*', methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], allowedHeaders: ['Content-Type', 'Authorization'] }));
+const defaultAllowedOrigins = [
+  "https://synapseplatform.app",
+  "http://localhost:3000",
+  "http://localhost:4000",
+  "http://127.0.0.1:3000",
+  "http://127.0.0.1:4000",
+];
+
+const envAllowedOrigins = process.env.CORS_ALLOWED_ORIGINS
+  ? process.env.CORS_ALLOWED_ORIGINS.split(",").map((o) => o.trim()).filter(Boolean)
+  : [];
+
+const allowedOrigins = new Set([...defaultAllowedOrigins, ...envAllowedOrigins]);
+
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      // 1. Permitir peticiones sin origen (SSR, Proxy de Next.js, Swagger local, Curl, Postman)
+      if (!origin) return callback(null, true);
+
+      // 2. Comprobar lista blanca de orígenes
+      if (allowedOrigins.has(origin)) {
+        return callback(null, true);
+      }
+
+      // 3. Origen no autorizado: no emitir cabecera CORS
+      return callback(null, false);
+    },
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS", "HEAD"],
+    allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With", "Accept"],
+    credentials: true,
+    maxAge: 86400,
+  })
+);
 app.use(express.json({ limit: "50mb" }));
 app.use(express.urlencoded({ extended: true, limit: "50mb" }));
 

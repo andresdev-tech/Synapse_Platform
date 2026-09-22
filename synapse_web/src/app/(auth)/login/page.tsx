@@ -62,7 +62,7 @@ function LoginForm() {
       setOtpSent(true)
       setOtp("")
       setTimeLeft(600) // Reiniciar a 10 minutos
-      setSuccessMsg(`Te enviamos un código de 6 dígitos a ${email.trim()}. Vence en 10 minutos.`)
+      setSuccessMsg(`Te enviamos un código de 6 dígitos a ${email.trim()}. Vence en 10 minutos. Recuerda revisar la carpeta de spam.`)
     } catch (requestError) {
       setError(requestError instanceof Error ? requestError.message : "No se pudo enviar el código")
       setCaptchaToken(null)
