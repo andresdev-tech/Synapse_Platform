@@ -306,7 +306,7 @@ export class AuthService {
       `;
 
       await this.getTransporter().sendMail({
-        from: '"Synapse SENA" <no-reply@synapse.edu.co>',
+       from: `"Synapse SENA" <${process.env.EMAIL_USER}>`,
         to: email,
         subject,
         text: `Tu código de acceso a Synapse es: ${code}. Este código vence en 10 minutos.`,
