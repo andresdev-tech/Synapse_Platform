@@ -7,7 +7,7 @@
 
 Synapse Platform es una plataforma de gestión y aprendizaje inteligente que utiliza una arquitectura RAG (Inteligencia Artificial) para interactuar con bases de conocimiento documentales. El ecosistema resuelve la necesidad de centralizar la educación técnica mediante paneles de administración interactivos, automatización de contenidos y un asistente conversacional avanzado.
 
-> 🎨 **Diseño y UI:** *[Haz clic aquí para ver los mockups de la plataforma](./docs/mockups/README.md)*
+> 🎨 **Diseño y UI:** *[Haz clic aquí para ver los mockups de la plataforma](./Docs/mockups/README.md)*
 
 ## 2. Requisitos Previos (Prerequisites)
 
