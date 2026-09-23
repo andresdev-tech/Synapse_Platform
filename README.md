@@ -2,178 +2,33 @@
 
 <div align="center">
 
-![Node.js](https://img.shields.io/badge/Node.js-v22+-339933?style=for-the-badge&logo=nodedotjs&logoColor=white)
-![Next.js](https://img.shields.io/badge/Next.js-16.3-000000?style=for-the-badge&logo=nextdotjs&logoColor=white)
-![Express](https://img.shields.io/badge/Express-5.2-000000?style=for-the-badge&logo=express&logoColor=white)
-![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178C6?style=for-the-badge&logo=typescript&logoColor=white)
-![Prisma](https://img.shields.io/badge/Prisma-7.10-2D3748?style=for-the-badge&logo=prisma&logoColor=white)
-![PostgreSQL](https://img.shields.io/badge/PostgreSQL-Neon.tech-4169E1?style=for-the-badge&logo=postgresql&logoColor=white)
-![Docker](https://img.shields.io/badge/Docker-Compose-2496ED?style=for-the-badge&logo=docker&logoColor=white)
-![OpenAI / Qwen](https://img.shields.io/badge/AI-RAG%20%26%20Qwen-7A22E1?style=for-the-badge&logo=openai&logoColor=white)
+![Node.js](https://img.shields.io/badge/Node.js-v22+-green.svg)
+![Next.js](https://img.shields.io/badge/Next.js-16.3-black.svg)
+![Prisma](https://img.shields.io/badge/Prisma-ORM-blue.svg)
+![Despliegue](https://img.shields.io/badge/Despliegue-Docker-blueviolet.svg)
 
-**Plataforma modular e inteligente para la gestión de notas técnicas, aprendizaje interactivo y asistencia conversacional impulsada por Inteligencia Artificial y arquitecturas RAG.**
+Synapse Platform es una plataforma de gestión y aprendizaje inteligente que utiliza una arquitectura RAG (Inteligencia Artificial) para interactuar con bases de conocimiento documentales. El ecosistema resuelve la necesidad de centralizar la educación técnica mediante paneles de administración interactivos, automatización de contenidos y un asistente conversacional avanzado.
 
-[Características](#-características-principales) •
-[Arquitectura](#-arquitectura-del-sistema) •
-[Estructura](#-estructura-del-proyecto) •
-[Requisitos](#-requisitos-previos) •
-[Instalación](#-instalación-y-puesta-en-marcha) •
-[Variables de Entorno](#-variables-de-entorno) •
-[Documentación API](#-documentación-de-la-api-swagger) •
-[Despliegue](#-despliegue-y-producción)
+> 🎨 **Diseño y UI:** *[Haz clic aquí para ver los mockups de la plataforma](./docs/mockups/README.md)*
 
-</div>
+## 2. Requisitos Previos (Prerequisites)
 
----
+Para asegurar el correcto funcionamiento del proyecto, debes contar con las siguientes tecnologías instaladas:
 
-## 🌟 Descripción General
+- **Node.js**: v22.0.0 o superior
+- **pnpm**: v11.0.0 o superior (`corepack enable`)
+- **Docker**: v24.0.0 o superior y Docker Compose (Para despliegue orquestado)
+- **Base de Datos**: PostgreSQL (Compatible con proveedores Serverless como Neon.tech)
 
-**Synapse Platform** es un ecosistema full-stack diseñado para centralizar la educación técnica, documentación y aprendizaje mediante paneles de administración interactivos, automatización de contenidos y un motor de asistente conversacional avanzado (RAG - *Retrieval-Augmented Generation*). 
+## 3. Configuración Local (Getting Started)
 
-Permite a los usuarios y administradores interactuar fluidamente con bases de conocimiento documentales, gestionar categorías, notas formativas, comentarios, control de accesos basados en dominios y roles, auditoría de eventos y procesamiento inteligente de imágenes y documentos.
+Sigue estos pasos en orden para levantar todo el proyecto en tu entorno de desarrollo en menos de 5 minutos:
 
-> 🎨 **Mockups y Guías de Diseño UI:** Consulta los recursos visuales y prototipos en [`Docs/mockups/README.md`](./Docs/mockups/README.md).
-
----
-
-## 🚀 Características Principales
-
-- 🤖 **Motor Conversacional RAG:** Chatbot inteligente impulsado por IA (compatible con modelos Qwen/OpenAI y embeddings vectoriales) para responder preguntas sobre la base de conocimiento en tiempo real.
-- 👥 **Control de Acceso Basado en Roles (RBAC):** Gestión granular de roles (SuperAdmin, Admin, Aprendiz / Estudiante) y restricción por dominios de correo permitidos.
-- 📝 **Gestión de Notas y Blogs Técnicos:** Creación, edición, categorización, ordenamiento drag-and-drop e interacción con comentarios y visores multimedia.
-- 🖼️ **Extracción y Procesamiento de Imágenes/Documentos:** Soporte para extracción de texto/contenido y subida de archivos estáticos con almacenamiento compatible con Amazon S3 / Neon Storage.
-- 📊 **Panel de Auditoría (Audit Logs):** Trazabilidad exhaustiva de acciones y eventos realizados dentro del sistema.
-- 📖 **Documentación Swagger Integrada:** API REST totalmente documentada e interactiva a través de OpenAPI/Swagger UI.
-- ⚡ **Arquitectura Monorepo / Microservicios Desacoplados:** Backend y Frontend independientes con comunicación optimizada mediante proxies y CORS configurable.
-
----
-
-## 🏗️ Arquitectura del Sistema
-
-```mermaid
-flowchart TD
-    subgraph Client ["Frontend (Next.js 16)"]
-        UI["UI / App Router (Tailwind CSS)"]
-        AuthClient["NextAuth.js Session"]
-        NextProxy["Next.js API Proxy (/api/proxy)"]
-    end
-
-    subgraph Backend ["Backend API (Express 5 + TS)"]
-        Router["Express Router (/api/*)"]
-        Swagger["Swagger UI (/api-docs)"]
-        Modules["Módulos: Auth, Notes, Categories, Users, RAG, Chatbot"]
-        Middleware["Auth, CORS & Error Middlewares"]
-    end
-
-    subgraph External ["Servicios Externos & Datos"]
-        DB[(PostgreSQL / Neon Database)]
-        S3[("S3 / Neon Object Storage")]
-        LLM["AI / LLM Provider (Qwen / OpenAI)"]
-    end
-
-    UI --> AuthClient
-    UI --> NextProxy
-    NextProxy --> Router
-    Swagger --> Router
-    Router --> Middleware
-    Middleware --> Modules
-    Modules --> DB
-    Modules --> S3
-    Modules --> LLM
-```
-
----
-
-## 📂 Estructura del Proyecto
-
-El repositorio está organizado como una arquitectura desacoplada con gestión unificada:
-
-```plaintext
-Synapse_Platform/
-├── 📁 Docs/                     # Documentación general y diseño
-│   └── 📁 mockups/              # Mockups e interfaces Desktop y Mobile
-├── 📁 synapse_api/              # Backend REST API (Node.js, Express, TypeScript)
-│   ├── 📁 prisma/               # Esquema de Prisma y migraciones de BD
-│   │   ├── schema.prisma        # Definición de modelos y relaciones
-│   │   └── migrations/          # Historial de migraciones SQL
-│   ├── 📁 src/
-│   │   ├── 📁 common/           # Utilidades compartidas y formateadores de respuesta
-│   │   ├── 📁 config/           # Configuraciones (Prisma, Variables de entorno)
-│   │   ├── 📁 middleware/       # Middlewares (Autenticación JWT, Manejo de errores)
-│   │   ├── 📁 modules/          # Arquitectura modular por dominio (Controller, Service, Repo)
-│   │   │   ├── 📁 allowed-domain/ # Restricciones de dominios de registro
-│   │   │   ├── 📁 audit-log/      # Auditoría y registro de actividades
-│   │   │   ├── 📁 auth/           # Autenticación, registro y recuperación de cuenta
-│   │   │   ├── 📁 category/       # Categorías y organización temática
-│   │   │   ├── 📁 chatbot/        # Lógica del chatbot, providers AI (Qwen/OpenAI) y herramientas
-│   │   │   ├── 📁 comment/        # Sistema de comentarios y feedback
-│   │   │   ├── 📁 extract/        # Extracción y procesamiento de contenidos
-│   │   │   ├── 📁 note/           # Gestión de notas técnicas y publicaciones
-│   │   │   ├── 📁 rag/            # Vectorización y búsqueda semántica (RAG)
-│   │   │   ├── 📁 role/           # Gestión de roles y permisos
-│   │   │   ├── 📁 session/        # Control de sesiones activas
-│   │   │   ├── 📁 upload/         # Manejo y firma de subida de archivos (S3)
-│   │   │   └── 📁 user/           # Administración y perfiles de usuarios
-│   │   ├── 📁 routes/           # Mapeo y agregación de rutas
-│   │   ├── 📁 swagger/          # Especificación OpenAPI / Swagger
-│   │   ├── app.ts               # Configuración de Express, middlewares y CORS
-│   │   └── server.ts            # Punto de entrada e inicialización del servidor HTTP
-│   ├── Dockerfile               # Contenedor Docker para la API
-│   ├── package.json             # Dependencias y scripts de la API
-│   └── tsconfig.json            # Configuración de TypeScript para la API
-│
-├── 📁 synapse_web/              # Frontend App (Next.js 16, React 19, Tailwind CSS)
-│   ├── 📁 public/               # Activos estáticos públicos (SVG, imágenes, iconos)
-│   ├── 📁 src/
-│   │   ├── 📁 app/              # Next.js App Router (Páginas y layouts)
-│   │   │   ├── 📁 (auth)/       # Rutas de autenticación (login, validación)
-│   │   │   ├── 📁 api/proxy/    # Proxy API interno hacia el backend
-│   │   │   ├── 📁 blogs/        # Visualización de blogs y artículos
-│   │   │   ├── 📁 chatbot/      # Interfaz dedicada del asistente AI
-│   │   │   ├── 📁 ctma/         # Vistas de contenido técnico por categorías/slug
-│   │   │   ├── 📁 loginadmin/   # Portal de acceso administrativo
-│   │   │   ├── layout.tsx       # Layout raíz con providers
-│   │   │   └── page.tsx         # Página principal / Landing Page
-│   │   ├── 📁 components/       # Componentes de UI reutilizables
-│   │   │   ├── AdminDashboard.tsx      # Panel para administradores
-│   │   │   ├── ApprenticeDashboard.tsx # Panel para aprendices
-│   │   │   ├── Chatbot.tsx             # Widget interactivo del chatbot
-│   │   │   ├── RagControlCenter.tsx    # Centro de control del motor RAG
-│   │   │   └── SuperAdminDashboard.tsx # Panel global para SuperAdmin
-│   │   ├── 📁 lib/              # Clientes de API, fetchers y utilidades UI
-│   │   └── 📁 types/            # Definiciones de tipos TypeScript y extensiones NextAuth
-│   ├── Dockerfile               # Contenedor Docker para el Frontend
-│   ├── package.json             # Dependencias y scripts del Frontend
-│   └── tsconfig.json            # Configuración de TypeScript del Frontend
-│
-├── .dockerignore                # Archivos excluidos en la construcción Docker
-├── .gitignore                   # Archivos ignorados por Git
-├── docker-compose.yml           # Orquestación de contenedores (API + Web)
-├── package.json                 # Scripts unificados de la raíz (Concurrently)
-└── README.md                    # Documentación principal del proyecto
-```
-
----
-
-## 📋 Requisitos Previos
-
-Asegúrate de tener instaladas las siguientes herramientas en tu sistema:
-
-- [Node.js](https://nodejs.org/) `>= 22.0.0`
-- [pnpm](https://pnpm.io/) `>= 10.0.0` (o habilitar corepack: `corepack enable`)
-- [Docker](https://www.docker.com/) `>= 24.0.0` y Docker Compose *(opcional para ejecución en contenedores)*
-- [PostgreSQL](https://www.postgresql.org/) `>= 15` (o una instancia serverless en [Neon.tech](https://neon.tech/))
-
----
-
-## ⚙️ Instalación y Puesta en Marcha
-
-### 1. Clonar el Repositorio
-
-```bash
-git clone https://github.com/tu-usuario/Synapse_Platform.git
-cd Synapse_Platform
-```
+1. **Clonar el repositorio:**
+   ```bash
+   git clone https://github.com/tu-usuario/Synapse_Platform.git
+   cd Synapse_Platform
+   ```
 
 ### 2. Instalar Dependencias
 
